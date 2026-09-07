@@ -1,7 +1,6 @@
 import Foundation
 import Supabase
 
-@MainActor
 public final class SupabaseOnboardingService: OnboardingService {
     private let client: SupabaseClient
 

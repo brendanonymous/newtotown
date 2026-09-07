@@ -1,8 +1,7 @@
 import Foundation
 
 /// The onboarding state machine can be tested without sending mail or creating users.
-@MainActor
-public protocol OnboardingService {
+public protocol OnboardingService: Sendable {
     func currentUserID() async throws -> UUID?
     func sendCode(to email: String) async throws
     func verifyCode(_ code: String, email: String) async throws -> UUID
