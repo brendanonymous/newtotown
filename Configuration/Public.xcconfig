@@ -1,0 +1,3 @@
+// Public client connection values. RLS is the authorization boundary.
+SUPABASE_PROJECT_HOST = pnlpdevgwenkkoqjgcui.supabase.co
+SUPABASE_PUBLISHABLE_KEY = sb_publishable_VWwYbbiW1ccdENsuoohlCQ_OFQH54oq

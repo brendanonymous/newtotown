@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct WelcomeView: View {
+    @State private var showingSignup = false
     var body: some View {
         ScrollView {
             VStack(spacing: 36) {
@@ -31,6 +32,16 @@ struct WelcomeView: View {
                     .background(BrandTheme.sage.opacity(0.22), in: Capsule())
 
                 VStack(spacing: 16) {
+                    Button {
+                        showingSignup = true
+                    } label: {
+                        Text("Join or sign in")
+                            .font(.body.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                            .padding(20)
+                            .foregroundStyle(BrandTheme.background)
+                            .background(BrandTheme.ink, in: RoundedRectangle(cornerRadius: 18))
+                    }
                     NavigationLink {
                         PilotOverviewView()
                     } label: {
@@ -41,11 +52,11 @@ struct WelcomeView: View {
                         }
                         .font(.body.weight(.medium))
                         .padding(20)
-                        .foregroundStyle(BrandTheme.background)
-                        .background(BrandTheme.ink, in: RoundedRectangle(cornerRadius: 18))
+                        .foregroundStyle(BrandTheme.ink)
+                        .background(BrandTheme.sage.opacity(0.22), in: RoundedRectangle(cornerRadius: 18))
                     }
 
-                    Text("Preview build · Signup is coming next")
+                    Text("Pilot build · Scottsdale, Arizona")
                         .font(.footnote)
                         .foregroundStyle(BrandTheme.secondaryInk)
                 }
@@ -58,6 +69,7 @@ struct WelcomeView: View {
         }
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
+        .sheet(isPresented: $showingSignup) { OnboardingView() }
     }
 }
 

@@ -1,5 +1,8 @@
-// Local overrides are optional: the foundation launches without backend credentials.
+// Public backend defaults can be overridden locally.
+#include "Public.xcconfig"
 #include? "Local.xcconfig"
+
+INFOPLIST_FILE = Configuration/AppInfo.plist
 
 IPHONEOS_DEPLOYMENT_TARGET = 17.0
 SWIFT_VERSION = 6.0

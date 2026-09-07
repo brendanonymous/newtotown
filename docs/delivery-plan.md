@@ -1,7 +1,7 @@
 # Delivery plan
 
-1. **Foundation (this PR):** buildable iOS project, welcome and pilot overview, visual tokens, configuration validation, tests, and CI.
-2. **Accounts and profiles:** Apple/email authentication, 18+ onboarding, job title, activity summary, photo upload, database migrations and RLS tests. Validate email delivery configuration before inviting real users.
+1. **Foundation (PR #1):** buildable iOS project, welcome and pilot overview, visual tokens, configuration validation, tests, and CI.
+2. **Email accounts and private profiles (this PR):** email OTP, 18+ onboarding, job title, activity summary, session restore, database migration, and RLS tests. Hosted setup remains. Apple sign-in and photos require follow-up PRs.
 3. **Photo review:** consent, verification selfie capture, private storage, reviewer queue, approval/rejection, retention and deletion. Only approved profiles become discoverable.
 4. **Discovery and connection:** Scottsdale selection, check/pass, mutual matches, and authorization tests. GPS/proximity is deferred.
 5. **Messaging and safety:** match-only chat, block/report/unmatch, moderation, and account deletion.
@@ -13,5 +13,5 @@ Each increment gets a separate reviewable PR. The foundation is not the investor
 
 - GitHub access: configured for branches and PRs; owner reviews merges.
 - Apple: account added to Xcode; paid membership pending. Signing, final bundle ID, and App Store Connect setup remain.
-- Supabase: project created. No schema, RLS policies, storage buckets, or auth providers configured by this code yet.
+- Supabase: project created. Profile schema and RLS are defined and tested locally; not applied to the hosted project. Email templates/SMTP and Apple sign-in still need configuration.
 - Before collecting user data: support contact, privacy policy, community rules, selfie retention policy, and a designated reviewer.

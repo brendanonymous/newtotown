@@ -4,7 +4,9 @@ An iPhone app for platonic friendship among men, starting in Scottsdale, Arizona
 
 ## Current build
 
-The foundation contains a SwiftUI welcome screen and pilot overview using the sage and warm-white visual direction. It does **not** create accounts, upload photos, verify people, match users, or send messages. No sample users are presented as real people. The letter N is a temporary typographic mark, not the final supplied monogram.
+The app supports email-code signup/sign-in and private profile details. It retains the sage and warm-white welcome screen and pilot overview. Photo verification, discovery, matching, messaging, and account deletion are not implemented yet. The N remains a temporary typographic mark.
+
+See [backend setup and phone journeys](docs/backend-setup.md) before testing live signup. The hosted Supabase project still needs the migration and email settings; this PR does not apply them automatically.
 
 ## Run
 
@@ -12,7 +14,7 @@ The foundation contains a SwiftUI welcome screen and pilot overview using the sa
 2. Open `NewToTown.xcodeproj`.
 3. Select the **NewToTown** scheme and an iPhone simulator, then press Run.
 
-The app targets iOS 17+. No paid membership or backend credentials are needed for simulator use.
+The app targets iOS 17+. No paid membership is needed for simulator use. Public backend settings are included; live signup also needs the documented Supabase setup.
 
 For a physical iPhone, copy `Configuration/Local.xcconfig.example` to `Configuration/Local.xcconfig`, enter your Team ID and an available bundle identifier, then select the connected phone in Xcode. Local configuration is ignored by Git. TestFlight distribution requires an active Apple Developer membership and later release configuration, including an app icon.
 
@@ -25,12 +27,12 @@ xcodebuild -project NewToTown.xcodeproj -scheme NewToTown \
   -derivedDataPath DerivedData CODE_SIGNING_ALLOWED=NO build
 ```
 
-Swift Package tests validate public backend configuration without network access. The Xcode build validates the iPhone UI. CI runs both on macOS; no credentials are required.
+Swift Package tests validate configuration, profile rules, and onboarding transitions using a test service that sends no email. The Xcode build validates the iPhone UI. CI also runs the signup-entry UI test on an iPhone simulator and PostgreSQL access-policy tests. No production credentials are required.
 
 ## Code map
 
 - `App/`: app entry point, shared design tokens, and feature screens.
-- `Sources/NewToTownCore/`: platform-independent logic, tested with Swift Package Manager. Not linked into the UI until backend integration needs it.
+- `Sources/NewToTownCore/`: profile rules, onboarding state, and the Supabase service, linked into the app and tested with Swift Package Manager.
 - `Tests/`: core behavior tests.
 - `Configuration/`: shared build settings and a local signing example.
 - `docs/`: architecture and implementation scope.

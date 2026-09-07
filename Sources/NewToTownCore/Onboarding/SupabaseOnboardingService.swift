@@ -1,0 +1,49 @@
+import Foundation
+import Supabase
+
+@MainActor
+public final class SupabaseOnboardingService: OnboardingService {
+    private let client: SupabaseClient
+
+    public init(configuration: SupabaseConfiguration) {
+        client = SupabaseClient(supabaseURL: configuration.projectURL, supabaseKey: configuration.publishableKey)
+    }
+
+    public func currentUserID() async throws -> UUID? {
+        do {
+            return try await client.auth.session.user.id
+        } catch AuthError.sessionMissing {
+            return nil
+        }
+    }
+
+    public func sendCode(to email: String) async throws {
+        try await client.auth.signInWithOTP(email: email, shouldCreateUser: true)
+    }
+
+    public func verifyCode(_ code: String, email: String) async throws -> UUID {
+        try await client.auth.verifyOTP(email: email, token: code, type: .email)
+        return try await client.auth.session.user.id
+    }
+
+    public func profile(for userID: UUID) async throws -> Profile? {
+        let profiles: [Profile] = try await client.from("profiles")
+            .select("id,first_name,job_title,goal,date_of_birth,city,platonic_agreement")
+            .eq("id", value: userID).limit(1).execute().value
+        return profiles.first
+    }
+
+    public func save(_ profile: Profile) async throws {
+        try await client.from("profiles").upsert(profile, onConflict: "id").execute()
+    }
+
+    public func signOut() async throws {
+        do {
+            try await client.auth.signOut(scope: .local)
+        } catch {
+            // The SDK clears local credentials before contacting the server.
+            // An offline revocation failure must not leave private details on screen.
+            if client.auth.currentSession != nil { throw error }
+        }
+    }
+}
