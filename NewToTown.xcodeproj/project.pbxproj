@@ -4,6 +4,89 @@
 	classes = {};
 	objectVersion = 77;
 	objects = {
+        C00000000000000000000001 = {
+            isa = PBXNativeTarget;
+            buildConfigurationList = C00000000000000000000006;
+            buildPhases = (C00000000000000000000004);
+            buildRules = ();
+            dependencies = (C00000000000000000000005);
+            fileSystemSynchronizedGroups = (C00000000000000000000002);
+            name = NewToTownUITests;
+            productName = NewToTownUITests;
+            productReference = C00000000000000000000003;
+            productType = "com.apple.product-type.bundle.ui-testing";
+        };
+        C00000000000000000000002 = {
+            isa = PBXFileSystemSynchronizedRootGroup;
+            path = UITests;
+            sourceTree = "<group>";
+        };
+        C00000000000000000000003 = {
+            isa = PBXFileReference;
+            explicitFileType = wrapper.cfbundle;
+            path = NewToTownUITests.xctest;
+            sourceTree = BUILT_PRODUCTS_DIR;
+        };
+        C00000000000000000000004 = {
+            isa = PBXSourcesBuildPhase;
+            buildActionMask = 2147483647;
+            files = ();
+            runOnlyForDeploymentPostprocessing = 0;
+        };
+        C00000000000000000000005 = {
+            isa = PBXTargetDependency;
+            target = A00000000000000000000005;
+        };
+        C00000000000000000000006 = {
+            isa = XCConfigurationList;
+            buildConfigurations = (C00000000000000000000007, C00000000000000000000008);
+            defaultConfigurationIsVisible = 0;
+            defaultConfigurationName = Release;
+        };
+        C00000000000000000000007 = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                GENERATE_INFOPLIST_FILE = YES;
+                IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+                PRODUCT_BUNDLE_IDENTIFIER = com.newtotown.ios.UITests;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SWIFT_VERSION = 6.0;
+                TARGETED_DEVICE_FAMILY = 1;
+                TEST_TARGET_NAME = NewToTown;
+            };
+            name = Debug;
+        };
+        C00000000000000000000008 = {
+            isa = XCBuildConfiguration;
+            buildSettings = {
+                GENERATE_INFOPLIST_FILE = YES;
+                IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+                PRODUCT_BUNDLE_IDENTIFIER = com.newtotown.ios.UITests;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SWIFT_VERSION = 6.0;
+                TARGETED_DEVICE_FAMILY = 1;
+                TEST_TARGET_NAME = NewToTown;
+            };
+            name = Release;
+        };
+        B00000000000000000000001 = {
+            isa = XCLocalSwiftPackageReference;
+            relativePath = .;
+        };
+        B00000000000000000000002 = {
+            isa = XCSwiftPackageProductDependency;
+            productName = NewToTownCore;
+        };
+        B00000000000000000000003 = {
+            isa = PBXBuildFile;
+            productRef = B00000000000000000000002;
+        };
+        B00000000000000000000004 = {
+            isa = PBXFrameworksBuildPhase;
+            buildActionMask = 2147483647;
+            files = (B00000000000000000000003);
+            runOnlyForDeploymentPostprocessing = 0;
+        };
 		/* App sources use Xcode's folder synchronization; no generated file list. */
 		A00000000000000000000001 = {
 			isa = PBXProject;
@@ -16,16 +99,17 @@
 			productRefGroup = A00000000000000000000003;
 			projectDirPath = "";
 			projectRoot = "";
-			targets = (A00000000000000000000005);
+			packageReferences = (B00000000000000000000001);
+			targets = (A00000000000000000000005, C00000000000000000000001);
 		};
 		A00000000000000000000002 = {
 			isa = PBXGroup;
-			children = (A00000000000000000000004, A00000000000000000000009, A00000000000000000000003);
+			children = (C00000000000000000000002, A00000000000000000000004, A00000000000000000000009, A00000000000000000000003);
 			sourceTree = "<group>";
 		};
 		A00000000000000000000003 = {
 			isa = PBXGroup;
-			children = (A00000000000000000000006);
+			children = (A00000000000000000000006, C00000000000000000000003);
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -37,12 +121,13 @@
 		A00000000000000000000005 = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A00000000000000000000011;
-			buildPhases = (A00000000000000000000007, A00000000000000000000008);
+			buildPhases = (A00000000000000000000007, A00000000000000000000008, B00000000000000000000004);
 			buildRules = ();
 			dependencies = ();
 			fileSystemSynchronizedGroups = (A00000000000000000000004);
 			name = NewToTown;
 			productName = NewToTown;
+			packageProductDependencies = (B00000000000000000000002);
 			productReference = A00000000000000000000006;
 			productType = "com.apple.product-type.application";
 		};
@@ -84,7 +169,7 @@
 		};
 		A00000000000000000000012 = {
 			isa = XCBuildConfiguration;
-			buildSettings = { SDKROOT = iphoneos; CLANG_ENABLE_MODULES = YES; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; DEBUG_INFORMATION_FORMAT = dwarf; };
+			buildSettings = { SDKROOT = iphoneos; CLANG_ENABLE_MODULES = YES; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; ONLY_ACTIVE_ARCH = YES; DEBUG_INFORMATION_FORMAT = dwarf; };
 			name = Debug;
 		};
 		A00000000000000000000013 = {

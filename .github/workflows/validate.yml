@@ -22,3 +22,35 @@ jobs:
           xcodebuild -project NewToTown.xcodeproj -scheme NewToTown
           -configuration Debug -destination 'generic/platform=iOS Simulator'
           -derivedDataPath DerivedData CODE_SIGNING_ALLOWED=NO build
+
+      - name: Test signup entry on iPhone simulator
+        run: |
+          simulator_id=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; data=json.load(sys.stdin); print(next(d["udid"] for group in data["devices"].values() for d in group if d["name"].startswith("iPhone")))')
+          xcodebuild -project NewToTown.xcodeproj -scheme NewToTown \
+            -configuration Debug -destination "platform=iOS Simulator,id=$simulator_id" \
+            -derivedDataPath DerivedData CODE_SIGNING_ALLOWED=NO test
+
+  profile-policies:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: local-test-only
+          POSTGRES_DB: newtotown_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test profile constraints and access policies
+        env:
+          PGPASSWORD: local-test-only
+        run: >-
+          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1
+          -f supabase/tests/auth_fixture.sql
+          -f supabase/migrations/202609080001_private_profiles.sql
+          -f supabase/tests/profiles.sql
