@@ -1,0 +1,15 @@
+// Local overrides are optional: the foundation launches without backend credentials.
+#include? "Local.xcconfig"
+
+IPHONEOS_DEPLOYMENT_TARGET = 17.0
+SWIFT_VERSION = 6.0
+TARGETED_DEVICE_FAMILY = 1
+PRODUCT_BUNDLE_IDENTIFIER = com.newtotown.ios
+MARKETING_VERSION = 0.1.0
+CURRENT_PROJECT_VERSION = 1
+GENERATE_INFOPLIST_FILE = YES
+INFOPLIST_KEY_CFBundleDisplayName = newtotown
+INFOPLIST_KEY_UILaunchScreen_Generation = YES
+INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES
+INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait
+CODE_SIGN_STYLE = Automatic

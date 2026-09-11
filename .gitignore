@@ -1,0 +1,9 @@
+.DS_Store
+.build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+Configuration/Local.xcconfig
+.env
+.env.*
+!.env.example
