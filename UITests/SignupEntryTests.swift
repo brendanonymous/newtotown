@@ -21,5 +21,12 @@ final class SignupEntryTests: XCTestCase {
         screenshot.name = "Signup validation"
         screenshot.lifetime = .keepAlways
         add(screenshot)
+
+        // The app owns the model now; reopening must still start a fresh email form.
+        app.buttons["Close"].tap()
+        join.tap()
+        XCTAssertTrue(email.waitForExistence(timeout: 10))
+        XCTAssertNotEqual(email.value as? String, "invalid-email")
+        XCTAssertFalse(app.staticTexts["signup.error"].exists)
     }
 }

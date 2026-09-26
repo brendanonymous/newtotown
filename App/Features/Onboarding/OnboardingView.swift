@@ -2,16 +2,7 @@ import NewToTownCore
 import SwiftUI
 
 struct OnboardingView: View {
-    @State private var model: OnboardingModel?
-
-    init() {
-        let values = Bundle.main.infoDictionary ?? [:]
-        if let url = values["SupabaseProjectURL"] as? String,
-           let key = values["SupabasePublishableKey"] as? String,
-           let configuration = try? SupabaseConfiguration(projectURL: url, publishableKey: key) {
-            _model = State(initialValue: OnboardingModel(service: SupabaseOnboardingService(configuration: configuration)))
-        }
-    }
+    let model: OnboardingModel?
 
     var body: some View {
         NavigationStack {

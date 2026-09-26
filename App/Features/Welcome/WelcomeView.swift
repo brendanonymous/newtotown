@@ -1,6 +1,9 @@
+import NewToTownCore
 import SwiftUI
 
 struct WelcomeView: View {
+    let onboardingModel: OnboardingModel?
+
     @State private var showingSignup = false
     var body: some View {
         ScrollView {
@@ -69,10 +72,10 @@ struct WelcomeView: View {
         }
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
-        .sheet(isPresented: $showingSignup) { OnboardingView() }
+        .sheet(isPresented: $showingSignup) { OnboardingView(model: onboardingModel) }
     }
 }
 
 #Preview {
-    NavigationStack { WelcomeView() }
+    NavigationStack { WelcomeView(onboardingModel: nil) }
 }

@@ -32,7 +32,8 @@ Swift Package tests validate configuration, profile rules, and onboarding transi
 ## Code map
 
 - `App/`: app entry point, shared design tokens, and feature screens.
-- `Sources/NewToTownCore/`: profile rules, onboarding state, and the Supabase service, linked into the app and tested with Swift Package Manager.
+- `Sources/NewToTownCore/`: profile rules, onboarding state, and service interfaces without a backend dependency.
+- `Sources/NewToTownSupabase/`: Supabase integration and public connection configuration. Created by the app entry point, not feature views.
 - `Tests/`: core behavior tests.
 - `Configuration/`: shared build settings and a local signing example.
 - `docs/`: architecture and implementation scope.
