@@ -4,7 +4,9 @@
 
 Use native SwiftUI for this iPhone-only pilot. Group screens and their state by feature under `App/Features`. Put shared colors and reusable visual elements in `App/DesignSystem` only when they are shared.
 
-Keep business rules independent of SwiftUI in `NewToTownCore`. Rules validate HTTPS project URLs, publishable keys, profile field limits, the 18+ boundary, and platonic agreement. Tests reject malformed endpoints and privileged-key formats; this is a configuration guard, not a substitute for server authorization.
+`NewToTownCore` contains profile rules, the onboarding model, and its service interface. It has no SwiftUI or Supabase dependency. `NewToTownSupabase` depends on the core and the official SDK; it contains the concrete service and public connection configuration. Configuration tests reject malformed endpoints and privileged-key formats, but server authorization still relies on RLS.
+
+`NewToTownApp` reads configuration and owns the onboarding model. Views receive that model instead of creating backend clients. The welcome preview passes no model and makes no backend connection. The dependency direction is `App → NewToTownSupabase → NewToTownCore`, with views also importing the core directly.
 
 Supabase calls live in `SupabaseOnboardingService`, behind `OnboardingService`. `OnboardingModel` owns transitions, loading, and retryable errors; SwiftUI views render it. Views do not construct database queries. Add abstractions when a real integration or test requires them; avoid speculative base classes and generic repository layers.
 

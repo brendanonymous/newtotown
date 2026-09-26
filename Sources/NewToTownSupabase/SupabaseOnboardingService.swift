@@ -1,4 +1,5 @@
 import Foundation
+import NewToTownCore
 import Supabase
 
 public final class SupabaseOnboardingService: OnboardingService {

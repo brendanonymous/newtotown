@@ -1,11 +1,26 @@
+import NewToTownCore
+import NewToTownSupabase
 import SwiftUI
 
 @main
 struct NewToTownApp: App {
+    @State private var onboardingModel: OnboardingModel?
+
+    init() {
+        // Construct the backend once at the app boundary; feature views receive state.
+        let values = Bundle.main.infoDictionary ?? [:]
+        if let url = values["SupabaseProjectURL"] as? String,
+           let key = values["SupabasePublishableKey"] as? String,
+           let configuration = try? SupabaseConfiguration(projectURL: url, publishableKey: key) {
+            let service = SupabaseOnboardingService(configuration: configuration)
+            _onboardingModel = State(initialValue: OnboardingModel(service: service))
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                WelcomeView()
+                WelcomeView(onboardingModel: onboardingModel)
             }
             .tint(BrandTheme.ink)
             .preferredColorScheme(.light)

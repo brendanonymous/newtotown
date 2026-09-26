@@ -1,5 +1,5 @@
 import Testing
-@testable import NewToTownCore
+@testable import NewToTownSupabase
 
 @Test func acceptsPublicClientConfiguration() throws {
     let configuration = try SupabaseConfiguration(

@@ -84,8 +84,16 @@
         B00000000000000000000004 = {
             isa = PBXFrameworksBuildPhase;
             buildActionMask = 2147483647;
-            files = (B00000000000000000000003);
+            files = (B00000000000000000000003, B00000000000000000000006);
             runOnlyForDeploymentPostprocessing = 0;
+        };
+        B00000000000000000000005 = {
+            isa = XCSwiftPackageProductDependency;
+            productName = NewToTownSupabase;
+        };
+        B00000000000000000000006 = {
+            isa = PBXBuildFile;
+            productRef = B00000000000000000000005;
         };
 		/* App sources use Xcode's folder synchronization; no generated file list. */
 		A00000000000000000000001 = {
@@ -127,7 +135,7 @@
 			fileSystemSynchronizedGroups = (A00000000000000000000004);
 			name = NewToTown;
 			productName = NewToTown;
-			packageProductDependencies = (B00000000000000000000002);
+			packageProductDependencies = (B00000000000000000000002, B00000000000000000000005);
 			productReference = A00000000000000000000006;
 			productType = "com.apple.product-type.application";
 		};
