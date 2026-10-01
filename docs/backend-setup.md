@@ -1,16 +1,33 @@
 # Backend setup and phone testing
 
-## What this PR enables
+## Current app behavior
 
 Email code signup/sign-in → editable private profile → saved confirmation. Returning users restore their Supabase session and saved details. Sessions use the official SDK's default Apple Keychain storage and refresh handling. Signing out clears this device's local session.
 
 Profiles contain a first name, job title, activity goal, birthday, Scottsdale location, and platonic agreement. Client validation improves feedback; the database independently enforces age, field limits, location, ownership, and agreement. Birthdays are UTC calendar dates and age is self-reported, not verified.
 
-This PR does not implement Apple sign-in, photo upload, selfie verification, discovery, messaging, account deletion, or invitations. Use it only for internal testing until the remaining user-data and safety flows ship. Profile creation does not grant discoverability or photo approval.
+The app does not implement Apple sign-in, photo upload, selfie verification, discovery, messaging, account deletion, or invitations. Use it only for internal testing until the remaining user-data and safety flows ship. Profile creation does not grant discoverability or photo approval.
 
 ## Supabase project setup
 
-No migration or dashboard setting has been applied to the hosted project by this PR.
+### Hosted status — September 30, 2026 (Arizona)
+
+Project `pnlpdevgwenkkoqjgcui` was restored from inactivity and confirmed healthy. The reviewed `202609080001_private_profiles.sql` migration was applied without changes through the Supabase connection. Hosted migration history records it as `20261001042036_private_profiles` (UTC deployment time). These are the same migration; do not apply it again. Reconcile the local and hosted version identifiers before adopting CLI migration deployment.
+
+Verified against the hosted database:
+
+- Owner insert, upsert, and read succeed; cross-user reads and writes are blocked.
+- Underage profiles, unsupported cities, and a missing platonic agreement are rejected.
+- Clients cannot change verification status or creation timestamps, or transfer ownership.
+- Anonymous REST access to profiles returns HTTP 401 / permission denied, as intended.
+- Verification used temporary identities in a rolled-back transaction; no test profiles remain.
+- Public Auth settings report email enabled, signup enabled, and email confirmation required.
+
+The security advisor reports execution grants on the pre-existing `public.rls_auto_enable()` helper. Inspection confirms it returns `event_trigger` and automatically enables RLS on new public tables. This migration did not create or change it. The advisor findings remain unresolved; do not describe the project as having a clean advisor report.
+
+Still pending: confirmation of the numeric-code email template, custom SMTP for external testers, and the physical-device signup journey below. No real email delivery or phone journey has been verified.
+
+### Setup for a fresh project
 
 1. Review `supabase/migrations/202609080001_private_profiles.sql`. Run it once in the project's SQL Editor after code review, or apply through the Supabase CLI migration workflow. Do not run the test fixture in Supabase.
 2. Enable the Email provider and new-user signup in Authentication settings. Keep email verification enabled.
@@ -24,7 +41,7 @@ References: [email OTP](https://supabase.com/docs/reference/swift/auth-signinwit
 
 ## Test on your iPhone
 
-Use this PR's branch. Open the project, select your team and phone, and run. A new checkout needs its own ignored `Configuration/Local.xcconfig` signing values; your original checkout's settings have not been changed.
+Use the current `main` branch. Open the project, select your team and phone, and run. A new checkout needs its own ignored `Configuration/Local.xcconfig` signing values; your original checkout's settings have not been changed.
 
 - Tap **Join or sign in**. An invalid email should show an error without sending mail.
 - Use a permitted test email, enter its code, and confirm that an invalid code leaves you on the code screen. Resend becomes available after 60 seconds; server limits may be stricter.
