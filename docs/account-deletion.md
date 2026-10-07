@@ -38,7 +38,7 @@ Use a disposable email/account for device acceptance. Save a profile, cancel del
 
 ## Hosted status — October 7, 2026 (Arizona)
 
-Function version 1 is deployed to project `pnlpdevgwenkkoqjgcui` with gateway JWT verification enabled. Deployment uses the source in this PR. Live POST requests with missing or malformed credentials returned HTTP 401. No real account was deleted during these checks. Authenticated end-to-end deletion still requires a disposable test account on a device; the server's happy path is covered with mocked Auth responses and real local database cascade tests.
+Function version 2 (including private-photo cleanup) is deployed to project `pnlpdevgwenkkoqjgcui` with gateway JWT verification enabled. Deployment uses the source in this PR. Live POST requests with missing or malformed credentials returned HTTP 401. No real account was deleted during these checks. Authenticated end-to-end deletion still requires a disposable test account on a device; the server's happy path is covered with mocked Auth responses and real local database cascade tests.
 
 ## Failure behavior and scope
 

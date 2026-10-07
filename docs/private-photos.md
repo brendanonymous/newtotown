@@ -27,7 +27,7 @@ This internal pilot has no automatic selfie expiry yet. Before external photo co
 
 ## Deployment and validation
 
-Apply `20261007201242_private_photos.sql` once, then deploy the updated `delete-account` function including `photos.ts`, with JWT verification enabled. Deploy cleanup before distributing the upload-capable app. The existing profile migration's hosted version mapping is documented in `backend-setup.md`; do not blindly reapply every local migration to the existing project.
+Apply `20261007201242_private_photos.sql` once, then deploy the updated `delete-account` function including `photos.ts`, with JWT verification enabled. Deploy cleanup before distributing the upload-capable app. The earlier profile migration has hosted version `20261001042036` and local filename `202609080001_private_profiles.sql`; reconcile that earlier mapping before adopting CLI deployment. Do not blindly reapply every local migration to the existing project.
 
 Swift tests cover consent, missing/invalid/oversized files, restore, replacement, save retry, and removal recovery. Handler tests cover cleanup ordering, owner-scoped paths, and cleanup failure. Local PostgreSQL tests check bucket settings, consent permissions, owner operations, cross-user isolation, allowed paths, anonymous access, and deleted identities. The fixture tests metadata/RLS; it does not emulate Storage HTTP uploads or camera hardware.
 
