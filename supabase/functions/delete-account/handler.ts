@@ -64,7 +64,6 @@ export function createDeleteAccountHandler(
       }
       return new Response(null, {
         status: 204,
-        signal: AbortSignal.timeout(15_000),
         headers: { "Cache-Control": "no-store" },
       });
     } catch {
