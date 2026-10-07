@@ -27,7 +27,7 @@ This internal pilot has no automatic selfie expiry yet. Before external photo co
 
 ## Deployment and validation
 
-Apply `20261007195830_private_photos.sql` once, then deploy the updated `delete-account` function including `photos.ts`, with JWT verification enabled. Deploy cleanup before distributing the upload-capable app. The existing profile migration's hosted version mapping is documented in `backend-setup.md`; do not blindly reapply every local migration to the existing project.
+Apply `20261007201242_private_photos.sql` once, then deploy the updated `delete-account` function including `photos.ts`, with JWT verification enabled. Deploy cleanup before distributing the upload-capable app. The existing profile migration's hosted version mapping is documented in `backend-setup.md`; do not blindly reapply every local migration to the existing project.
 
 Swift tests cover consent, missing/invalid/oversized files, restore, replacement, save retry, and removal recovery. Handler tests cover cleanup ordering, owner-scoped paths, and cleanup failure. Local PostgreSQL tests check bucket settings, consent permissions, owner operations, cross-user isolation, allowed paths, anonymous access, and deleted identities. The fixture tests metadata/RLS; it does not emulate Storage HTTP uploads or camera hardware.
 
@@ -41,3 +41,11 @@ Device acceptance:
 6. Deny camera access and test the settings link. Simulator capture must show the unavailable-camera message.
 
 Hosted authenticated Storage HTTP behavior, image metadata inspection, actual camera capture, and deletion with photos require these device checks before acceptance. Automated checks do not establish successful face verification.
+
+## Hosted status — October 7, 2026 (Arizona)
+
+The private bucket, consent table, and policies are applied to project `pnlpdevgwenkkoqjgcui`. The CLI-created migration file was renamed to match the assigned hosted version `20261007201242`; its SQL is unchanged. Account-deletion function version 2 includes photo cleanup with JWT verification enabled. An unauthenticated live request still returns 401.
+
+Hosted rollback-only policy verification uses temporary identities and metadata; it does not upload image bytes. Supabase blocks direct Storage SQL deletion even when no rows are visible. Hosted verification therefore checks cross-user updates instead of DELETE and leaves all metadata cleanup to transaction rollback; owner deletion is covered by local RLS tests and must be confirmed through the actual Storage API on a device. No test images are retained.
+
+Security advisors report the pre-existing RLS helper execution-grant findings ([anonymous](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable), [authenticated](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)) and disabled [leaked-password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). The app uses email codes rather than passwords. No new missing-RLS finding was reported for this migration; the existing findings remain unresolved.
