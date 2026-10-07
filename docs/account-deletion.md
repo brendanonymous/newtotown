@@ -35,6 +35,10 @@ The handler tests inject a fake HTTP transport, make no live requests, and cover
 
 Use a disposable email/account for device acceptance. Save a profile, cancel deletion and confirm it remains; then confirm deletion, relaunch, and verify the profile is gone. Signing up again must create a fresh account. Try offline deletion and verify the app preserves the draft with recovery guidance. Do not use an account whose profile you want to keep.
 
+## Hosted status — October 7, 2026 (Arizona)
+
+Function version 1 is deployed to project `pnlpdevgwenkkoqjgcui` with gateway JWT verification enabled. Deployment uses the source in this PR. Live POST requests with missing or malformed credentials returned HTTP 401. No real account was deleted during these checks. Authenticated end-to-end deletion still requires a disposable test account on a device; the server's happy path is covered with mocked Auth responses and real local database cascade tests.
+
 ## Failure behavior and scope
 
 Revocation and Auth deletion are separate operations. If revocation succeeds but deletion fails, the account may remain with its sessions revoked; signing in again provides a fresh session for retry. A lost response after successful deletion is ambiguous to the client: it preserves the draft until the user retries or signs out and checks the account. Do not display a deletion-success message on an unconfirmed result.
