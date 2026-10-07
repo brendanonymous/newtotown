@@ -1,21 +1,42 @@
 # Backend setup and phone testing
 
-## What this PR enables
+## Current app behavior
 
 Email code signup/sign-in → editable private profile → saved confirmation. Returning users restore their Supabase session and saved details. Sessions use the official SDK's default Apple Keychain storage and refresh handling. Signing out clears this device's local session.
 
 Profiles contain a first name, job title, activity goal, birthday, Scottsdale location, and platonic agreement. Client validation improves feedback; the database independently enforces age, field limits, location, ownership, and agreement. Birthdays are UTC calendar dates and age is self-reported, not verified.
 
-This PR does not implement Apple sign-in, photo upload, selfie verification, discovery, messaging, account deletion, or invitations. Use it only for internal testing until the remaining user-data and safety flows ship. Profile creation does not grant discoverability or photo approval.
+The app does not implement Apple sign-in, photo upload, selfie verification, discovery, messaging, account deletion, or invitations. Use it only for internal testing until the remaining user-data and safety flows ship. Profile creation does not grant discoverability or photo approval.
 
 ## Supabase project setup
 
-No migration or dashboard setting has been applied to the hosted project by this PR.
+### Hosted status — September 30, 2026 (Arizona)
+
+Project `pnlpdevgwenkkoqjgcui` was restored from inactivity and confirmed healthy. The reviewed `202609080001_private_profiles.sql` migration was applied without changes through the Supabase connection. Hosted migration history records it as `20261001042036_private_profiles` (UTC deployment time). These are the same migration; do not apply it again. Reconcile the local and hosted version identifiers before adopting CLI migration deployment.
+
+Verified against the hosted database:
+
+- Owner insert, upsert, and read succeed; cross-user reads and writes are blocked.
+- Underage profiles, unsupported cities, and a missing platonic agreement are rejected.
+- Clients cannot change verification status or creation timestamps, or transfer ownership.
+- Anonymous REST access to profiles returns HTTP 401 / permission denied, as intended.
+- Verification used temporary identities in a rolled-back transaction; no test profiles remain.
+- Public Auth settings report email enabled, signup enabled, and email confirmation required.
+
+The security advisor reports execution grants on the pre-existing `public.rls_auto_enable()` helper. Inspection confirms it returns `event_trigger` and automatically enables RLS on new public tables. This migration did not create or change it. The advisor findings remain unresolved; do not describe the project as having a clean advisor report.
+
+### Email setup — October 7, 2026 (Arizona)
+
+The owner verified `newtotown.email` in Resend, configured custom SMTP with sender `noreply@newtotown.email`, updated both **Confirm sign up** and **Magic Link** to display `{{ .Token }}`, and reported email-code delivery working. Credentials stay in provider settings, not this repository.
+
+This confirms email delivery, not completion of every phone journey below. Profile persistence, editing, session restoration, and sign-out still need explicit device acceptance before calling signup fully validated.
+
+### Setup for a fresh project
 
 1. Review `supabase/migrations/202609080001_private_profiles.sql`. Run it once in the project's SQL Editor after code review, or apply through the Supabase CLI migration workflow. Do not run the test fixture in Supabase.
 2. Enable the Email provider and new-user signup in Authentication settings. Keep email verification enabled.
-3. Change the **Magic Link** email template to include `{{ .Token }}` as a visible numeric code. The app verifies an email OTP; it does not handle a magic-link redirect. Example body: `<p>Your newtotown sign-in code is: {{ .Token }}</p>`.
-4. Supabase's default SMTP only sends to project-team addresses and has a low rate limit. Configure a custom SMTP provider and sender before testing with other people. No email provider has been selected or configured by this PR.
+3. Change both the **Confirm sign up** and **Magic Link** email templates to include `{{ .Token }}` as a visible numeric code. The app verifies an email OTP; it does not handle a magic-link redirect. Example body: `<p>Your newtotown sign-in code is: {{ .Token }}</p>`.
+4. Supabase's default SMTP only sends to project-team addresses and has a low rate limit. Configure a custom SMTP provider and sender before testing with other people. The current project uses Resend; new projects must configure their own sender and credentials.
 5. Ensure the `public` schema is exposed through the Data API. The migration supplies the table grants and RLS policies; do not grant broader write access.
 
 References: [email OTP](https://supabase.com/docs/reference/swift/auth-signinwithotp), [SMTP restrictions](https://supabase.com/docs/guides/auth/auth-smtp), [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
@@ -24,7 +45,7 @@ References: [email OTP](https://supabase.com/docs/reference/swift/auth-signinwit
 
 ## Test on your iPhone
 
-Use this PR's branch. Open the project, select your team and phone, and run. A new checkout needs its own ignored `Configuration/Local.xcconfig` signing values; your original checkout's settings have not been changed.
+Use the current `main` branch. Open the project, select your team and phone, and run. A new checkout needs its own ignored `Configuration/Local.xcconfig` signing values; your original checkout's settings have not been changed.
 
 - Tap **Join or sign in**. An invalid email should show an error without sending mail.
 - Use a permitted test email, enter its code, and confirm that an invalid code leaves you on the code screen. Resend becomes available after 60 seconds; server limits may be stricter.

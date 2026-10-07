@@ -6,7 +6,7 @@ An iPhone app for platonic friendship among men, starting in Scottsdale, Arizona
 
 The app supports email-code signup/sign-in and private profile details. It retains the sage and warm-white welcome screen and pilot overview. Photo verification, discovery, matching, messaging, and account deletion are not implemented yet. The N remains a temporary typographic mark.
 
-See [backend setup and phone journeys](docs/backend-setup.md) before testing live signup. The hosted Supabase project still needs the migration and email settings; this PR does not apply them automatically.
+See [backend setup and phone journeys](docs/backend-setup.md) before testing live signup. The hosted profile migration is applied, and email-code delivery is working as reported during phone testing. See the guide for the remaining journey checks and fresh-project setup.
 
 ## Run
 
@@ -34,7 +34,9 @@ Swift Package tests validate configuration, profile rules, and onboarding transi
 - `App/`: app entry point, shared design tokens, and feature screens.
 - `Sources/NewToTownCore/`: profile rules, onboarding state, and service interfaces without a backend dependency.
 - `Sources/NewToTownSupabase/`: Supabase integration and public connection configuration. Created by the app entry point, not feature views.
-- `Tests/`: core behavior tests.
+- `Tests/`: core behavior and backend configuration tests.
+- `UITests/`: simulator signup-entry checks.
+- `supabase/`: schema migrations and PostgreSQL authorization tests.
 - `Configuration/`: shared build settings and a local signing example.
 - `docs/`: architecture and implementation scope.
 
