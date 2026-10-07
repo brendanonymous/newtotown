@@ -1,0 +1,4 @@
+# Keep gateway JWT validation and independently resolve the caller through Auth
+# inside the handler before using server-side administrative credentials.
+[functions.delete-account]
+verify_jwt = true

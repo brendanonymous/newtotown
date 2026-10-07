@@ -21,6 +21,7 @@ private struct OnboardingContent: View {
     @Environment(\.dismiss) private var dismiss
     @State private var email = ""
     @State private var code = ""
+    @State private var showsDeletionConfirmation = false
 
     var body: some View {
         ScrollView {
@@ -29,7 +30,7 @@ private struct OnboardingContent: View {
                 case .loading:
                     ProgressView("Loading your account…")
                 case .email:
-                    title("Your next friend\nstarts here.", subtitle: "Create an account or sign in with an email code. For men aged 18+ in Scottsdale.")
+                    title("Your next friend\nstarts here.", subtitle: "Create an account or sign in with an email code. Meet other men in Scottsdale.")
                     TextField("Email address", text: $email)
                         .keyboardType(.emailAddress)
                         .textContentType(.emailAddress)
@@ -65,7 +66,7 @@ private struct OnboardingContent: View {
                     ProfileForm(draft: $model.draft)
                         .disabled(model.isBusy)
                     primary("Save my profile") { await model.saveProfile() }
-                    signOut
+                    accountActions
                 case .saved:
                     title("You’re off to\na good start.", subtitle: "Your profile details are saved, \(model.draft.firstName).")
                     Label("Scottsdale", systemImage: "mappin")
@@ -76,11 +77,11 @@ private struct OnboardingContent: View {
                         .foregroundStyle(BrandTheme.secondaryInk)
                     Button("Edit profile") { model.editProfile() }
                         .disabled(model.isBusy)
-                    signOut
+                    accountActions
                 case .restoreFailed:
                     title("Let’s reconnect.", subtitle: "We haven’t changed your saved profile.")
                     primary("Try again") { await model.restore() }
-                    signOut
+                    accountActions
                 }
 
                 if model.isBusy { ProgressView().frame(maxWidth: .infinity) }
@@ -105,13 +106,42 @@ private struct OnboardingContent: View {
                 Button("Close") { dismiss() }.disabled(model.isBusy)
             }
         }
+        .alert("Delete your account?", isPresented: $showsDeletionConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete account", role: .destructive) {
+                Task {
+                    await model.deleteAccount()
+                    if model.step == .email {
+                        email = ""
+                        code = ""
+                    }
+                }
+            }
+        } message: {
+            Text("This permanently deletes your account and private profile. You’ll need to create a new account to use newtotown again.")
+        }
         .interactiveDismissDisabled(model.isBusy)
         .task { await model.restore() }
     }
 
-    private var signOut: some View {
-        Button("Sign out") { Task { await model.signOut() } }
-            .disabled(model.isBusy)
+    private var accountActions: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            Button("Sign out") {
+                Task {
+                    await model.signOut()
+                    if model.step == .email {
+                        email = ""
+                        code = ""
+                    }
+                }
+            }
+            Button("Delete account", role: .destructive) {
+                showsDeletionConfirmation = true
+            }
+            .accessibilityIdentifier("account.delete")
+            .disabled(!model.canDeleteAccount)
+        }
+        .disabled(model.isBusy)
     }
 
     private func title(_ title: String, subtitle: String) -> some View {

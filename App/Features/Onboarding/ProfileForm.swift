@@ -19,12 +19,12 @@ struct ProfileForm: View {
             DatePicker("Birthday", selection: birthday, in: ...Date.now, displayedComponents: .date)
                 .environment(\.calendar, BirthDate.calendar)
                 .environment(\.timeZone, BirthDate.calendar.timeZone)
-            Text("You must be 18 or older. Your birthday stays private.")
+            Text("Your birthday stays private.")
                 .font(.footnote)
                 .foregroundStyle(BrandTheme.secondaryInk)
             Label("Scottsdale, Arizona", systemImage: "mappin")
             Toggle(isOn: $draft.platonicAgreement) {
-                Text("I’m here for platonic friendship. No dating, sexual solicitation, or harassment.")
+                Text("I’m at least 18 years old and I’m here for platonic friendship. No dating, sexual solicitation, or harassment.")
                     .font(.callout)
             }
         }

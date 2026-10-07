@@ -37,6 +37,13 @@ public final class SupabaseOnboardingService: OnboardingService {
         try await client.from("profiles").upsert(profile, onConflict: "id").execute()
     }
 
+    public func deleteAccount() async throws {
+        try await client.functions.invoke("delete-account")
+        // signOut clears Keychain before its network call. The account is gone,
+        // so an offline/invalid-token logout response must not report deletion failure.
+        try? await client.auth.signOut(scope: .local)
+    }
+
     public func signOut() async throws {
         do {
             try await client.auth.signOut(scope: .local)

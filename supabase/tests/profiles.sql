@@ -88,4 +88,26 @@ do $$ begin
         raise exception 'Anonymous profile read was allowed';
     exception when insufficient_privilege then null; end;
 end $$;
+-- Auth account deletion cascades to only that account's private profile.
+reset role;
+delete from auth.users where id = '00000000-0000-0000-0000-000000000001';
+do $$ begin
+    if exists (select 1 from public.profiles where id = '00000000-0000-0000-0000-000000000001') then
+        raise exception 'Deleted account profile remains';
+    end if;
+    if not exists (select 1 from public.profiles where id = '00000000-0000-0000-0000-000000000002') then
+        raise exception 'Another account profile was deleted';
+    end if;
+end $$;
+
+-- Even a still-unexpired JWT cannot recreate a profile for a deleted Auth user.
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-000000000001';
+do $$ begin
+    begin
+        insert into public.profiles (id, first_name, job_title, goal, date_of_birth, city, platonic_agreement)
+        values (auth.uid(), 'Alex', 'Teacher', 'Find a hiking buddy.', '1990-01-01', 'Scottsdale', true);
+        raise exception 'Deleted account recreated its profile';
+    exception when foreign_key_violation then null; end;
+end $$;
 rollback;

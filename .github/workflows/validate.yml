@@ -54,3 +54,15 @@ jobs:
           -f supabase/tests/auth_fixture.sql
           -f supabase/migrations/202609080001_private_profiles.sql
           -f supabase/tests/profiles.sql
+
+  account-deletion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.9.6
+      - name: Check and test account deletion handler
+        run: |
+          deno check supabase/functions/delete-account/index.ts
+          deno test supabase/functions/delete-account/handler_test.ts

@@ -70,8 +70,8 @@ public enum ProfileValidationError: Error, LocalizedError {
         case .firstName: "Enter a first name between 1 and 40 characters."
         case .jobTitle: "Enter a job title between 1 and 80 characters."
         case .goal: "Tell us what you’re up for in 10–280 characters."
-        case .age: "Enter a valid birthday. You must be at least 18 to join."
-        case .agreement: "Please agree to keep newtotown strictly platonic."
+        case .age: "Enter a valid birthday that meets the age requirement in the agreement."
+        case .agreement: "Please agree to the age requirement and keep newtotown strictly platonic."
         }
     }
 }

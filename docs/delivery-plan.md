@@ -1,7 +1,7 @@
 # Delivery plan
 
 1. **Foundation (PR #1):** buildable iOS project, welcome and pilot overview, visual tokens, configuration validation, tests, and CI.
-2. **Email accounts and private profiles (this PR):** email OTP, 18+ onboarding, job title, activity summary, session restore, database migration, and RLS tests. Hosted setup remains. Apple sign-in and photos require follow-up PRs.
+2. **Email accounts and private profiles (this PR):** email OTP, age eligibility, job title, activity summary, session restore, database migration, and RLS tests. Hosted setup remains. Apple sign-in and photos require follow-up PRs.
 3. **Photo review:** consent, verification selfie capture, private storage, reviewer queue, approval/rejection, retention and deletion. Only approved profiles become discoverable.
 4. **Discovery and connection:** Scottsdale selection, check/pass, mutual matches, and authorization tests. GPS/proximity is deferred.
 5. **Messaging and safety:** match-only chat, block/report/unmatch, moderation, and account deletion.

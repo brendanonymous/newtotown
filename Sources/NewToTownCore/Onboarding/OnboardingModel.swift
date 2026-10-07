@@ -18,6 +18,8 @@ public final class OnboardingModel {
     private let service: any OnboardingService
     private var userID: UUID?
 
+    public var canDeleteAccount: Bool { userID != nil }
+
     public init(service: any OnboardingService) { self.service = service }
 
     public func restore() async {
@@ -123,13 +125,31 @@ public final class OnboardingModel {
         defer { isBusy = false }
         do {
             try await service.signOut()
-            userID = nil
-            draft = ProfileDraft()
-            email = ""
-            step = .email
+            clearAccount()
         } catch {
             errorMessage = "Sign out failed. Please try again."
         }
+    }
+
+    public func deleteAccount() async {
+        guard !isBusy, userID != nil else { return }
+        isBusy = true
+        errorMessage = nil
+        defer { isBusy = false }
+        do {
+            try await service.deleteAccount()
+            clearAccount()
+        } catch {
+            errorMessage = "We couldn’t confirm account deletion. Try again, or sign out and sign in to check your account."
+        }
+    }
+
+    private func clearAccount() {
+        userID = nil
+        draft = ProfileDraft()
+        email = ""
+        resendAvailableAt = .distantPast
+        step = .email
     }
 
     private func loadProfile(for id: UUID) async throws {
