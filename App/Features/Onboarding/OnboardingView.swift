@@ -30,7 +30,7 @@ private struct OnboardingContent: View {
                 case .loading:
                     ProgressView("Loading your account…")
                 case .email:
-                    title("Your next friend\nstarts here.", subtitle: "Create an account or sign in with an email code. For men aged 18+ in Scottsdale.")
+                    title("Your next friend\nstarts here.", subtitle: "Create an account or sign in with an email code. Meet other men in Scottsdale.")
                     TextField("Email address", text: $email)
                         .keyboardType(.emailAddress)
                         .textContentType(.emailAddress)

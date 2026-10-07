@@ -1,6 +1,6 @@
 # newtotown
 
-An iPhone app for platonic friendship among men, starting in Scottsdale, Arizona (18+).
+An iPhone app for platonic friendship among men, starting in Scottsdale, Arizona.
 
 ## Current build
 

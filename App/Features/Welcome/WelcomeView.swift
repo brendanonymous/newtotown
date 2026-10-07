@@ -27,7 +27,7 @@ struct WelcomeView: View {
                         .multilineTextAlignment(.center)
                 }
 
-                Label("SCOTTSDALE, AZ · 18+", systemImage: "mappin")
+                Label("SCOTTSDALE, AZ", systemImage: "mappin")
                     .font(.caption.weight(.medium))
                     .tracking(1)
                     .padding(.horizontal, 18)
