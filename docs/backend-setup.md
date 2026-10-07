@@ -25,14 +25,18 @@ Verified against the hosted database:
 
 The security advisor reports execution grants on the pre-existing `public.rls_auto_enable()` helper. Inspection confirms it returns `event_trigger` and automatically enables RLS on new public tables. This migration did not create or change it. The advisor findings remain unresolved; do not describe the project as having a clean advisor report.
 
-Still pending: confirmation of the numeric-code email template, custom SMTP for external testers, and the physical-device signup journey below. No real email delivery or phone journey has been verified.
+### Email setup — October 7, 2026 (Arizona)
+
+The owner verified `newtotown.email` in Resend, configured custom SMTP with sender `noreply@newtotown.email`, updated both **Confirm sign up** and **Magic Link** to display `{{ .Token }}`, and reported email-code delivery working. Credentials stay in provider settings, not this repository.
+
+This confirms email delivery, not completion of every phone journey below. Profile persistence, editing, session restoration, and sign-out still need explicit device acceptance before calling signup fully validated.
 
 ### Setup for a fresh project
 
 1. Review `supabase/migrations/202609080001_private_profiles.sql`. Run it once in the project's SQL Editor after code review, or apply through the Supabase CLI migration workflow. Do not run the test fixture in Supabase.
 2. Enable the Email provider and new-user signup in Authentication settings. Keep email verification enabled.
-3. Change the **Magic Link** email template to include `{{ .Token }}` as a visible numeric code. The app verifies an email OTP; it does not handle a magic-link redirect. Example body: `<p>Your newtotown sign-in code is: {{ .Token }}</p>`.
-4. Supabase's default SMTP only sends to project-team addresses and has a low rate limit. Configure a custom SMTP provider and sender before testing with other people. No email provider has been selected or configured by this PR.
+3. Change both the **Confirm sign up** and **Magic Link** email templates to include `{{ .Token }}` as a visible numeric code. The app verifies an email OTP; it does not handle a magic-link redirect. Example body: `<p>Your newtotown sign-in code is: {{ .Token }}</p>`.
+4. Supabase's default SMTP only sends to project-team addresses and has a low rate limit. Configure a custom SMTP provider and sender before testing with other people. The current project uses Resend; new projects must configure their own sender and credentials.
 5. Ensure the `public` schema is exposed through the Data API. The migration supplies the table grants and RLS policies; do not grant broader write access.
 
 References: [email OTP](https://supabase.com/docs/reference/swift/auth-signinwithotp), [SMTP restrictions](https://supabase.com/docs/guides/auth/auth-smtp), [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security).
