@@ -5,9 +5,7 @@ import Supabase
 public final class SupabaseOnboardingService: OnboardingService {
     private let client: SupabaseClient
 
-    public init(configuration: SupabaseConfiguration) {
-        client = SupabaseClient(supabaseURL: configuration.projectURL, supabaseKey: configuration.publishableKey)
-    }
+    init(client: SupabaseClient) { self.client = client }
 
     public func currentUserID() async throws -> UUID? {
         do {

@@ -49,11 +49,12 @@ jobs:
       - name: Test profile constraints and access policies
         env:
           PGPASSWORD: local-test-only
-        run: >-
-          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1
-          -f supabase/tests/auth_fixture.sql
-          -f supabase/migrations/202609080001_private_profiles.sql
-          -f supabase/tests/profiles.sql
+        run: |
+          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f supabase/tests/auth_fixture.sql
+          for migration in supabase/migrations/*.sql; do
+            psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f "$migration"
+          done
+          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles.sql -f supabase/tests/photos.sql
 
   account-deletion:
     runs-on: ubuntu-latest

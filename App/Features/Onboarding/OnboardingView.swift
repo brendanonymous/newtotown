@@ -3,11 +3,12 @@ import SwiftUI
 
 struct OnboardingView: View {
     let model: OnboardingModel?
+    let photoService: (any PhotoService)?
 
     var body: some View {
         NavigationStack {
             if let model {
-                OnboardingContent(model: model)
+                OnboardingContent(model: model, photoService: photoService)
             } else {
                 ContentUnavailableView("Signup isn’t configured", systemImage: "wrench.and.screwdriver", description: Text("This build needs its backend connection settings. You can still explore the welcome screen."))
             }
@@ -18,10 +19,12 @@ struct OnboardingView: View {
 
 private struct OnboardingContent: View {
     @Bindable var model: OnboardingModel
+    let photoService: (any PhotoService)?
     @Environment(\.dismiss) private var dismiss
     @State private var email = ""
     @State private var code = ""
     @State private var showsDeletionConfirmation = false
+    @State private var showsPhotos = false
 
     var body: some View {
         ScrollView {
@@ -72,9 +75,12 @@ private struct OnboardingContent: View {
                     Label("Scottsdale", systemImage: "mappin")
                     Text(model.draft.jobTitle).font(.headline)
                     Text(model.draft.goal)
-                    Text("Next up: your profile photo and verification selfie. That step is coming in the next build. Your profile is private and isn’t available in discovery.")
+                    Text("Add your profile photo and a private selfie. Manual review is coming next. Your profile stays private and isn’t available in discovery.")
                         .font(.callout)
                         .foregroundStyle(BrandTheme.secondaryInk)
+                    if photoService != nil {
+                        Button("My photos") { showsPhotos = true }.disabled(model.isBusy)
+                    }
                     Button("Edit profile") { model.editProfile() }
                         .disabled(model.isBusy)
                     accountActions
@@ -105,6 +111,9 @@ private struct OnboardingContent: View {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Close") { dismiss() }.disabled(model.isBusy)
             }
+        }
+        .sheet(isPresented: $showsPhotos) {
+            if let photoService { PhotoSubmissionView(service: photoService) }
         }
         .alert("Delete your account?", isPresented: $showsDeletionConfirmation) {
             Button("Cancel", role: .cancel) {}

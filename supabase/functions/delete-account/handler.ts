@@ -1,3 +1,5 @@
+import { removePrivatePhotos } from "./photos.ts";
+
 type Configuration = {
   projectURL: string;
   publicKey: string;
@@ -49,8 +51,15 @@ export function createDeleteAccountHandler(
       });
       if (!revoked.ok) return reply(503, "Could not revoke account sessions");
 
-      // Hard deletion cascades to profiles through the existing foreign key.
-      // Add Storage cleanup here before introducing user-owned media.
+      const removed = await removePrivatePhotos(
+        configuration.projectURL,
+        configuration.adminKey,
+        user.id,
+        send,
+      );
+      if (!removed) return reply(503, "Photo cleanup could not be completed");
+
+      // Hard deletion cascades to profile and consent through their foreign keys.
       const deleted = await send(`${authURL}/admin/users/${user.id}`, {
         method: "DELETE",
         signal: AbortSignal.timeout(15_000),

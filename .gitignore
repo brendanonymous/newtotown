@@ -7,3 +7,4 @@ Configuration/Local.xcconfig
 .env
 .env.*
 !.env.example
+supabase/.temp/
