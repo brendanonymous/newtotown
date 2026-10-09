@@ -4,11 +4,11 @@
 
 Use native SwiftUI for this iPhone-only pilot. Group screens and their state by feature under `App/Features`. Put shared colors and reusable visual elements in `App/DesignSystem` only when they are shared.
 
-`NewToTownCore` contains profile rules, the onboarding model, and its service interface. It has no SwiftUI or Supabase dependency. `NewToTownSupabase` depends on the core and the official SDK; it contains the concrete service and public connection configuration. Configuration tests reject malformed endpoints and privileged-key formats, but server authorization still relies on RLS.
+`NewToTownCore` contains profile rules, onboarding/photo models, typed photo requirements, and service interfaces. It has no SwiftUI or Supabase dependency. `NewToTownSupabase` depends on the core and the official SDK; it contains the concrete service and public connection configuration. Configuration tests reject malformed endpoints and privileged-key formats, but server authorization still relies on RLS.
 
 `NewToTownApp` reads configuration and owns the onboarding model. Views receive that model instead of creating backend clients. The welcome preview passes no model and makes no backend connection. The dependency direction is `App → NewToTownSupabase → NewToTownCore`, with views also importing the core directly.
 
-Supabase calls live in `SupabaseOnboardingService`, behind `OnboardingService`. `OnboardingModel` owns transitions, loading, and retryable errors; SwiftUI views render it. Views do not construct database queries. Add abstractions when a real integration or test requires them; avoid speculative base classes and generic repository layers.
+Supabase calls live in the onboarding and photo services, behind their core interfaces. `SupabaseServices` shares one client/session between them. `OnboardingModel` owns transitions, loading, and retryable errors; SwiftUI views render it. Views do not construct database queries. Add abstractions when a real integration or test requires them; avoid speculative base classes and generic repository layers.
 
 ## Configuration and data
 
@@ -16,7 +16,7 @@ The signup PR embeds public connection values through build configuration. It us
 
 Only the project URL and publishable key may ship in the client. Database passwords, secret keys, and service-role keys must never enter the app bundle, Git, or logs. RLS policies and storage policies are mandatory before exposing user data.
 
-Verification selfies will require private storage and a separate reviewer authorization boundary. A client-controlled flag must never grant reviewer access or approve a profile. Define retention, deletion, and consent before collecting selfies. Manual photo review does not verify legal identity, age, or background.
+Selfies use owner-only private storage. The server-owned [photo-review flag](photo-review-flag.md) controls collection and eligibility requirements; reviewer authorization remains separate work. A client-controlled flag must never grant reviewer access or approve a profile. Define retention, deletion, and consent before collecting selfies. Manual photo review does not verify legal identity, age, or background.
 
 ## UI
 

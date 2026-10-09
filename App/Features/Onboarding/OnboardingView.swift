@@ -75,7 +75,7 @@ private struct OnboardingContent: View {
                     Label("Scottsdale", systemImage: "mappin")
                     Text(model.draft.jobTitle).font(.headline)
                     Text(model.draft.goal)
-                    Text("Add your profile photo and a private selfie. Manual review is coming next. Your profile stays private and isn’t available in discovery.")
+                    Text("Add your profile photo to get ready. Your profile stays private until discovery is available.")
                         .font(.callout)
                         .foregroundStyle(BrandTheme.secondaryInk)
                     if photoService != nil {

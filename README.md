@@ -4,7 +4,7 @@ An iPhone app for platonic friendship among men, starting in Scottsdale, Arizona
 
 ## Current build
 
-The app supports email-code signup/sign-in and private profile details. It retains the sage and warm-white welcome screen and pilot overview. Account deletion is available through a confirmation and an authenticated server function; see [deployment and testing](docs/account-deletion.md). Private profile-photo upload and camera selfie capture are available; see [photo setup and testing](docs/private-photos.md). Manual verification, discovery, matching, and messaging are not implemented yet. The N remains a temporary typographic mark.
+The app supports email-code signup/sign-in and private profile details. It retains the sage and warm-white welcome screen and pilot overview. Account deletion is available through a confirmation and an authenticated server function; see [deployment and testing](docs/account-deletion.md). Private profile-photo upload is available; camera selfies are conditional on the server-owned [photo-review flag](docs/photo-review-flag.md), which defaults off; see [photo setup and testing](docs/private-photos.md). Manual verification, discovery, matching, and messaging are not implemented yet. The N remains a temporary typographic mark.
 
 See [backend setup and phone journeys](docs/backend-setup.md) before testing live signup. Hosted signup is configured and has passed owner-reported end-to-end testing. The photo migration and deletion cleanup are deployed for testing this branch; fresh projects still need the documented setup.
 

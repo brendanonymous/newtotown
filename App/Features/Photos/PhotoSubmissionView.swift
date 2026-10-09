@@ -18,12 +18,16 @@ struct PhotoSubmissionView: View {
 
     private var isBusy: Bool { model.isBusy || isPreparingImage }
 
+    private var reviewRequired: Bool { model.requirements?.reviewRequired ?? true }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     Text("Show up as yourself.").font(.system(.largeTitle, design: .serif))
-                    Text("Choose a profile photo and take a selfie. Both stay private; manual review is coming next.")
+                    Text(reviewRequired
+                        ? "Choose a profile photo and take a private selfie for photo review."
+                        : "Choose a profile photo. Your photo stays private until discovery is available.")
                         .foregroundStyle(BrandTheme.secondaryInk)
                     if model.isLoaded {
                         photoPreview("Profile photo", data: model.photos.profile)
@@ -32,20 +36,24 @@ struct PhotoSubmissionView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .disabled(isBusy)
-                        photoPreview("Private selfie", data: model.photos.selfie)
-                        Button("Take selfie", systemImage: "camera") { Task { await startCamera() } }
-                            .frame(maxWidth: .infinity)
-                            .disabled(isBusy)
-                        Text("Face the camera in good light. Your selfie won’t appear on your profile.")
-                            .font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
-                        Toggle("I agree to private storage of these photos to prepare for manual photo review. I can remove them or delete my account at any time.", isOn: $model.hasConsent)
+                        if reviewRequired {
+                            photoPreview("Private selfie", data: model.photos.selfie)
+                            Button("Take selfie", systemImage: "camera") { Task { await startCamera() } }
+                                .frame(maxWidth: .infinity)
+                                .disabled(isBusy)
+                            Text("Face the camera in good light. Your selfie won’t appear on your profile.")
+                                .font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
+                        }
+                        Toggle(reviewRequired
+                            ? "I agree to private storage of my profile photo and selfie for photo review. I can remove them or delete my account at any time."
+                            : "I agree to private storage of my profile photo. I can remove my photos or delete my account at any time.", isOn: $model.hasConsent)
                             .disabled(isBusy)
                         Button("Save photos") { Task { await model.save() } }
                             .buttonStyle(.borderedProminent)
                             .foregroundStyle(BrandTheme.background)
                             .disabled(isBusy)
                         if model.isSaved {
-                            Label("Both photos are saved privately.", systemImage: "checkmark.circle")
+                            Label(reviewRequired ? "Both photos are saved privately." : "Your profile photo is saved privately.", systemImage: "checkmark.circle")
                         }
                         Button("Remove my photos", role: .destructive) { confirmsRemoval = true }
                             .disabled(isBusy)
@@ -54,7 +62,7 @@ struct PhotoSubmissionView: View {
                     }
                     if isBusy { ProgressView("Please wait…") }
                     if let error = model.errorMessage { Text(error).foregroundStyle(.red).font(.callout) }
-                    if AVCaptureDevice.authorizationStatus(for: .video) == .denied {
+                    if reviewRequired && AVCaptureDevice.authorizationStatus(for: .video) == .denied {
                         Button("Open camera settings") {
                             if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                         }
@@ -80,10 +88,10 @@ struct PhotoSubmissionView: View {
                     catch { model.showImageError(error.localizedDescription) }
                 }.ignoresSafeArea()
             }
-            .alert("Remove both photos?", isPresented: $confirmsRemoval) {
+            .alert("Remove your photos?", isPresented: $confirmsRemoval) {
                 Button("Cancel", role: .cancel) {}
                 Button("Remove photos", role: .destructive) { Task { await model.remove() } }
-            } message: { Text("This removes the uploaded profile photo and selfie. You can add new ones later.") }
+            } message: { Text("This removes your profile photo and any previously uploaded selfie. You can add photos again later.") }
         }
         .tint(BrandTheme.ink)
     }

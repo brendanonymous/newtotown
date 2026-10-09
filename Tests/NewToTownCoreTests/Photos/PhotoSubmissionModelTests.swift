@@ -6,9 +6,15 @@ import Testing
 private final class TestPhotoService: PhotoService {
     enum Failure: Error { case unavailable }
     var stored = PrivatePhotos()
+    var policy = PhotoRequirements(reviewRequired: true)
+    var failRequirements = false
     var failSave = false
     var failRemove = false
     var saves = 0
+    func requirements() async throws -> PhotoRequirements {
+        if failRequirements { throw Failure.unavailable }
+        return policy
+    }
     func load() async throws -> PrivatePhotos { stored }
     func save(_ photos: PrivatePhotos) async throws {
         saves += 1
@@ -101,4 +107,99 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
     await model.remove()
     #expect(model.photos == PrivatePhotos())
     #expect(model.errorMessage == nil)
+}
+
+@Test @MainActor func pilotSavesProfileWithoutSelfieAndDoesNotSubmitOldSelfie() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    model.selectProfile(jpeg)
+    model.hasConsent = true
+    await model.save()
+    #expect(model.isSaved)
+    #expect(service.stored.profile == jpeg)
+    #expect(service.stored.selfie == nil)
+    model.captureSelfie(jpeg)
+    model.hasConsent = true
+    await model.save()
+    #expect(service.stored.selfie == nil)
+}
+
+@Test @MainActor func pilotRestoresProfileOnlyAsSaved() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    service.stored = PrivatePhotos(profile: jpeg)
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    #expect(model.isSaved)
+    #expect(model.requirements?.reviewRequired == false)
+}
+
+@Test @MainActor func enablingReviewWhileScreenIsOpenRequiresSelfieBeforeSaving() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    model.selectProfile(jpeg)
+    model.hasConsent = true
+    service.policy = PhotoRequirements(reviewRequired: true)
+    await model.save()
+    #expect(service.saves == 0)
+    #expect(model.requirements?.reviewRequired == true)
+    #expect(!model.hasConsent)
+    #expect(!model.isSaved)
+    #expect(model.photos.profile == jpeg)
+    model.captureSelfie(jpeg)
+    model.hasConsent = true
+    await model.save()
+    #expect(model.isSaved)
+}
+
+@Test @MainActor func unknownRequirementsBlockLoadAndSaveWithoutLosingSelections() async {
+    let service = TestPhotoService()
+    service.failRequirements = true
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    #expect(!model.isLoaded)
+    #expect(model.requirements == nil)
+    service.failRequirements = false
+    await model.load()
+    model.selectProfile(jpeg)
+    model.captureSelfie(jpeg)
+    model.hasConsent = true
+    service.failRequirements = true
+    await model.save()
+    #expect(service.saves == 0)
+    #expect(!model.isSaved)
+    #expect(model.photos.isComplete)
+    #expect(model.errorMessage != nil)
+}
+
+@Test func profileOnlyStillRejectsInvalidAndOversizedImages() throws {
+    let requirements = PhotoRequirements(reviewRequired: false)
+    #expect(throws: PhotoValidationError.self) {
+        try PrivatePhotos(profile: Data([0])).validate(requirements: requirements)
+    }
+    #expect(throws: PhotoValidationError.self) {
+        try PrivatePhotos(profile: Data(repeating: 0, count: PrivatePhotos.maximumFileSize + 1))
+            .validate(requirements: requirements)
+    }
+}
+
+@Test @MainActor func disablingReviewWhileOpenRefreshesConsentAndAllowsProfileOnly() async {
+    let service = TestPhotoService()
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    model.selectProfile(jpeg)
+    model.hasConsent = true
+    service.policy = PhotoRequirements(reviewRequired: false)
+    await model.save()
+    #expect(service.saves == 0)
+    #expect(!model.hasConsent)
+    #expect(model.requirements?.reviewRequired == false)
+    model.hasConsent = true
+    await model.save()
+    #expect(model.isSaved)
+    #expect(service.stored.selfie == nil)
 }

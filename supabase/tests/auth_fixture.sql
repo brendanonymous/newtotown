@@ -1,6 +1,7 @@
 -- LOCAL TEST DATABASE ONLY. Supabase already supplies these objects in production.
 create role anon nologin;
 create role authenticated nologin;
+create role service_role nologin bypassrls;
 create schema auth;
 create table auth.users (id uuid primary key);
 create function auth.uid() returns uuid language sql stable as $$
@@ -18,6 +19,7 @@ create table storage.buckets (
 create table storage.objects (
     id uuid primary key default gen_random_uuid(),
     bucket_id text references storage.buckets(id), name text not null,
+    updated_at timestamptz not null default now(),
     unique (bucket_id, name)
 );
 alter table storage.objects enable row level security;
