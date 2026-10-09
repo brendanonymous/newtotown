@@ -23,16 +23,18 @@ struct PhotoSubmissionView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     Text("Show up as yourself.").font(.system(.largeTitle, design: .serif))
-                    Text("Choose a profile photo and take a selfie. Both stay private in this build; manual review is coming next.")
+                    Text("Choose a profile photo and take a selfie. Both stay private; manual review is coming next.")
                         .foregroundStyle(BrandTheme.secondaryInk)
                     if model.isLoaded {
                         photoPreview("Profile photo", data: model.photos.profile)
                         PhotosPicker(selection: $selection, matching: .images) {
                             Label("Choose profile photo", systemImage: "photo")
                         }
+                        .frame(maxWidth: .infinity)
                         .disabled(isBusy)
                         photoPreview("Private selfie", data: model.photos.selfie)
                         Button("Take selfie", systemImage: "camera") { Task { await startCamera() } }
+                            .frame(maxWidth: .infinity)
                             .disabled(isBusy)
                         Text("Face the camera in good light. Your selfie won’t appear on your profile.")
                             .font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
@@ -40,6 +42,7 @@ struct PhotoSubmissionView: View {
                             .disabled(isBusy)
                         Button("Save photos") { Task { await model.save() } }
                             .buttonStyle(.borderedProminent)
+                            .foregroundStyle(BrandTheme.background)
                             .disabled(isBusy)
                         if model.isSaved {
                             Label("Both photos are saved privately.", systemImage: "checkmark.circle")
@@ -86,16 +89,17 @@ struct PhotoSubmissionView: View {
     }
 
     private func photoPreview(_ title: String, data: Data?) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(spacing: 8) {
             Text(title).font(.headline)
             if let data, let image = UIImage(data: data) {
                 Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 220)
-                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                    .brandPhotoStyle()
             } else {
                 Label("No photo yet", systemImage: "person.crop.rectangle")
                     .foregroundStyle(BrandTheme.secondaryInk)
             }
         }
+        .frame(maxWidth: .infinity)
     }
 
     @MainActor private func prepareProfile(_ item: PhotosPickerItem?) async {

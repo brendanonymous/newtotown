@@ -9,6 +9,7 @@ The picker imports images without broad photo-library access. The camera request
 ## Structure
 
 - `App/Features/Photos`: feature view, camera bridge, pixel normalization.
+- `App/DesignSystem/BrandPhotoStyle.swift`: shared rounded corners and subtle shadow for photo previews; use `brandPhotoStyle()` for future photo surfaces.
 - `Sources/NewToTownCore/Photos`: photo data validation, workflow state, service interface.
 - `Sources/NewToTownSupabase/Photos`: authenticated Storage operations and consent persistence.
 - `SupabaseServices`: constructs one SDK client shared by onboarding and photos.
@@ -34,7 +35,7 @@ Swift tests cover consent, missing/invalid/oversized files, restore, replacement
 Device acceptance:
 
 1. Sign in and save a profile. Open **My photos**. Cancel the picker and camera; neither should upload anything.
-2. Choose a profile photo and capture a selfie. Check previews/orientation, accept consent, and save.
+2. Choose a profile photo and capture a selfie. Check previews/orientation, centered photo controls, rounded corners, and subtle shadows. Confirm **Save photos** has readable light text, accept consent, and save.
 3. Close/reopen the screen and relaunch the app. Both private photos should restore.
 4. Replace one image, agree again, and save. Disconnect during upload; retry and verify that both files restore correctly.
 5. Remove both photos and reopen. Both should be absent. Re-upload with a disposable account, delete that account, and confirm both Storage files are removed.

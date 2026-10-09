@@ -10,7 +10,7 @@ struct OnboardingView: View {
             if let model {
                 OnboardingContent(model: model, photoService: photoService)
             } else {
-                ContentUnavailableView("Signup isn’t configured", systemImage: "wrench.and.screwdriver", description: Text("This build needs its backend connection settings. You can still explore the welcome screen."))
+                ContentUnavailableView("Signup is temporarily unavailable", systemImage: "wrench.and.screwdriver", description: Text("Please try again later. You can still explore the welcome screen."))
             }
         }
         .tint(BrandTheme.ink)
