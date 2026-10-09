@@ -14,7 +14,7 @@ struct PilotOverviewView: View {
                 detail("Find common ground", symbol: "checkmark", description: "Connect or pass. When you both connect, you’ll be able to start a conversation.")
                 detail("Make a plan", symbol: "cup.and.saucer", description: "Coffee, a hike, or a beer in Old Town. Keep it simple, local, and strictly platonic.")
 
-                Text("This pilot build supports email signup and private profile details. Photo verification, discovery, and messaging are coming next.")
+                Text("The pilot supports email signup, private profile details, and private photos. Manual photo review, discovery, and messaging are coming next.")
                     .font(.footnote)
                     .foregroundStyle(BrandTheme.secondaryInk)
                     .padding(20)

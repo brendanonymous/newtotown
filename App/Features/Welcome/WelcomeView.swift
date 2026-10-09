@@ -3,6 +3,7 @@ import SwiftUI
 
 struct WelcomeView: View {
     let onboardingModel: OnboardingModel?
+    var photoService: (any PhotoService)? = nil
 
     @State private var showingSignup = false
     var body: some View {
@@ -21,7 +22,7 @@ struct WelcomeView: View {
                         .font(.system(.largeTitle, design: .serif))
                         .multilineTextAlignment(.center)
 
-                    Text("Meet local guys. Make actual friends.")
+                    Text("Meet local friends.")
                         .font(.body)
                         .foregroundStyle(BrandTheme.secondaryInk)
                         .multilineTextAlignment(.center)
@@ -59,7 +60,7 @@ struct WelcomeView: View {
                         .background(BrandTheme.sage.opacity(0.22), in: RoundedRectangle(cornerRadius: 18))
                     }
 
-                    Text("Pilot build · Scottsdale, Arizona")
+                    Text("Scottsdale, Arizona")
                         .font(.footnote)
                         .foregroundStyle(BrandTheme.secondaryInk)
                 }
@@ -72,7 +73,7 @@ struct WelcomeView: View {
         }
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
-        .sheet(isPresented: $showingSignup) { OnboardingView(model: onboardingModel) }
+        .sheet(isPresented: $showingSignup) { OnboardingView(model: onboardingModel, photoService: photoService) }
     }
 }
 

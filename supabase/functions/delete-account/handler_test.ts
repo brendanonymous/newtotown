@@ -21,7 +21,7 @@ function request(body?: string): Request {
 }
 
 // Requests are inspected at the HTTP boundary, including credential separation.
-function backend(statuses: number[] = [200, 204, 200]) {
+function backend(statuses: number[] = [200, 204, 200, 200]) {
   const calls: { url: string; method: string; headers: Headers }[] = [];
   const send: typeof fetch = (input, init) => {
     calls.push({
@@ -71,7 +71,7 @@ Deno.test("body cannot select another account; verified owner is revoked then ha
     "Deletion failed",
   );
   expect(
-    calls.length === 3,
+    calls.length === 4,
     "Missing identity, revocation, or deletion request",
   );
   expect(calls[0].url.endsWith("/user"), "Identity was not checked first");
@@ -88,12 +88,12 @@ Deno.test("body cannot select another account; verified owner is revoked then ha
     "Wrong session revoked",
   );
   expect(
-    calls[2].url.endsWith(`/admin/users/${ownerID}`),
+    calls[3].url.endsWith(`/admin/users/${ownerID}`),
     "Unverified account selected",
   );
-  expect(calls[2].method === "DELETE", "Not an Auth hard deletion");
+  expect(calls[3].method === "DELETE", "Not an Auth hard deletion");
   expect(
-    calls[2].headers.get("Authorization") ===
+    calls[3].headers.get("Authorization") ===
       `Bearer ${configuration.adminKey}`,
     "Missing server authorization",
   );
@@ -109,7 +109,7 @@ Deno.test("failed session revocation stops deletion", async () => {
 });
 
 Deno.test("failed Auth deletion is retryable and never exposes upstream details", async () => {
-  const { handler } = backend([200, 204, 500]);
+  const { handler } = backend([200, 204, 200, 500]);
   const response = await handler(request());
   expect(response.status === 503, "Deletion failure reported as success");
   const body = await response.text();
@@ -128,5 +128,43 @@ Deno.test("network failure produces a controlled error", async () => {
   expect(
     (await handler(request())).status === 503,
     "Network error escaped handler",
+  );
+});
+
+Deno.test("photo cleanup failure prevents Auth deletion", async () => {
+  const { calls, handler } = backend([200, 204, 500]);
+  expect(
+    (await handler(request())).status === 503,
+    "Cleanup failure reported as success",
+  );
+  expect(calls.length === 3, "Auth user deleted before cleanup completed");
+  expect(
+    calls[2].url.endsWith("/storage/v1/object/private-photos"),
+    "Wrong bucket selected",
+  );
+});
+
+Deno.test("photo cleanup targets only the verified owner's fixed keys", async () => {
+  let keys: string[] = [];
+  const send: typeof fetch = (input, init) => {
+    const url = String(input);
+    if (url.endsWith("/user")) {
+      return Promise.resolve(Response.json({ id: ownerID }));
+    }
+    if (url.includes("/storage/")) {
+      keys = JSON.parse(String(init?.body)).prefixes;
+    }
+    return Promise.resolve(new Response(null, { status: 204 }));
+  };
+  const handler = createDeleteAccountHandler(configuration, send);
+  expect(
+    (await handler(request(JSON.stringify({ user_id: otherID })))).status ===
+      204,
+    "Deletion failed",
+  );
+  expect(
+    JSON.stringify(keys) ===
+      JSON.stringify([`${ownerID}/profile.jpg`, `${ownerID}/selfie.jpg`]),
+    "Cleanup escaped owner prefix",
   );
 });
