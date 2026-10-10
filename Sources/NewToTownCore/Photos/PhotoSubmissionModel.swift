@@ -5,6 +5,7 @@ import Observation
 @Observable
 public final class PhotoSubmissionModel {
     public private(set) var photos = PrivatePhotos()
+    public private(set) var requirements: PhotoRequirements?
     public private(set) var isBusy = false
     public private(set) var isLoaded = false
     public private(set) var isSaved = false
@@ -20,9 +21,11 @@ public final class PhotoSubmissionModel {
         errorMessage = nil
         defer { isBusy = false }
         do {
+            let requirements = try await service.requirements()
             photos = try await service.load()
+            self.requirements = requirements
             isLoaded = true
-            isSaved = photos.isComplete
+            isSaved = photos.meets(requirements)
         } catch {
             errorMessage = "We couldn’t load your photos. Check your connection and try again."
         }
@@ -49,16 +52,31 @@ public final class PhotoSubmissionModel {
             errorMessage = "Please agree to private photo storage before uploading."
             return
         }
-        do { try photos.validate() }
-        catch { errorMessage = error.localizedDescription; return }
         isBusy = true
         defer { isBusy = false }
         do {
-            try await service.save(photos)
+            // Refresh before saving: an operator may have changed the flag since opening.
+            let requirements = try await service.requirements()
+            let requirementsChanged = self.requirements != requirements
+            self.requirements = requirements
+            isSaved = false
+            guard !requirementsChanged else {
+                hasConsent = false
+                errorMessage = "Photo requirements changed. Review the updated agreement and try again."
+                return
+            }
+            try photos.validate(requirements: requirements)
+            let submission = PrivatePhotos(
+                profile: photos.profile,
+                selfie: requirements.reviewRequired ? photos.selfie : nil
+            )
+            try await service.save(submission)
             isSaved = true
             hasConsent = false
+        } catch let error as PhotoValidationError {
+            errorMessage = error.localizedDescription
         } catch {
-            errorMessage = "We couldn’t finish saving both photos. Some may have uploaded. Your selections are still here—try again."
+            errorMessage = "We couldn’t finish saving your photos. Your selections are still here—try again."
         }
     }
 
