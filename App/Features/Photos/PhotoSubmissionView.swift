@@ -57,7 +57,7 @@ struct PhotoSubmissionView: View {
                             .buttonStyle(.borderedProminent)
                             .foregroundStyle(BrandTheme.background)
                             .frame(maxWidth: .infinity)
-                            .disabled(isBusy)
+                            .disabled(isBusy || !model.hasConsent)
                         if model.isSaved {
                             Label(reviewRequired ? "Your photos are saved. Your selfie stays private." : "Your profile photo is saved.", systemImage: "checkmark.circle")
                                 .multilineTextAlignment(.center)
