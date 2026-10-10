@@ -36,9 +36,9 @@ Device acceptance (selfie steps require review enabled in a development project;
 
 1. Sign in and save a profile. Open **My photos**. Cancel the picker and camera; neither should upload anything.
 2. Choose a profile photo and capture a selfie. Check previews/orientation, centered photo controls, rounded corners, and subtle shadows. Confirm **Save photo** has readable light text and the save, saved-message, and removal controls are centered. Save without another agreement; the screen should close after a successful upload and stay open on failure.
-3. Close/reopen the screen and relaunch the app. Both private photos should restore.
+3. Close/reopen the screen and relaunch the app. Both private photos should restore. On the saved-profile screen, the add-photo prompt should stay hidden while a profile photo exists.
 4. Replace one image and save without another agreement. Disconnect during upload; retry and verify that both files restore correctly.
-5. Remove both photos and reopen. Both should be absent. Re-upload with a disposable account, delete that account, and confirm both Storage files are removed.
+5. Remove both photos and reopen. Both should be absent; after dismissing My photos, the add-photo prompt should return. Re-upload with a disposable account, delete that account, and confirm both Storage files are removed.
 6. Deny camera access and test the settings link. Simulator capture must show the unavailable-camera message.
 
 Hosted authenticated Storage HTTP behavior, image metadata inspection, actual camera capture, and deletion with photos require these device checks before acceptance. Automated checks do not establish successful face verification.

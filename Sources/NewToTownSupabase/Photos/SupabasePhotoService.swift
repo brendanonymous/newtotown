@@ -14,6 +14,12 @@ public final class SupabasePhotoService: PhotoService {
         return PhotoRequirements(reviewRequired: flags.photoReviewRequired)
     }
 
+    public func hasProfilePhoto() async throws -> Bool {
+        let folder = try await ownerFolder()
+        return try await client.storage.from(bucket).list(path: folder)
+            .contains { $0.name == "profile.jpg" }
+    }
+
     public func load() async throws -> PrivatePhotos {
         let folder = try await ownerFolder()
         let storage = client.storage.from(bucket)

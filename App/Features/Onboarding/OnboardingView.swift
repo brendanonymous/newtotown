@@ -27,6 +27,7 @@ private struct OnboardingContent: View {
     @State private var code = ""
     @State private var showsDeletionConfirmation = false
     @State private var showsPhotos = false
+    @State private var hasProfilePhoto: Bool?
 
     var body: some View {
         ScrollView {
@@ -82,9 +83,11 @@ private struct OnboardingContent: View {
                     Label("Scottsdale", systemImage: "mappin")
                     Text(model.draft.jobTitle).font(.headline)
                     Text(model.draft.goal)
-                    Text("Add your profile photo to get ready. You choose when your profile becomes visible in Scottsdale.")
-                        .font(.callout)
-                        .foregroundStyle(BrandTheme.secondaryInk)
+                    if hasProfilePhoto == false {
+                        Text("Add your profile photo to get ready. You choose when your profile becomes visible in Scottsdale.")
+                            .font(.callout)
+                            .foregroundStyle(BrandTheme.secondaryInk)
+                    }
                     if photoService != nil {
                         Button("My photos") { showsPhotos = true }.disabled(model.isBusy)
                     }
@@ -141,6 +144,19 @@ private struct OnboardingContent: View {
         }
         .interactiveDismissDisabled(model.isBusy)
         .task { await model.restore() }
+        .task(id: model.step == .saved && !showsPhotos) {
+            hasProfilePhoto = nil
+            guard model.step == .saved, !showsPhotos, let photoService else { return }
+            do {
+                let exists = try await photoService.hasProfilePhoto()
+                guard !Task.isCancelled else { return }
+                hasProfilePhoto = exists
+            } catch {
+                // Unknown photo status must not tell an existing member to add a photo.
+                guard !Task.isCancelled else { return }
+                hasProfilePhoto = nil
+            }
+        }
     }
 
     private var accountActions: some View {
