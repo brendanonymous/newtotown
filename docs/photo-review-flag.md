@@ -24,11 +24,11 @@ The existing photo-service boundary is reused; no global mutable flag store, env
 
 ## Server eligibility
 
-`public.is_own_profile_discoverable()` is a security-invoker function with no user-ID parameter. It evaluates the caller's profile through existing RLS. `profile_access` is owner-readable and client-read-only; operators own suspension, rejection, and approval fields. No access row means no approval and no moderation restriction.
+`public.is_own_profile_discoverable()` is a security-invoker function with no user-ID parameter; it checks photo eligibility separately from the additional visibility agreement. It evaluates the caller's profile through existing RLS. `profile_access` is owner-readable and client-read-only; operators own suspension, rejection, and approval fields. No access row means no approval and no moderation restriction.
 
 An approval records both Storage object IDs and `updated_at` values. Replacing either file makes the recorded version stale; removing/recreating a file cannot reuse the old object ID. Review-off mode does not create an approval. Turning review on therefore makes previously unreviewed users ineligible until reviewed. Turning it off never bypasses suspension or rejection.
 
-**Discovery is not implemented by this PR.** The function is the tested eligibility primitive for the next server-side discovery endpoint; that endpoint must enforce eligibility for both the caller and candidate profiles. It must also enforce pairwise blocks when blocking ships. Do not expose profile rows or the private bucket to implement discovery. Publishing profile photos needs a separate authorized delivery path and updated consent.
+The [discovery feature](discovery.md) now reuses `private.photo_eligibility` behind this self-only function. Server discovery enforces eligibility for both caller and candidates, visibility agreement, and pairwise blocks. Profile photos are delivered through authorized short-lived links; private profile rows and the bucket remain owner-only.
 
 ## Operation
 

@@ -26,8 +26,8 @@ struct PhotoSubmissionView: View {
                 VStack(alignment: .leading, spacing: 24) {
                     Text("Show up as yourself.").font(.system(.largeTitle, design: .serif))
                     Text(reviewRequired
-                        ? "Choose a profile photo and take a private selfie for photo review."
-                        : "Choose a profile photo. Your photo stays private until discovery is available.")
+                        ? "Choose a profile photo and take a private selfie for photo review. Only your profile photo is shared when you join discovery."
+                        : "Choose a profile photo. Only your profile photo is shared when you join discovery.")
                         .foregroundStyle(BrandTheme.secondaryInk)
                     if model.isLoaded {
                         photoPreview("Profile photo", data: model.photos.profile)
@@ -53,7 +53,7 @@ struct PhotoSubmissionView: View {
                             .foregroundStyle(BrandTheme.background)
                             .disabled(isBusy)
                         if model.isSaved {
-                            Label(reviewRequired ? "Both photos are saved privately." : "Your profile photo is saved privately.", systemImage: "checkmark.circle")
+                            Label(reviewRequired ? "Your photos are saved. Your selfie stays private." : "Your profile photo is saved.", systemImage: "checkmark.circle")
                         }
                         Button("Remove my photos", role: .destructive) { confirmsRemoval = true }
                             .disabled(isBusy)

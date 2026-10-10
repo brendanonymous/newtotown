@@ -2,7 +2,7 @@
 
 ## Scope
 
-After saving a profile, open **My photos**, choose a profile image, and accept private storage before saving. The server-controlled [photo-review flag](photo-review-flag.md) defaults off; selfie capture is shown and required only when review is on. All uploaded images remain private to the owner. A successful save means the required uploads completed; it does not approve or verify the person. Manual review, reviewer access, and discovery are the next increment.
+After saving a profile, open **My photos**, choose a profile image, and accept private storage before saving. The server-controlled [photo-review flag](photo-review-flag.md) defaults off; selfie capture is shown and required only when review is on. Storage remains private; opting into discovery permits eligible members to view the profile photo only. Selfies remain owner-only. A successful save means the required uploads completed; it does not approve or verify the person. Manual review and reviewer access remain separate work. [Discovery](discovery.md) shares only opted-in profile photos through authorized links; selfies remain private.
 
 The picker imports images without broad photo-library access. The camera requests permission only on **Take selfie**, prefers the front camera, and supports cancel, denied permission/settings recovery, and unavailable-camera feedback. Imported images are downsampled to 1,200 pixels; both sources are drawn into a fresh image and encoded as JPEG, omitting original EXIF/GPS metadata. Each upload is limited to 3 MiB. Capture is enforced by the app UI, not proof of liveness or identity; a modified client can supply another file.
 

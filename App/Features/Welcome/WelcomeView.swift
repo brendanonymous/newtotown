@@ -4,6 +4,7 @@ import SwiftUI
 struct WelcomeView: View {
     let onboardingModel: OnboardingModel?
     var photoService: (any PhotoService)? = nil
+    var discoveryService: (any DiscoveryService)? = nil
 
     @State private var showingSignup = false
     var body: some View {
@@ -73,7 +74,7 @@ struct WelcomeView: View {
         }
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
-        .sheet(isPresented: $showingSignup) { OnboardingView(model: onboardingModel, photoService: photoService) }
+        .sheet(isPresented: $showingSignup) { OnboardingView(model: onboardingModel, photoService: photoService, discoveryService: discoveryService) }
     }
 }
 

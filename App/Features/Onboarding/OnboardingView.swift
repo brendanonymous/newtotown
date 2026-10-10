@@ -4,11 +4,12 @@ import SwiftUI
 struct OnboardingView: View {
     let model: OnboardingModel?
     let photoService: (any PhotoService)?
+    let discoveryService: (any DiscoveryService)?
 
     var body: some View {
         NavigationStack {
             if let model {
-                OnboardingContent(model: model, photoService: photoService)
+                OnboardingContent(model: model, photoService: photoService, discoveryService: discoveryService)
             } else {
                 ContentUnavailableView("Signup is temporarily unavailable", systemImage: "wrench.and.screwdriver", description: Text("Please try again later. You can still explore the welcome screen."))
             }
@@ -20,6 +21,7 @@ struct OnboardingView: View {
 private struct OnboardingContent: View {
     @Bindable var model: OnboardingModel
     let photoService: (any PhotoService)?
+    let discoveryService: (any DiscoveryService)?
     @Environment(\.dismiss) private var dismiss
     @State private var email = ""
     @State private var code = ""
@@ -75,11 +77,14 @@ private struct OnboardingContent: View {
                     Label("Scottsdale", systemImage: "mappin")
                     Text(model.draft.jobTitle).font(.headline)
                     Text(model.draft.goal)
-                    Text("Add your profile photo to get ready. Your profile stays private until discovery is available.")
+                    Text("Add your profile photo to get ready. You choose when your profile becomes visible in Scottsdale.")
                         .font(.callout)
                         .foregroundStyle(BrandTheme.secondaryInk)
                     if photoService != nil {
                         Button("My photos") { showsPhotos = true }.disabled(model.isBusy)
+                    }
+                    if let discoveryService {
+                        NavigationLink("Discover local friends") { DiscoveryView(service: discoveryService) }
                     }
                     Button("Edit profile") { model.editProfile() }
                         .disabled(model.isBusy)
