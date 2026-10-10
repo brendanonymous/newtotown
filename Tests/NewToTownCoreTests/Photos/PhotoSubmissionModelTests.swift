@@ -29,18 +29,15 @@ private final class TestPhotoService: PhotoService {
 
 private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
 
-@Test @MainActor func photosRequireBothImagesAndExplicitConsent() async {
+@Test @MainActor func photosSaveWithoutRepeatedAgreement() async {
     let service = TestPhotoService()
     let model = PhotoSubmissionModel(service: service)
     await model.load()
     model.selectProfile(jpeg)
     model.captureSelfie(jpeg)
     await model.save()
-    #expect(service.saves == 0)
-    model.hasConsent = true
-    await model.save()
+    #expect(service.saves == 1)
     #expect(model.isSaved)
-    #expect(!model.hasConsent)
     #expect(service.stored.isComplete)
 }
 
@@ -49,15 +46,12 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
     let model = PhotoSubmissionModel(service: service)
     await model.load()
     model.selectProfile(jpeg)
-    model.hasConsent = true
     await model.save()
     #expect(service.saves == 0)
     model.captureSelfie(Data([0, 1, 2]))
-    model.hasConsent = true
     await model.save()
     #expect(service.saves == 0)
     model.captureSelfie(Data(repeating: 0, count: PrivatePhotos.maximumFileSize + 1))
-    model.hasConsent = true
     await model.save()
     #expect(service.saves == 0)
     #expect(model.errorMessage != nil)
@@ -69,28 +63,26 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
     await model.load()
     model.selectProfile(jpeg)
     model.captureSelfie(jpeg)
-    model.hasConsent = true
     service.failSave = true
     await model.save()
     #expect(!model.isSaved)
     #expect(model.photos.isComplete)
-    #expect(model.hasConsent)
     #expect(!model.isBusy)
     service.failSave = false
     await model.save()
     #expect(model.isSaved)
 }
 
-@Test @MainActor func restoresPrivatePhotosAndReplacementRequiresConsentAgain() async {
+@Test @MainActor func restoresPrivatePhotosAndReplacementCanSaveWithoutRepeatedConsent() async {
     let service = TestPhotoService()
     service.stored = PrivatePhotos(profile: jpeg, selfie: jpeg)
     let model = PhotoSubmissionModel(service: service)
     await model.load()
     #expect(model.isSaved)
-    model.hasConsent = true
     model.captureSelfie(jpeg)
     #expect(!model.isSaved)
-    #expect(!model.hasConsent)
+    await model.save()
+    #expect(model.isSaved)
 }
 
 @Test @MainActor func removalFailureIsRetryableWithoutClaimingSuccess() async {
@@ -115,13 +107,11 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
     let model = PhotoSubmissionModel(service: service)
     await model.load()
     model.selectProfile(jpeg)
-    model.hasConsent = true
     await model.save()
     #expect(model.isSaved)
     #expect(service.stored.profile == jpeg)
     #expect(service.stored.selfie == nil)
     model.captureSelfie(jpeg)
-    model.hasConsent = true
     await model.save()
     #expect(service.stored.selfie == nil)
 }
@@ -142,16 +132,13 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
     let model = PhotoSubmissionModel(service: service)
     await model.load()
     model.selectProfile(jpeg)
-    model.hasConsent = true
     service.policy = PhotoRequirements(reviewRequired: true)
     await model.save()
     #expect(service.saves == 0)
     #expect(model.requirements?.reviewRequired == true)
-    #expect(!model.hasConsent)
     #expect(!model.isSaved)
     #expect(model.photos.profile == jpeg)
     model.captureSelfie(jpeg)
-    model.hasConsent = true
     await model.save()
     #expect(model.isSaved)
 }
@@ -167,7 +154,6 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
     await model.load()
     model.selectProfile(jpeg)
     model.captureSelfie(jpeg)
-    model.hasConsent = true
     service.failRequirements = true
     await model.save()
     #expect(service.saves == 0)
@@ -187,18 +173,15 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
     }
 }
 
-@Test @MainActor func disablingReviewWhileOpenRefreshesConsentAndAllowsProfileOnly() async {
+@Test @MainActor func disablingReviewWhileOpenRefreshesRequirementsAndAllowsProfileOnly() async {
     let service = TestPhotoService()
     let model = PhotoSubmissionModel(service: service)
     await model.load()
     model.selectProfile(jpeg)
-    model.hasConsent = true
     service.policy = PhotoRequirements(reviewRequired: false)
     await model.save()
     #expect(service.saves == 0)
-    #expect(!model.hasConsent)
     #expect(model.requirements?.reviewRequired == false)
-    model.hasConsent = true
     await model.save()
     #expect(model.isSaved)
     #expect(service.stored.selfie == nil)

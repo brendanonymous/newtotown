@@ -8,7 +8,7 @@ Use native SwiftUI for this iPhone-only pilot. Group screens and their state by 
 
 `NewToTownApp` reads configuration and owns the onboarding model. Views receive that model instead of creating backend clients. The welcome preview passes no model and makes no backend connection. The dependency direction is `App → NewToTownSupabase → NewToTownCore`, with views also importing the core directly. Feature screens own transient photo/discovery state.
 
-Supabase calls live in the onboarding, photo, and discovery services, behind their core interfaces. `SupabaseServices` shares one client/session between them. `OnboardingModel` owns transitions, loading, and retryable errors; SwiftUI views render it. Views do not construct database queries. Add abstractions when a real integration or test requires them; avoid speculative base classes and generic repository layers.
+Supabase calls live in the onboarding, photo, and discovery services, behind their core interfaces. `SupabaseServices` shares one client/session between them. `OnboardingModel` owns transitions, loading, and retryable errors; SwiftUI views render it. Views do not construct database queries. `FirstSignupIntroduction` presents the one-time slides; `OnboardingModel` advances only after the account-level acceptance is persisted. See [onboarding agreement](onboarding-agreement.md). Add abstractions when a real integration or test requires them; avoid speculative base classes and generic repository layers.
 
 ## Configuration and data
 

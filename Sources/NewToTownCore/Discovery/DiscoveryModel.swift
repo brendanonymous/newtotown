@@ -6,7 +6,6 @@ public final class DiscoveryModel {
     public private(set) var feed: DiscoveryFeed?
     public private(set) var isBusy = false
     public private(set) var errorMessage: String?
-    public var acceptsVisibility = false
     private let service: any DiscoveryService
 
     public init(service: any DiscoveryService) { self.service = service }
@@ -16,10 +15,6 @@ public final class DiscoveryModel {
     }
 
     public func setVisible(_ visible: Bool) async {
-        guard !visible || acceptsVisibility else {
-            errorMessage = "Agree to share your profile before joining discovery."
-            return
-        }
         await perform { try await self.service.setVisible(visible) }
     }
 
@@ -39,7 +34,6 @@ public final class DiscoveryModel {
         defer { isBusy = false }
         do {
             feed = try await action()
-            acceptsVisibility = false
         } catch {
             // Discard cached people on uncertain authorization/visibility changes.
             // Decisions are idempotent; refresh safely restores the server's result.

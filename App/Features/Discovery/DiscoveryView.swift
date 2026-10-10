@@ -73,10 +73,10 @@ struct DiscoveryView: View {
             Button("Hide my profile") { Task { await model.setVisible(false) } }
         } else if feed.state != .restricted {
             Text("Meet local friends.").font(.system(.title, design: .serif))
-            Toggle("I agree to show my first name, job, activity summary, and profile photo to other eligible members in Scottsdale.", isOn: $model.acceptsVisibility)
+            Text("Joining shows your profile and photo to other members in Scottsdale. You can hide it at any time.")
+                .foregroundStyle(BrandTheme.secondaryInk)
             Button("Join discovery") { Task { await model.setVisible(true) } }
                 .buttonStyle(.borderedProminent).foregroundStyle(BrandTheme.background)
-                .disabled(!model.acceptsVisibility)
         }
     }
 

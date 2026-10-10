@@ -27,11 +27,6 @@ public final class SupabasePhotoService: PhotoService {
         let requirements = try await requirements()
         try photos.validate(requirements: requirements)
         let folder = try await ownerFolder()
-        // Record the first acceptance of this version using the database timestamp.
-        try await client.from("photo_consents").upsert(
-            PhotoConsent(userID: folder, version: "pilot-v1"),
-            onConflict: "user_id", ignoreDuplicates: true
-        ).execute()
         let storage = client.storage.from(bucket)
         let options = FileOptions(cacheControl: "0", contentType: "image/jpeg", upsert: true)
         if let profile = photos.profile {
@@ -49,15 +44,6 @@ public final class SupabasePhotoService: PhotoService {
 
     private func ownerFolder() async throws -> String {
         try await client.auth.session.user.id.uuidString.lowercased()
-    }
-}
-
-private struct PhotoConsent: Encodable {
-    let userID: String
-    let version: String
-    enum CodingKeys: String, CodingKey {
-        case userID = "user_id"
-        case version
     }
 }
 

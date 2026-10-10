@@ -5,7 +5,7 @@ import Observation
 @Observable
 public final class OnboardingModel {
     public enum Step: Equatable {
-        case loading, email, code, profile, saved, restoreFailed
+        case loading, email, code, introduction, profile, saved, restoreFailed
     }
 
     public private(set) var step: Step = .loading
@@ -17,6 +17,7 @@ public final class OnboardingModel {
 
     private let service: any OnboardingService
     private var userID: UUID?
+    private var hasAcceptedAgreement = false
 
     public var canDeleteAccount: Bool { userID != nil }
 
@@ -96,7 +97,7 @@ public final class OnboardingModel {
     }
 
     public func saveProfile() async {
-        guard !isBusy, let userID else { return }
+        guard !isBusy, step == .profile, hasAcceptedAgreement, let userID else { return }
         isBusy = true
         errorMessage = nil
         defer { isBusy = false }
@@ -112,8 +113,22 @@ public final class OnboardingModel {
         }
     }
 
+    public func acceptIntroduction() async {
+        guard !isBusy, step == .introduction, let userID else { return }
+        isBusy = true
+        errorMessage = nil
+        defer { isBusy = false }
+        do {
+            try await service.acceptAgreement(for: userID)
+            hasAcceptedAgreement = true
+            try await loadProfile(for: userID)
+        } catch {
+            errorMessage = "We couldn’t finish setting up your account. Try again."
+        }
+    }
+
     public func editProfile() {
-        guard !isBusy else { return }
+        guard !isBusy, hasAcceptedAgreement else { return }
         errorMessage = nil
         step = .profile
     }
@@ -146,6 +161,7 @@ public final class OnboardingModel {
 
     private func clearAccount() {
         userID = nil
+        hasAcceptedAgreement = false
         draft = ProfileDraft()
         email = ""
         resendAvailableAt = .distantPast
@@ -153,11 +169,17 @@ public final class OnboardingModel {
     }
 
     private func loadProfile(for id: UUID) async throws {
+        hasAcceptedAgreement = try await service.hasAcceptedAgreement(for: id)
+        guard hasAcceptedAgreement else {
+            step = .introduction
+            return
+        }
         if let profile = try await service.profile(for: id) {
             draft = ProfileDraft(profile: profile)
             step = .saved
         } else {
             draft = ProfileDraft()
+            draft.platonicAgreement = true
             step = .profile
         }
     }

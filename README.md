@@ -39,3 +39,5 @@ Swift Package tests validate configuration, profile rules, and onboarding transi
 - `docs/`: architecture and implementation scope.
 
 See [architecture](docs/architecture.md) and [delivery plan](docs/delivery-plan.md).
+
+First-time onboarding and persistent agreement behavior: [onboarding agreement](docs/onboarding-agreement.md).

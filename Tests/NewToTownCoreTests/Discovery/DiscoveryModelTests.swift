@@ -34,16 +34,13 @@ import Testing
 private let localFriend = DiscoveryProfile(id: UUID(), firstName: "Alex", jobTitle: "Designer",
     goal: "Find a hiking buddy.", city: "Scottsdale", photoURL: URL(string: "https://example.com/photo.jpg")!)
 
-@Test @MainActor func discoveryNeedsVisibilityAgreementAndAllowsHidingWithoutIt() async {
+@Test @MainActor func discoveryJoinAndHideAreChoicesWithoutRepeatedAgreement() async {
     let service = TestDiscoveryService()
     let model = DiscoveryModel(service: service)
     await model.load()
     await model.setVisible(true)
-    #expect(service.visibilityCalls == 0)
-    model.acceptsVisibility = true
-    await model.setVisible(true)
+    #expect(service.visibilityCalls == 1)
     #expect(model.feed?.visible == true)
-    #expect(!model.acceptsVisibility)
     await model.setVisible(false)
     #expect(model.feed?.state == .hidden)
     #expect(service.visibilityCalls == 2)

@@ -66,6 +66,11 @@ private struct OnboardingContent: View {
                         model.changeEmail()
                     }
                     .disabled(model.isBusy)
+                case .introduction:
+                    FirstSignupIntroduction(isBusy: model.isBusy) {
+                        await model.acceptIntroduction()
+                    }
+                    accountActions
                 case .profile:
                     title("A little about you.", subtitle: "Give a future friend something to connect with.")
                     ProfileForm(draft: $model.draft)

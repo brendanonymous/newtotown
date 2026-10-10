@@ -42,7 +42,7 @@ public enum PhotoValidationError: Error, LocalizedError {
 public protocol PhotoService: Sendable {
     func requirements() async throws -> PhotoRequirements
     func load() async throws -> PrivatePhotos
-    /// Rechecks server requirements and persists consent before uploading.
+    /// Rechecks server requirements; storage enforces the account’s recorded consent.
     /// Uploads are individually retryable, not atomic; review-off saves omit selfies.
     func save(_ photos: PrivatePhotos) async throws
     func remove() async throws

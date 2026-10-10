@@ -44,10 +44,6 @@ struct PhotoSubmissionView: View {
                             Text("Face the camera in good light. Your selfie won’t appear on your profile.")
                                 .font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
                         }
-                        Toggle(reviewRequired
-                            ? "I agree to private storage of my profile photo and selfie for photo review. I can remove them or delete my account at any time."
-                            : "I agree to private storage of my profile photo. I can remove my photos or delete my account at any time.", isOn: $model.hasConsent)
-                            .disabled(isBusy)
                         Button("Save photo") {
                             Task {
                                 await model.save()
@@ -57,7 +53,7 @@ struct PhotoSubmissionView: View {
                             .buttonStyle(.borderedProminent)
                             .foregroundStyle(BrandTheme.background)
                             .frame(maxWidth: .infinity)
-                            .disabled(isBusy || !model.hasConsent)
+                            .disabled(isBusy)
                         if model.isSaved {
                             Label(reviewRequired ? "Your photos are saved. Your selfie stays private." : "Your profile photo is saved.", systemImage: "checkmark.circle")
                                 .multilineTextAlignment(.center)

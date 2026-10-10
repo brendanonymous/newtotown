@@ -2,7 +2,7 @@
 
 ## User flow
 
-Save profile details and a profile photo, then open **Discover local friends**. Agree to share the first name, job, activity summary, and profile photo before joining. Profiles start hidden, including existing accounts. Birthday, email, selfie, and moderation fields are never in discovery cards.
+Save profile details and a profile photo, then open **Discover local friends**. Tap **Join discovery** to share the first name, job, activity summary, and profile photo. The sharing terms are included in [first signup](onboarding-agreement.md); joining has no repeated agreement checkbox. Profiles start hidden, including existing accounts. Birthday, email, selfie, and moderation fields are never in discovery cards.
 
 Tap **check** to connect or **X** to pass. A connection appears only when both people choose connect. Decisions are immutable in this pilot; there is no undo or unmatch yet. Connections are derived from the two decisions, so simultaneous checks cannot create duplicate matches. Repeating the same decision after a lost response is safe.
 
@@ -26,18 +26,18 @@ The Edge Function requires gateway JWT verification and independently resolves t
 
 The server explicitly projects public fields and signs only `<candidate UUID>/profile.jpg` paths from the authorized feed. The private bucket and owner-only Storage policies are unchanged. No selfie path is signed. URL responses use `Cache-Control: no-store`; photo links expire after **60 seconds**. A previously issued link or downloaded image cannot be instantly revoked by hiding/blocking—new requests enforce the updated state. The app offers Refresh when a photo link expires.
 
-The `discovery-v1` agreement records a server timestamp when joining/rejoining. Hiding without joining creates no consent row. Profile edits and profile-photo replacements are reflected to other eligible members while visible; when review is required, replacing an approved photo makes it ineligible until approved again. Deleting an account cascades its visibility, decisions, and blocks; existing deletion cleanup still removes both photo keys.
+The existing `discovery-v1` visibility receipt records a server timestamp when joining/rejoining; it records the explicit sharing choice, rather than a new terms acceptance. Hiding without joining creates no consent row. Profile edits and profile-photo replacements are reflected to other eligible members while visible; when review is required, replacing an approved photo makes it ineligible until approved again. Deleting an account cascades its visibility, decisions, and blocks; existing deletion cleanup still removes both photo keys.
 
 ## Deployment and validation
 
 Apply `20261010201702_scottsdale_discovery.sql` once, then deploy `discovery` with `index.ts`, `handler.ts`, and `photos.ts`, keeping JWT verification enabled. Default settings do not publish existing profiles. No new secret belongs in the app. Earlier local/hosted profile-migration versions remain mismatched; see [photo deployment notes](private-photos.md) before CLI migration deployment.
 
-Tests cover visibility agreement, current-card decisions, failed-action recovery, mutual versus one-sided connections, passes, retry idempotency, hidden/restricted/review-required profiles, block filtering, deleted-account cleanup, direct-write denial, and caller impersonation. Handler tests check public projection and profile-only signing. SQL tests use transaction-only metadata fixtures; they do not upload files or sign real photo URLs.
+Tests cover visibility choices, current-card decisions, failed-action recovery, mutual versus one-sided connections, passes, retry idempotency, hidden/restricted/review-required profiles, block filtering, deleted-account cleanup, direct-write denial, and caller impersonation. Handler tests check public projection and profile-only signing. SQL tests use transaction-only metadata fixtures; they do not upload files or sign real photo URLs.
 
 Phone acceptance with two real volunteer accounts:
 
 1. Save each profile and profile photo. Open discovery without joining; neither should appear to the other.
-2. Both accept visibility. Confirm only the public fields and profile photo appear, with rounded corners/shadows.
+2. Both tap **Join discovery**. Confirm only the public fields and profile photo appear, with rounded corners/shadows.
 3. Check from the first account; no connection yet. Check back from the second; both Connections lists show the match after refresh.
 4. Use a third volunteer to test pass, and confirm it disappears from that account's deck without a match.
 5. Hide one account; refresh the other and confirm the connection disappears. Rejoin and refresh.

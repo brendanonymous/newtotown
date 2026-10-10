@@ -7,6 +7,9 @@ private final class TestOnboardingService: OnboardingService {
     enum Failure: Error { case unavailable }
     let id = UUID()
     var signedIn = false
+    var acceptedAgreement = true
+    var failAcceptance = false
+    var acceptances = 0
     var storedProfile: Profile?
     var sentEmails: [String] = []
     var failSend = false
@@ -31,6 +34,15 @@ private final class TestOnboardingService: OnboardingService {
         if failLoad { throw Failure.unavailable }
         return storedProfile
     }
+    func hasAcceptedAgreement(for userID: UUID) async throws -> Bool {
+        if failLoad { throw Failure.unavailable }
+        return acceptedAgreement
+    }
+    func acceptAgreement(for userID: UUID) async throws {
+        if failAcceptance { throw Failure.unavailable }
+        acceptedAgreement = true
+        acceptances += 1
+    }
     func save(_ profile: Profile) async throws {
         if failSave { throw Failure.unavailable }
         saves += 1
@@ -41,6 +53,7 @@ private final class TestOnboardingService: OnboardingService {
         deletions += 1
         signedIn = false
         storedProfile = nil
+        acceptedAgreement = false
     }
     func signOut() async throws { signedIn = false }
 }
@@ -161,4 +174,69 @@ private final class TestOnboardingService: OnboardingService {
     await model.deleteAccount()
     #expect(model.step == .email)
     #expect(service.deletions == 1)
+}
+
+@Test @MainActor func firstSignupRequiresPersistedAgreementBeforeProfileAndNeverRepeatsIt() async {
+    let service = TestOnboardingService()
+    service.acceptedAgreement = false
+    let model = OnboardingModel(service: service)
+    await model.requestCode(email: "alex@example.com")
+    await model.verify(code: "123456")
+    #expect(model.step == .introduction)
+    model.draft = validDraft()
+    await model.saveProfile()
+    #expect(service.saves == 0)
+    service.failAcceptance = true
+    await model.acceptIntroduction()
+    #expect(model.step == .introduction)
+    #expect(model.errorMessage != nil)
+    service.failAcceptance = false
+    await model.acceptIntroduction()
+    #expect(model.step == .profile)
+    #expect(model.draft.platonicAgreement)
+    #expect(service.acceptances == 1)
+    // Resume an accepted signup even if no profile was saved yet.
+    let resumed = OnboardingModel(service: service)
+    await resumed.restore()
+    #expect(resumed.step == .profile)
+    #expect(service.acceptances == 1)
+    resumed.draft = validDraft()
+    await resumed.saveProfile()
+    resumed.editProfile()
+    #expect(resumed.step == .profile)
+    await resumed.signOut()
+    await resumed.requestCode(email: "alex@example.com")
+    await resumed.verify(code: "123456")
+    #expect(resumed.step == .saved)
+    #expect(service.acceptances == 1)
+}
+
+@Test @MainActor func pendingIntroductionSurvivesRestartWithoutInventingConsent() async {
+    let service = TestOnboardingService()
+    service.signedIn = true
+    service.acceptedAgreement = false
+    let model = OnboardingModel(service: service)
+    await model.restore()
+    #expect(model.step == .introduction)
+    #expect(service.acceptances == 0)
+    await model.signOut()
+    #expect(model.step == .email)
+}
+
+@Test @MainActor func existingPilotAccountAcceptsOnceWithoutChangingSavedProfile() async throws {
+    let service = TestOnboardingService()
+    service.signedIn = true
+    service.acceptedAgreement = false
+    service.storedProfile = try Profile(id: service.id, draft: validDraft())
+    let original = service.storedProfile
+    let model = OnboardingModel(service: service)
+    await model.restore()
+    #expect(model.step == .introduction)
+    await model.acceptIntroduction()
+    #expect(model.step == .saved)
+    #expect(service.storedProfile == original)
+    #expect(service.saves == 0)
+    await model.restore()
+    #expect(model.step == .saved)
+    #expect(service.acceptances == 1)
 }
