@@ -48,14 +48,23 @@ struct PhotoSubmissionView: View {
                             ? "I agree to private storage of my profile photo and selfie for photo review. I can remove them or delete my account at any time."
                             : "I agree to private storage of my profile photo. I can remove my photos or delete my account at any time.", isOn: $model.hasConsent)
                             .disabled(isBusy)
-                        Button("Save photos") { Task { await model.save() } }
+                        Button("Save photo") {
+                            Task {
+                                await model.save()
+                                if model.isSaved && model.errorMessage == nil { dismiss() }
+                            }
+                        }
                             .buttonStyle(.borderedProminent)
                             .foregroundStyle(BrandTheme.background)
+                            .frame(maxWidth: .infinity)
                             .disabled(isBusy)
                         if model.isSaved {
                             Label(reviewRequired ? "Your photos are saved. Your selfie stays private." : "Your profile photo is saved.", systemImage: "checkmark.circle")
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: .infinity)
                         }
                         Button("Remove my photos", role: .destructive) { confirmsRemoval = true }
+                            .frame(maxWidth: .infinity)
                             .disabled(isBusy)
                     } else if !model.isBusy {
                         Button("Try loading again") { Task { await model.load() } }
@@ -100,8 +109,11 @@ struct PhotoSubmissionView: View {
         VStack(spacing: 8) {
             Text(title).font(.headline)
             if let data, let image = UIImage(data: data) {
-                Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 220)
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
                     .brandPhotoStyle()
+                    .frame(maxHeight: 220)
             } else {
                 Label("No photo yet", systemImage: "person.crop.rectangle")
                     .foregroundStyle(BrandTheme.secondaryInk)

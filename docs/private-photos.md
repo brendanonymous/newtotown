@@ -35,7 +35,7 @@ Swift tests cover consent, missing/invalid/oversized files, restore, replacement
 Device acceptance (selfie steps require review enabled in a development project; the pilot defaults off):
 
 1. Sign in and save a profile. Open **My photos**. Cancel the picker and camera; neither should upload anything.
-2. Choose a profile photo and capture a selfie. Check previews/orientation, centered photo controls, rounded corners, and subtle shadows. Confirm **Save photos** has readable light text, accept consent, and save.
+2. Choose a profile photo and capture a selfie. Check previews/orientation, centered photo controls, rounded corners, and subtle shadows. Confirm **Save photo** has readable light text and the save, saved-message, and removal controls are centered. Accept consent and save; the screen should close after a successful upload and stay open on failure.
 3. Close/reopen the screen and relaunch the app. Both private photos should restore.
 4. Replace one image, agree again, and save. Disconnect during upload; retry and verify that both files restore correctly.
 5. Remove both photos and reopen. Both should be absent. Re-upload with a disposable account, delete that account, and confirm both Storage files are removed.
