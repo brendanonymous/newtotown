@@ -69,9 +69,7 @@ struct DiscoveryView: View {
     }
 
     @ViewBuilder private func visibilityControls(_ feed: DiscoveryFeed) -> some View {
-        if feed.visible {
-            Button("Hide my profile") { Task { await model.setVisible(false) } }
-        } else if feed.state != .restricted {
+        if !feed.visible && feed.state != .restricted {
             Text("Meet local friends.").font(.system(.title, design: .serif))
             Text("Joining shows your profile and photo to other members in Scottsdale. You can hide it at any time.")
                 .foregroundStyle(BrandTheme.secondaryInk)

@@ -6,10 +6,11 @@ Save profile details and a profile photo, then open **Discover local friends**. 
 
 Tap **check** to connect or **X** to pass. A connection appears only when both people choose connect. Decisions are immutable in this pilot; there is no undo or unmatch yet. Connections are derived from the two decisions, so simultaneous checks cannot create duplicate matches. Repeating the same decision after a lost response is safe.
 
-**Hide my profile** removes the person from new discovery and connections while hidden. **Block** removes both directions from discovery and connections, even if already matched. Blocking has no client undo in this increment. Refresh reloads current eligibility and photo links; returning from the background also refreshes.
+**Profile → Settings → Hide my profile** removes the person from new discovery and connections while hidden. **Block** removes both directions from discovery and connections, even if already matched. Blocking has no client undo in this increment. Refresh reloads current eligibility and photo links; returning from the background also refreshes.
 
 ## Structure
 
+- `App/Features/Profile`: saved-profile home with Profile/Settings tabs; visibility, sign-out, and deletion controls live in Settings.
 - `App/Features/Discovery`: screen and shared profile card; photos use the existing `brandPhotoStyle()`.
 - `NewToTownCore/Discovery`: public projection, feed, service interface, and observable workflow state.
 - `NewToTownSupabase/Discovery`: typed calls through the existing shared SDK client/session.
@@ -40,7 +41,7 @@ Phone acceptance with two real volunteer accounts:
 2. Both tap **Join discovery**. Confirm only the public fields and profile photo appear, with rounded corners/shadows.
 3. Check from the first account; no connection yet. Check back from the second; both Connections lists show the match after refresh.
 4. Use a third volunteer to test pass, and confirm it disappears from that account's deck without a match.
-5. Hide one account; refresh the other and confirm the connection disappears. Rejoin and refresh.
+5. Open **Settings** on one account and tap **Hide my profile**; refresh the other and confirm the connection disappears. Rejoin and refresh.
 6. Block a connection and verify both directions disappear. Disconnect during a decision, then refresh to reconcile the saved result.
 7. Wait over a minute before loading an unviewed photo; Refresh must recover expired links. Delete a disposable account and confirm profile/photo/discovery data disappear.
 
