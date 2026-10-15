@@ -31,6 +31,20 @@ public final class SupabaseOnboardingService: OnboardingService {
         return profiles.first
     }
 
+    public func hasAcceptedAgreement(for userID: UUID) async throws -> Bool {
+        let agreements: [AccountAgreement] = try await client.from("account_agreements")
+            .select("user_id,version").eq("user_id", value: userID)
+            .eq("version", value: "onboarding-v1").limit(1).execute().value
+        return !agreements.isEmpty
+    }
+
+    public func acceptAgreement(for userID: UUID) async throws {
+        try await client.from("account_agreements").upsert(
+            AccountAgreement(userID: userID, version: "onboarding-v1"),
+            onConflict: "user_id", ignoreDuplicates: true
+        ).execute()
+    }
+
     public func save(_ profile: Profile) async throws {
         try await client.from("profiles").upsert(profile, onConflict: "id").execute()
     }
@@ -50,5 +64,14 @@ public final class SupabaseOnboardingService: OnboardingService {
             // An offline revocation failure must not leave private details on screen.
             if client.auth.currentSession != nil { throw error }
         }
+    }
+}
+
+private struct AccountAgreement: Codable {
+    let userID: UUID
+    let version: String
+    enum CodingKeys: String, CodingKey {
+        case userID = "user_id"
+        case version
     }
 }

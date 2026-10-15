@@ -2,3 +2,6 @@
 # inside the handler before using server-side administrative credentials.
 [functions.delete-account]
 verify_jwt = true
+
+[functions.discovery]
+verify_jwt = true

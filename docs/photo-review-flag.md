@@ -6,8 +6,8 @@
 
 | Mode | Photo screen | Discovery eligibility prerequisite |
 | --- | --- | --- |
-| Off | Profile photo and consent; no selfie capture | Saved profile and profile photo |
-| On | Profile photo, private selfie, and consent | Both exact photo versions approved by a trusted reviewer |
+| Off | Profile photo; no selfie capture | Saved profile and profile photo |
+| On | Profile photo and private selfie | Both exact photo versions approved by a trusted reviewer |
 | Missing/unavailable | Loading/retry; uploads stop | Ineligible when the configuration row is missing |
 
 Suspended or rejected profiles are ineligible in both modes. Neither mode grants access to another user's photos. There are no verified badges. Selfie capture and manual photo comparison cannot establish legal identity, age, intentions, or sexual orientation.
@@ -15,8 +15,8 @@ Suspended or rejected profiles are ineligible in both modes. Neither mode grants
 ## Code boundaries
 
 - `NewToTownCore/Photos/PhotoRequirements.swift`: typed requirements, independent of SwiftUI and Supabase.
-- `PhotoSubmissionModel`: refreshes requirements on load/save, validates required images, and clears consent when the mode changes while open. A changed mode requires reviewing the new agreement before retrying.
-- `PhotoSubmissionView`: renders controls and consent copy for the current requirements.
+- `PhotoSubmissionModel`: refreshes requirements on load/save, validates required images, and refreshes requirements when the mode changes while open. A changed mode requires checking the updated photo requirements before retrying; consent remains the account-level agreement.
+- `PhotoSubmissionView`: renders controls for the current requirements; agreement copy lives in first-time onboarding.
 - `SupabasePhotoService`: reads the server flag, revalidates immediately before uploads, and uploads no selfie when review is off.
 - `supabase/migrations/*_photo_review_flag.sql`: configuration permissions, trusted moderation state, and a self-only eligibility function.
 
@@ -24,11 +24,11 @@ The existing photo-service boundary is reused; no global mutable flag store, env
 
 ## Server eligibility
 
-`public.is_own_profile_discoverable()` is a security-invoker function with no user-ID parameter. It evaluates the caller's profile through existing RLS. `profile_access` is owner-readable and client-read-only; operators own suspension, rejection, and approval fields. No access row means no approval and no moderation restriction.
+`public.is_own_profile_discoverable()` is a security-invoker function with no user-ID parameter; it checks photo eligibility separately from the separate discovery visibility choice. It evaluates the caller's profile through existing RLS. `profile_access` is owner-readable and client-read-only; operators own suspension, rejection, and approval fields. No access row means no approval and no moderation restriction.
 
 An approval records both Storage object IDs and `updated_at` values. Replacing either file makes the recorded version stale; removing/recreating a file cannot reuse the old object ID. Review-off mode does not create an approval. Turning review on therefore makes previously unreviewed users ineligible until reviewed. Turning it off never bypasses suspension or rejection.
 
-**Discovery is not implemented by this PR.** The function is the tested eligibility primitive for the next server-side discovery endpoint; that endpoint must enforce eligibility for both the caller and candidate profiles. It must also enforce pairwise blocks when blocking ships. Do not expose profile rows or the private bucket to implement discovery. Publishing profile photos needs a separate authorized delivery path and updated consent.
+The [discovery feature](discovery.md) now reuses `private.photo_eligibility` behind this self-only function. Server discovery enforces eligibility for both caller and candidates, visibility choice, and pairwise blocks. Profile photos are delivered through authorized short-lived links; private profile rows and the bucket remain owner-only.
 
 ## Operation
 
@@ -49,9 +49,9 @@ Existing selfies remain private until users remove photos or delete their accoun
 
 ## Validation
 
-Swift tests cover both modes, profile-only restore, missing/invalid/oversized photos, unavailable flags, and consent renewal when enabling or disabling review during a session. PostgreSQL tests cover client-write denial, anonymous/cross-user isolation, eligibility in both modes, suspension/rejection, stale approvals for either image, recreated objects, missing configuration, and deleted accounts.
+Swift tests cover both modes, profile-only restore, missing/invalid/oversized photos, unavailable flags, and requirement refresh when enabling or disabling review during a session. PostgreSQL tests cover client-write denial, anonymous/cross-user isolation, eligibility in both modes, suspension/rejection, stale approvals for either image, recreated objects, missing configuration, and deleted accounts.
 
-Phone checks: with review off, open **My photos**, confirm there is no selfie control, save only a profile photo, and reopen to restore it. Remove photos and confirm an old selfie is also removed. In a development project, enable review while the screen is open, press save, and confirm the updated requirements require renewed consent and a selfie. No successful upload should display a verified badge.
+Phone checks: with review off, open **My photos**, confirm there is no selfie control, save only a profile photo, and reopen to restore it. Remove photos and confirm an old selfie is also removed. In a development project, enable review while the screen is open, press save, and confirm the updated requirements require a selfie without another agreement. No successful upload should display a verified badge.
 
 ## Hosted status — October 8, 2026 (Arizona)
 

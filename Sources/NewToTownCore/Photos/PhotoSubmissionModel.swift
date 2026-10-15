@@ -10,7 +10,6 @@ public final class PhotoSubmissionModel {
     public private(set) var isLoaded = false
     public private(set) var isSaved = false
     public private(set) var errorMessage: String?
-    public var hasConsent = false
 
     private let service: any PhotoService
     public init(service: any PhotoService) { self.service = service }
@@ -48,10 +47,6 @@ public final class PhotoSubmissionModel {
     public func save() async {
         guard !isBusy, isLoaded else { return }
         errorMessage = nil
-        guard hasConsent else {
-            errorMessage = "Please agree to private photo storage before uploading."
-            return
-        }
         isBusy = true
         defer { isBusy = false }
         do {
@@ -61,8 +56,7 @@ public final class PhotoSubmissionModel {
             self.requirements = requirements
             isSaved = false
             guard !requirementsChanged else {
-                hasConsent = false
-                errorMessage = "Photo requirements changed. Review the updated agreement and try again."
+                errorMessage = "Photo requirements changed. Check the required photos and try again."
                 return
             }
             try photos.validate(requirements: requirements)
@@ -72,7 +66,6 @@ public final class PhotoSubmissionModel {
             )
             try await service.save(submission)
             isSaved = true
-            hasConsent = false
         } catch let error as PhotoValidationError {
             errorMessage = error.localizedDescription
         } catch {
@@ -90,7 +83,6 @@ public final class PhotoSubmissionModel {
             try await service.remove()
             photos = PrivatePhotos()
             isSaved = false
-            hasConsent = false
         } catch {
             errorMessage = "We couldn’t confirm photo removal. Try again to remove any remaining files."
         }
@@ -98,7 +90,6 @@ public final class PhotoSubmissionModel {
 
     private func changedSelection() {
         isSaved = false
-        hasConsent = false
         errorMessage = nil
     }
 }

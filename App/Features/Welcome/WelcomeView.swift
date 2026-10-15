@@ -2,18 +2,11 @@ import NewToTownCore
 import SwiftUI
 
 struct WelcomeView: View {
-    let onboardingModel: OnboardingModel?
-    var photoService: (any PhotoService)? = nil
+    let onJoin: (() -> Void)?
 
-    @State private var showingSignup = false
     var body: some View {
         ScrollView {
             VStack(spacing: 36) {
-                Text("NEWTOTOWN")
-                    .font(.caption.weight(.semibold))
-                    .tracking(4)
-                    .padding(.top, 24)
-
                 BrandMark()
                     .padding(.top, 28)
 
@@ -37,7 +30,7 @@ struct WelcomeView: View {
 
                 VStack(spacing: 16) {
                     Button {
-                        showingSignup = true
+                        onJoin?()
                     } label: {
                         Text("Join or sign in")
                             .font(.body.weight(.semibold))
@@ -46,6 +39,7 @@ struct WelcomeView: View {
                             .foregroundStyle(BrandTheme.background)
                             .background(BrandTheme.ink, in: RoundedRectangle(cornerRadius: 18))
                     }
+                    .disabled(onJoin == nil)
                     NavigationLink {
                         PilotOverviewView()
                     } label: {
@@ -73,10 +67,10 @@ struct WelcomeView: View {
         }
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
-        .sheet(isPresented: $showingSignup) { OnboardingView(model: onboardingModel, photoService: photoService) }
+        .toolbar { BrandNavigationLogo() }
     }
 }
 
 #Preview {
-    NavigationStack { WelcomeView(onboardingModel: nil) }
+    NavigationStack { WelcomeView(onJoin: {}) }
 }

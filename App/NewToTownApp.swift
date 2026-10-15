@@ -6,6 +6,7 @@ import SwiftUI
 struct NewToTownApp: App {
     @State private var onboardingModel: OnboardingModel?
     private let photoService: (any PhotoService)?
+    private let discoveryService: (any DiscoveryService)?
 
     init() {
         // Construct the backend once at the app boundary; feature views receive state.
@@ -18,12 +19,17 @@ struct NewToTownApp: App {
         }
         _onboardingModel = State(initialValue: services.map { OnboardingModel(service: $0.onboarding) })
         photoService = services?.photos
+        discoveryService = services?.discovery
     }
 
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                WelcomeView(onboardingModel: onboardingModel, photoService: photoService)
+            Group {
+                if let onboardingModel {
+                    AppEntryView(model: onboardingModel, photoService: photoService, discoveryService: discoveryService)
+                } else {
+                    NavigationStack { WelcomeView(onJoin: nil) }
+                }
             }
             .tint(BrandTheme.ink)
             .preferredColorScheme(.light)

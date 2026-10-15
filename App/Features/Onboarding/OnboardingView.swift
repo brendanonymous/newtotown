@@ -4,11 +4,13 @@ import SwiftUI
 struct OnboardingView: View {
     let model: OnboardingModel?
     let photoService: (any PhotoService)?
+    let discoveryService: (any DiscoveryService)?
+    let close: () -> Void
 
     var body: some View {
         NavigationStack {
             if let model {
-                OnboardingContent(model: model, photoService: photoService)
+                OnboardingContent(model: model, photoService: photoService, discoveryService: discoveryService, close: close)
             } else {
                 ContentUnavailableView("Signup is temporarily unavailable", systemImage: "wrench.and.screwdriver", description: Text("Please try again later. You can still explore the welcome screen."))
             }
@@ -20,13 +22,49 @@ struct OnboardingView: View {
 private struct OnboardingContent: View {
     @Bindable var model: OnboardingModel
     let photoService: (any PhotoService)?
-    @Environment(\.dismiss) private var dismiss
+    let discoveryService: (any DiscoveryService)?
+    let close: () -> Void
     @State private var email = ""
     @State private var code = ""
     @State private var showsDeletionConfirmation = false
-    @State private var showsPhotos = false
 
     var body: some View {
+        Group {
+            if model.step == .saved {
+                ProfileHomeView(model: model, photoService: photoService, discoveryService: discoveryService,
+                    signOut: signOut, deleteAccount: { showsDeletionConfirmation = true })
+            } else {
+                signupContent
+            }
+        }
+        .scrollDismissesKeyboard(.interactively)
+        .foregroundStyle(BrandTheme.ink)
+        .background(BrandTheme.background)
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            BrandNavigationLogo()
+            if model.step == .email || model.step == .code {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close", action: close).disabled(model.isBusy)
+                }
+            }
+        }
+        .alert("Delete your account?", isPresented: $showsDeletionConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete account", role: .destructive) {
+                Task {
+                    await model.deleteAccount()
+                    if model.step == .email { clearSignInFields() }
+                }
+            }
+        } message: {
+            Text("This permanently deletes your account and private profile. You’ll need to create a new account to use newtotown again.")
+        }
+        .interactiveDismissDisabled(model.isBusy)
+    }
+
+    private var signupContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 switch model.step {
@@ -64,6 +102,11 @@ private struct OnboardingContent: View {
                         model.changeEmail()
                     }
                     .disabled(model.isBusy)
+                case .introduction:
+                    FirstSignupIntroduction(isBusy: model.isBusy) {
+                        await model.acceptIntroduction()
+                    }
+                    accountActions
                 case .profile:
                     title("A little about you.", subtitle: "Give a future friend something to connect with.")
                     ProfileForm(draft: $model.draft)
@@ -71,19 +114,7 @@ private struct OnboardingContent: View {
                     primary("Save my profile") { await model.saveProfile() }
                     accountActions
                 case .saved:
-                    title("You’re off to\na good start.", subtitle: "Your profile details are saved, \(model.draft.firstName).")
-                    Label("Scottsdale", systemImage: "mappin")
-                    Text(model.draft.jobTitle).font(.headline)
-                    Text(model.draft.goal)
-                    Text("Add your profile photo to get ready. Your profile stays private until discovery is available.")
-                        .font(.callout)
-                        .foregroundStyle(BrandTheme.secondaryInk)
-                    if photoService != nil {
-                        Button("My photos") { showsPhotos = true }.disabled(model.isBusy)
-                    }
-                    Button("Edit profile") { model.editProfile() }
-                        .disabled(model.isBusy)
-                    accountActions
+                    EmptyView() // The saved account uses the profile home tabs.
                 case .restoreFailed:
                     title("Let’s reconnect.", subtitle: "We haven’t changed your saved profile.")
                     primary("Try again") { await model.restore() }
@@ -102,48 +133,11 @@ private struct OnboardingContent: View {
             .frame(maxWidth: 520)
             .frame(maxWidth: .infinity)
         }
-        .scrollDismissesKeyboard(.interactively)
-        .foregroundStyle(BrandTheme.ink)
-        .background(BrandTheme.background)
-        .navigationTitle("newtotown")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Close") { dismiss() }.disabled(model.isBusy)
-            }
-        }
-        .sheet(isPresented: $showsPhotos) {
-            if let photoService { PhotoSubmissionView(service: photoService) }
-        }
-        .alert("Delete your account?", isPresented: $showsDeletionConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete account", role: .destructive) {
-                Task {
-                    await model.deleteAccount()
-                    if model.step == .email {
-                        email = ""
-                        code = ""
-                    }
-                }
-            }
-        } message: {
-            Text("This permanently deletes your account and private profile. You’ll need to create a new account to use newtotown again.")
-        }
-        .interactiveDismissDisabled(model.isBusy)
-        .task { await model.restore() }
     }
 
     private var accountActions: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Button("Sign out") {
-                Task {
-                    await model.signOut()
-                    if model.step == .email {
-                        email = ""
-                        code = ""
-                    }
-                }
-            }
+            Button("Sign out") { Task { await signOut() } }
             Button("Delete account", role: .destructive) {
                 showsDeletionConfirmation = true
             }
@@ -151,6 +145,16 @@ private struct OnboardingContent: View {
             .disabled(!model.canDeleteAccount)
         }
         .disabled(model.isBusy)
+    }
+
+    private func signOut() async {
+        await model.signOut()
+        if model.step == .email { clearSignInFields() }
+    }
+
+    private func clearSignInFields() {
+        email = ""
+        code = ""
     }
 
     private func title(_ title: String, subtitle: String) -> some View {

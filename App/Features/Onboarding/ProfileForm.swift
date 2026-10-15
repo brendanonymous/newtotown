@@ -23,10 +23,6 @@ struct ProfileForm: View {
                 .font(.footnote)
                 .foregroundStyle(BrandTheme.secondaryInk)
             Label("Scottsdale, Arizona", systemImage: "mappin")
-            Toggle(isOn: $draft.platonicAgreement) {
-                Text("I’m at least 18 years old and I’m here for platonic friendship. No dating, sexual solicitation, or harassment.")
-                    .font(.callout)
-            }
         }
     }
 
