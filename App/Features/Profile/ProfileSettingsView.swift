@@ -2,6 +2,7 @@ import NewToTownCore
 import SwiftUI
 
 struct ProfileSettingsView: View {
+    let personalInfoService: (any PersonalInfoService)?
     let isSelected: Bool
     let isAccountBusy: Bool
     let accountError: String?
@@ -10,14 +11,22 @@ struct ProfileSettingsView: View {
     @State private var discovery: DiscoveryModel?
     @Environment(\.scenePhase) private var scenePhase
 
-    init(service: (any DiscoveryService)?, isSelected: Bool, isAccountBusy: Bool, accountError: String?,
-         signOut: @escaping @MainActor () async -> Void, deleteAccount: @escaping () -> Void) {
+    init(
+        discoveryService: (any DiscoveryService)?,
+        personalInfoService: (any PersonalInfoService)?,
+        isSelected: Bool,
+        isAccountBusy: Bool,
+        accountError: String?,
+        signOut: @escaping @MainActor () async -> Void,
+        deleteAccount: @escaping () -> Void
+    ) {
+        self.personalInfoService = personalInfoService
         self.isSelected = isSelected
         self.isAccountBusy = isAccountBusy
         self.accountError = accountError
         self.signOut = signOut
         self.deleteAccount = deleteAccount
-        _discovery = State(initialValue: service.map { DiscoveryModel(service: $0) })
+        _discovery = State(initialValue: discoveryService.map { DiscoveryModel(service: $0) })
     }
 
     var body: some View {
@@ -29,6 +38,21 @@ struct ProfileSettingsView: View {
                     Divider()
                 }
                 Text("Account").font(.headline)
+                if let personalInfoService {
+                    NavigationLink {
+                        PersonalInfoView(service: personalInfoService)
+                    } label: {
+                        HStack {
+                            Label("Personal info", systemImage: "person.text.rectangle")
+                            Spacer()
+                            Image(systemName: "chevron.right").font(.caption)
+                                .foregroundStyle(BrandTheme.secondaryInk)
+                        }
+                        .frame(minHeight: 44)
+                        .contentShape(Rectangle())
+                    }
+                    .accessibilityIdentifier("settings.personalInfo")
+                }
                 Button("Sign out") { Task { await signOut() } }
                 Button("Delete account", role: .destructive, action: deleteAccount)
                     .accessibilityIdentifier("account.delete")

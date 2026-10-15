@@ -4,6 +4,7 @@ import SwiftUI
 /// Session routing lives at the window root, rather than inside a signup sheet.
 struct AppEntryView: View {
     @Bindable var model: OnboardingModel
+    let personalInfoService: (any PersonalInfoService)?
     let photoService: (any PhotoService)?
     let discoveryService: (any DiscoveryService)?
     @State private var showsSignup = false
@@ -11,7 +12,12 @@ struct AppEntryView: View {
     var body: some View {
         Group {
             if showsSignup || model.isSignedIn || model.step == .loading || model.step == .restoreFailed {
-                OnboardingView(model: model, photoService: photoService, discoveryService: discoveryService) {
+                OnboardingView(
+                    model: model,
+                    personalInfoService: personalInfoService,
+                    photoService: photoService,
+                    discoveryService: discoveryService
+                ) {
                     model.changeEmail()
                     showsSignup = false
                 }
