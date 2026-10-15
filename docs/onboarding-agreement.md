@@ -10,7 +10,7 @@ Existing pilot accounts without this consolidated receipt see it once on their n
 
 - `App/Features/Onboarding/FirstSignupIntroduction.swift`: exact displayed terms, page navigation, and acceptance action.
 - `NewToTownCore/Onboarding`: durable-state check and onboarding transitions behind `OnboardingService`.
-- `NewToTownSupabase/SupabaseOnboardingService.swift`: owner-scoped receipt read and idempotent insert.
+- `NewToTownSupabase/Onboarding/SupabaseOnboardingService.swift`: owner-scoped receipt read and idempotent insert.
 - `supabase/migrations/*_account_agreements.sql`: owner-only RLS, fixed version, immutable server timestamp, and photo policy updates.
 
 The receipt contains only user ID, `onboarding-v1`, and server acceptance time. Clients cannot change its timestamp, delete it, or accept on another account's behalf. New photo uploads require this receipt (or the earlier photo consent) and an existing profile. Account-wide acceptance does not publish a profile: **Join discovery** remains an explicit choice, with **Hide my profile** available afterwards. Camera permissions still come from iOS.

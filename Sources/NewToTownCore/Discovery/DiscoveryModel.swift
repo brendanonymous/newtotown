@@ -7,10 +7,17 @@ public final class DiscoveryModel {
     public private(set) var isBusy = false
     public private(set) var errorMessage: String?
     private let service: any DiscoveryService
+    private var refreshWaiters: [CheckedContinuation<Void, Never>] = []
 
     public init(service: any DiscoveryService) { self.service = service }
 
     public func load() async {
+        // A returning tab may refresh before its cancelled request has unwound.
+        // Wait for the current operation instead of silently dropping the refresh.
+        while isBusy && !Task.isCancelled {
+            await withCheckedContinuation { refreshWaiters.append($0) }
+        }
+        guard !Task.isCancelled else { return }
         await perform { try await self.service.load() }
     }
 
@@ -28,17 +35,25 @@ public final class DiscoveryModel {
     }
 
     private func perform(_ action: () async throws -> DiscoveryFeed) async {
-        guard !isBusy else { return }
+        guard !isBusy, !Task.isCancelled else { return }
         isBusy = true
         errorMessage = nil
-        defer { isBusy = false }
+        defer {
+            isBusy = false
+            let waiters = refreshWaiters
+            refreshWaiters.removeAll()
+            for waiter in waiters { waiter.resume() }
+        }
         do {
-            feed = try await action()
+            let updated = try await action()
+            feed = Task.isCancelled ? nil : updated
         } catch {
             // Discard cached people on uncertain authorization/visibility changes.
             // Decisions are idempotent; refresh safely restores the server's result.
             feed = nil
-            errorMessage = "We couldn’t update discovery. Refresh to check your connections and try again."
+            if !Task.isCancelled {
+                errorMessage = "We couldn’t update discovery. Refresh to check your connections and try again."
+            }
         }
     }
 }

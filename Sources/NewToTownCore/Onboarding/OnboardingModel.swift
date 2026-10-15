@@ -31,7 +31,7 @@ public final class OnboardingModel {
         defer { isBusy = false }
         do {
             guard let id = try await service.currentUserID() else {
-                step = .email
+                clearAccount()
                 return
             }
             userID = id

@@ -7,8 +7,10 @@ import Testing
     var feed = DiscoveryFeed(state: .hidden, visible: false)
     var fails = false
     var visibilityCalls = 0
+    var onLoad: (@MainActor () async throws -> DiscoveryFeed)?
     var decisions: [UUID] = []
     func load() async throws -> DiscoveryFeed {
+        if let onLoad { return try await onLoad() }
         if fails { throw Failure.unavailable }
         return feed
     }
@@ -85,4 +87,43 @@ private let localFriend = DiscoveryProfile(id: UUID(), firstName: "Alex", jobTit
     await model.load()
     await model.block(localFriend.id)
     #expect(model.feed?.matches.isEmpty == true)
+}
+
+@Test @MainActor func returningToDiscoveryWaitsForCancelledLoadAndRefreshes() async {
+    let service = TestDiscoveryService()
+    let model = DiscoveryModel(service: service)
+    let firstStarted = AsyncStream<Void>.makeStream()
+    let secondStarted = AsyncStream<Void>.makeStream()
+    var firstEvents = firstStarted.stream.makeAsyncIterator()
+    var secondEvents = secondStarted.stream.makeAsyncIterator()
+    var firstResponse: CheckedContinuation<DiscoveryFeed, any Error>?
+    var loads = 0
+    service.onLoad = {
+        loads += 1
+        if loads == 1 {
+            return try await withCheckedThrowingContinuation { response in
+                firstResponse = response
+                firstStarted.continuation.yield(())
+            }
+        }
+        return DiscoveryFeed(state: .ready, visible: true)
+    }
+    let cancelled = Task { await model.load() }
+    await firstEvents.next()
+    cancelled.cancel()
+    let refreshed = Task {
+        secondStarted.continuation.yield(())
+        await model.load()
+    }
+    // The second task has reached its first suspension (or incorrectly returned).
+    await secondEvents.next()
+    firstResponse?.resume(throwing: CancellationError())
+    await cancelled.value
+    await refreshed.value
+    #expect(loads == 2)
+    #expect(model.feed?.state == .ready)
+    #expect(model.errorMessage == nil)
+    #expect(!model.isBusy)
+    firstStarted.continuation.finish()
+    secondStarted.continuation.finish()
 }

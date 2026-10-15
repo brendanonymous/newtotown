@@ -6,7 +6,7 @@ Use native SwiftUI for this iPhone-only pilot. Group screens and their state by 
 
 `NewToTownCore` contains profile rules, onboarding/photo/discovery models, typed photo requirements, and service interfaces. It has no SwiftUI or Supabase dependency. `NewToTownSupabase` depends on the core and the official SDK; it contains the concrete service and public connection configuration. Configuration tests reject malformed endpoints and privileged-key formats, but server authorization still relies on RLS.
 
-`NewToTownApp` reads configuration and owns the onboarding model. `AppEntryView` restores the session and routes welcome/signup/saved-account screens at the window root; the signed-in app is not presented inside a signup sheet. Views receive that model instead of creating backend clients. The welcome preview passes no model and makes no backend connection. The dependency direction is `App → NewToTownSupabase → NewToTownCore`, with views also importing the core directly. Feature screens own transient photo/discovery state. Saved accounts render `ProfileHomeView` with native Profile/Discovery/Settings tabs; `ProfileSettingsView` owns its visibility model, while account mutations remain in onboarding.
+`NewToTownApp` reads configuration and owns the onboarding model. `AppEntryView` restores the session and routes welcome/signup/saved-account screens at the window root; the signed-in app is not presented inside a signup sheet. Views receive that model instead of creating backend clients. The welcome preview supplies only a navigation callback and makes no backend connection. The dependency direction is `App → NewToTownSupabase → NewToTownCore`, with views also importing the core directly. Feature screens own transient photo/discovery state. Saved accounts render `ProfileHomeView` with native Profile/Discovery/Settings tabs; `ProfileSettingsView` owns its visibility model, while account mutations remain in onboarding.
 
 Supabase calls live in the onboarding, photo, and discovery services, behind their core interfaces. `SupabaseServices` shares one client/session between them. `OnboardingModel` owns transitions, loading, and retryable errors; SwiftUI views render it. Views do not construct database queries. `FirstSignupIntroduction` presents the one-time slides; `OnboardingModel` advances only after the account-level acceptance is persisted. See [onboarding agreement](onboarding-agreement.md). Add abstractions when a real integration or test requires them; avoid speculative base classes and generic repository layers.
 
@@ -27,3 +27,15 @@ The supplied reference informs the palette, spacing, and restrained typography. 
 ## Review
 
 Keep PRs focused and document user-visible behavior, validation, and limitations. Test decisions and permission boundaries when implemented. Do not add snapshot tests that simply duplicate static layout. Never merge without owner review.
+
+## Directory map
+
+- `App/Features/<feature>`: SwiftUI screens and platform bridges.
+- `App/DesignSystem` and `App/Assets.xcassets`: shared visual components and artwork.
+- `Sources/NewToTownCore/<feature>`: platform-independent rules, state models, and service contracts.
+- `Sources/NewToTownSupabase/<feature>`: SDK adapters; shared configuration/client construction stays at the package root.
+- `Tests/<module>/<feature>` and `UITests`: core/integration-boundary tests and iPhone UI journeys.
+- `supabase/functions`, `supabase/migrations`, and `supabase/tests`: server handlers, versioned schema, and policy checks.
+- `Configuration`, `scripts`, and `docs`: build settings, asset tooling, and operational documentation.
+
+A missing session clears the account ID, draft, and agreement state before returning to login. Discovery refreshes wait for an in-flight request to finish cancellation rather than dropping the new tab's refresh. Regression tests cover both lifecycle rules.

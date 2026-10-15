@@ -244,3 +244,22 @@ private final class TestOnboardingService: OnboardingService {
     #expect(model.step == .saved)
     #expect(service.acceptances == 1)
 }
+
+@Test @MainActor func missingSessionClearsPreviousAccountAndDraftBeforeReturningToEmail() async throws {
+    let service = TestOnboardingService()
+    service.signedIn = true
+    service.storedProfile = try Profile(id: service.id, draft: validDraft())
+    let model = OnboardingModel(service: service)
+    await model.restore()
+    #expect(model.isSignedIn)
+    #expect(model.step == .saved)
+    // The session may disappear between a failed restore and its retry.
+    service.signedIn = false
+    await model.restore()
+    #expect(model.step == .email)
+    #expect(!model.isSignedIn)
+    #expect(!model.canDeleteAccount)
+    #expect(model.draft == ProfileDraft())
+    model.editProfile()
+    #expect(model.step == .email)
+}
