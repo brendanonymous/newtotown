@@ -12,17 +12,28 @@ public final class PersonalInfoModel {
     public func load() async {
         guard !isBusy, !Task.isCancelled else { return }
         isBusy = true
-        info = nil
         errorMessage = nil
         defer { isBusy = false }
         do {
             let loaded = try await service.load()
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else {
+                finishCancellation()
+                return
+            }
             info = loaded
         } catch {
-            if !Task.isCancelled {
+            if Task.isCancelled {
+                finishCancellation()
+            } else {
+                info = nil
                 errorMessage = "We couldn’t load your personal info. Check your connection and try again."
             }
+        }
+    }
+
+    private func finishCancellation() {
+        if info == nil {
+            errorMessage = "Loading was interrupted. Pull down to refresh or try again."
         }
     }
 }

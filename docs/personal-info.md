@@ -11,7 +11,7 @@ The screen fetches the current user through `client.auth.user()` on entry and wh
 - `Sources/NewToTownSupabase/Account`: current-user Auth adapter.
 - `Tests/NewToTownCoreTests/Account`: missing fields, reload failure/retry, and cancellation coverage.
 
-Views do not construct backend clients. The settings screen receives a service interface; its destination owns transient contact state. Reload clears previously displayed values before fetching. Failed/cancelled requests do not publish stale details. No account editing or phone verification is introduced.
+Views do not construct backend clients. The settings screen receives a service interface; its destination owns transient contact state. Reload keeps the current details visible while fetching. A failed request clears them and offers retry. Cancellation does not publish the interrupted response; it keeps previously loaded details, or offers retry if nothing has loaded yet. No account editing or phone verification is introduced.
 
 ## Phone acceptance
 
@@ -25,3 +25,5 @@ Views do not construct backend clients. The settings screen receives a service i
 Discovery (including Connections), Settings visibility, and Personal info use native iOS pull-to-refresh. Vertical bouncing stays enabled for short content and empty states. Each gesture awaits the existing model’s load operation; errors keep a Try again action. No custom gesture recognizer or additional data layer is introduced.
 
 On an iPhone, pull down from the top of each screen and check that the refresh indicator ends when loading completes. Repeat on an empty discovery feed and on Personal info with the network disconnected, then reconnect and retry.
+
+Cancelled read-only refreshes retain the last loaded Discovery feed or contact details. An interrupted initial load offers retry instead of an empty screen. Discovery mutations still discard cached people when their result is uncertain. Regression tests cover cancellation reported by throwing and by a late response, plus a successful subsequent refresh.

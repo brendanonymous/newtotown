@@ -57,7 +57,41 @@ import Testing
     response?.resume(returning: service.value)
     await task.value
     #expect(model.info == nil)
+    #expect(model.errorMessage != nil)
+    #expect(!model.isBusy)
+    started.continuation.finish()
+}
+
+@Test(arguments: [false, true]) @MainActor
+func cancelledPersonalInfoRefreshKeepsLoadedContactsAndCanRetry(throwsCancellation: Bool) async {
+    let service = TestPersonalInfoService()
+    let model = PersonalInfoModel(service: service)
+    await model.load()
+    let previous = model.info
+    let started = AsyncStream<Void>.makeStream()
+    var events = started.stream.makeAsyncIterator()
+    var response: CheckedContinuation<PersonalInfo, any Error>?
+    service.onLoad = {
+        try await withCheckedThrowingContinuation {
+            response = $0
+            started.continuation.yield(())
+        }
+    }
+    let refresh = Task { await model.load() }
+    await events.next()
+    refresh.cancel()
+    if throwsCancellation {
+        response?.resume(throwing: CancellationError())
+    } else {
+        response?.resume(returning: PersonalInfo(email: "discarded@example.com", phone: nil))
+    }
+    await refresh.value
+    #expect(model.info == previous)
     #expect(model.errorMessage == nil)
     #expect(!model.isBusy)
+    service.onLoad = nil
+    service.value = PersonalInfo(email: "updated@example.com", phone: nil)
+    await model.load()
+    #expect(model.info == service.value)
     started.continuation.finish()
 }

@@ -7,6 +7,7 @@ import Testing
     var feed = DiscoveryFeed(state: .hidden, visible: false)
     var fails = false
     var visibilityCalls = 0
+    var onVisibility: (@MainActor () async throws -> DiscoveryFeed)?
     var onLoad: (@MainActor () async throws -> DiscoveryFeed)?
     var decisions: [UUID] = []
     func load() async throws -> DiscoveryFeed {
@@ -16,6 +17,7 @@ import Testing
     }
     func setVisible(_ visible: Bool) async throws -> DiscoveryFeed {
         visibilityCalls += 1
+        if let onVisibility { return try await onVisibility() }
         if fails { throw Failure.unavailable }
         feed = DiscoveryFeed(state: visible ? .ready : .hidden, visible: visible)
         return feed
@@ -126,4 +128,74 @@ private let localFriend = DiscoveryProfile(id: UUID(), firstName: "Alex", jobTit
     #expect(!model.isBusy)
     firstStarted.continuation.finish()
     secondStarted.continuation.finish()
+}
+
+@Test(arguments: [false, true]) @MainActor
+func cancelledDiscoveryRefreshKeepsLoadedFeedAndCanRefreshAgain(throwsCancellation: Bool) async {
+    let service = TestDiscoveryService()
+    service.feed = DiscoveryFeed(state: .ready, visible: true, candidates: [localFriend])
+    let model = DiscoveryModel(service: service)
+    await model.load()
+    let previous = model.feed
+    let started = AsyncStream<Void>.makeStream()
+    var events = started.stream.makeAsyncIterator()
+    var response: CheckedContinuation<DiscoveryFeed, any Error>?
+    service.onLoad = {
+        try await withCheckedThrowingContinuation {
+            response = $0
+            started.continuation.yield(())
+        }
+    }
+    let refresh = Task { await model.load() }
+    await events.next()
+    refresh.cancel()
+    if throwsCancellation {
+        response?.resume(throwing: CancellationError())
+    } else {
+        response?.resume(returning: DiscoveryFeed(state: .hidden, visible: false))
+    }
+    await refresh.value
+    #expect(model.feed == previous)
+    #expect(model.errorMessage == nil)
+    #expect(!model.isBusy)
+
+    service.onLoad = nil
+    service.feed = DiscoveryFeed(state: .ready, visible: true, matches: [localFriend])
+    await model.load()
+    #expect(model.feed?.matches == [localFriend])
+    started.continuation.finish()
+}
+
+@Test @MainActor func cancelledInitialDiscoveryLoadOffersRetryInsteadOfBlankScreen() async {
+    let service = TestDiscoveryService()
+    let model = DiscoveryModel(service: service)
+    service.onLoad = {
+        withUnsafeCurrentTask { $0?.cancel() }
+        throw CancellationError()
+    }
+    let load = Task { await model.load() }
+    await load.value
+    #expect(model.feed == nil)
+    #expect(model.errorMessage != nil)
+    #expect(!model.isBusy)
+    service.onLoad = nil
+    await model.load()
+    #expect(model.feed?.state == .hidden)
+    #expect(model.errorMessage == nil)
+}
+
+@Test @MainActor func cancelledVisibilityChangeClearsFeedAndOffersRecovery() async {
+    let service = TestDiscoveryService()
+    service.feed = DiscoveryFeed(state: .ready, visible: true, candidates: [localFriend])
+    let model = DiscoveryModel(service: service)
+    await model.load()
+    service.onVisibility = {
+        withUnsafeCurrentTask { $0?.cancel() }
+        throw CancellationError()
+    }
+    let hide = Task { await model.setVisible(false) }
+    await hide.value
+    #expect(model.feed == nil)
+    #expect(model.errorMessage != nil)
+    #expect(!model.isBusy)
 }
