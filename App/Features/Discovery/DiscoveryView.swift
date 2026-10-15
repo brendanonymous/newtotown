@@ -52,7 +52,7 @@ struct DiscoveryView: View {
         }
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
-        .navigationTitle("Scottsdale")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .tint(BrandTheme.ink)
         .task(id: isSelected) {

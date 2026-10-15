@@ -79,9 +79,12 @@ struct PhotoSubmissionView: View {
             }
             .foregroundStyle(BrandTheme.ink)
             .background(BrandTheme.background)
-            .navigationTitle("Your photos")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() }.disabled(isBusy) } }
+            .toolbar {
+                BrandNavigationLogo()
+                ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() }.disabled(isBusy) }
+            }
             .interactiveDismissDisabled(isBusy)
             .task { await model.load() }
             .onChange(of: selection) { _, item in

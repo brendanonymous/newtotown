@@ -3,8 +3,10 @@ import SwiftUI
 
 struct DiscoveryProfileCard: View {
     let profile: DiscoveryProfile
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        ProfileCard(firstName: profile.firstName, jobTitle: profile.jobTitle,
+                    goal: profile.goal, city: profile.city) {
             AsyncImage(url: profile.photoURL) { phase in
                 if let image = phase.image {
                     image.resizable().scaledToFill()
@@ -15,16 +17,6 @@ struct DiscoveryProfileCard: View {
                     ProgressView()
                 }
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 300)
-            .background(BrandTheme.sage.opacity(0.22))
-            .clipped()
-            .brandPhotoStyle()
-            Text(profile.firstName).font(.system(.title, design: .serif))
-            Text(profile.jobTitle).font(.headline)
-            Text(profile.goal)
-            Label(profile.city, systemImage: "mappin").font(.footnote)
-                .foregroundStyle(BrandTheme.secondaryInk)
         }
     }
 }

@@ -5,11 +5,12 @@ struct OnboardingView: View {
     let model: OnboardingModel?
     let photoService: (any PhotoService)?
     let discoveryService: (any DiscoveryService)?
+    let close: () -> Void
 
     var body: some View {
         NavigationStack {
             if let model {
-                OnboardingContent(model: model, photoService: photoService, discoveryService: discoveryService)
+                OnboardingContent(model: model, photoService: photoService, discoveryService: discoveryService, close: close)
             } else {
                 ContentUnavailableView("Signup is temporarily unavailable", systemImage: "wrench.and.screwdriver", description: Text("Please try again later. You can still explore the welcome screen."))
             }
@@ -22,7 +23,7 @@ private struct OnboardingContent: View {
     @Bindable var model: OnboardingModel
     let photoService: (any PhotoService)?
     let discoveryService: (any DiscoveryService)?
-    @Environment(\.dismiss) private var dismiss
+    let close: () -> Void
     @State private var email = ""
     @State private var code = ""
     @State private var showsDeletionConfirmation = false
@@ -39,11 +40,14 @@ private struct OnboardingContent: View {
         .scrollDismissesKeyboard(.interactively)
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
-        .navigationTitle("newtotown")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Close") { dismiss() }.disabled(model.isBusy)
+            BrandNavigationLogo()
+            if model.step == .email || model.step == .code {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close", action: close).disabled(model.isBusy)
+                }
             }
         }
         .alert("Delete your account?", isPresented: $showsDeletionConfirmation) {
@@ -58,7 +62,6 @@ private struct OnboardingContent: View {
             Text("This permanently deletes your account and private profile. You’ll need to create a new account to use newtotown again.")
         }
         .interactiveDismissDisabled(model.isBusy)
-        .task { await model.restore() }
     }
 
     private var signupContent: some View {

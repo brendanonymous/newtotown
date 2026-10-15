@@ -11,7 +11,7 @@ Tap **check** to connect or **X** to pass. A connection appears only when both p
 ## Structure
 
 - `App/Features/Profile`: saved-profile home with Profile/Discovery/Settings tabs; visibility, sign-out, and deletion controls live in Settings.
-- `App/Features/Discovery`: screen and shared profile card; photos use the existing `brandPhotoStyle()`.
+- `App/Features/Discovery`: screen and authorized-photo adapter for the shared `DesignSystem/ProfileCard`; the owner, discovery, and connections use the same public fields and icons. Photos use the existing `brandPhotoStyle()`.
 - `NewToTownCore/Discovery`: public projection, feed, service interface, and observable workflow state.
 - `NewToTownSupabase/Discovery`: typed calls through the existing shared SDK client/session.
 - `supabase/functions/discovery`: Auth/command handler plus public profile projection and photo-link delivery in `photos.ts`.

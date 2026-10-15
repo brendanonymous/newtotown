@@ -1,5 +1,6 @@
 import NewToTownCore
 import SwiftUI
+import UIKit
 
 /// Home for a saved profile; signup and account mutation remain in onboarding.
 struct ProfileHomeView: View {
@@ -12,7 +13,9 @@ struct ProfileHomeView: View {
     private enum Tab: Hashable { case profile, discovery, settings }
     @State private var selectedTab = Tab.profile
     @State private var showsPhotos = false
-    @State private var hasProfilePhoto: Bool?
+    @State private var profilePhoto: UIImage?
+    @State private var photoIsMissing = false
+    @State private var photoFailed = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -34,16 +37,23 @@ struct ProfileHomeView: View {
             if let photoService { PhotoSubmissionView(service: photoService) }
         }
         .task(id: selectedTab == .profile && !showsPhotos) {
-            hasProfilePhoto = nil
+            profilePhoto = nil
+            photoIsMissing = false
+            photoFailed = false
             guard selectedTab == .profile, !showsPhotos, let photoService else { return }
             do {
-                let exists = try await photoService.hasProfilePhoto()
+                let data = try await photoService.loadProfilePhoto()
                 guard !Task.isCancelled else { return }
-                hasProfilePhoto = exists
+                if let data {
+                    profilePhoto = UIImage(data: data)
+                    photoFailed = profilePhoto == nil
+                } else {
+                    photoIsMissing = true
+                }
             } catch {
                 // Unknown photo status must not prompt an existing member to add one.
                 guard !Task.isCancelled else { return }
-                hasProfilePhoto = nil
+                photoFailed = true
             }
         }
     }
@@ -51,27 +61,21 @@ struct ProfileHomeView: View {
     private var profile: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("You’re off to\na good start.").font(.system(.largeTitle, design: .serif))
-                    Text("Your profile details are saved, \(model.draft.firstName).")
-                        .foregroundStyle(BrandTheme.secondaryInk)
+                ProfileCard(firstName: model.draft.firstName, jobTitle: model.draft.jobTitle,
+                            goal: model.draft.goal, city: "Scottsdale") {
+                    if let profilePhoto {
+                        Image(uiImage: profilePhoto).resizable().scaledToFill()
+                    } else if photoIsMissing {
+                        Label("Add a profile photo", systemImage: "person.crop.rectangle")
+                            .foregroundStyle(BrandTheme.secondaryInk)
+                    } else if photoFailed {
+                        Label("Photo unavailable. Open My photos to try again.", systemImage: "photo")
+                            .font(.callout).padding()
+                    } else {
+                        ProgressView()
+                    }
                 }
-                Label("Scottsdale", systemImage: "mappin")
-                Label {
-                    Text(model.draft.jobTitle).font(.headline)
-                } icon: {
-                    Image(systemName: "briefcase").font(.caption)
-                        .foregroundStyle(BrandTheme.secondaryInk)
-                }
-                .accessibilityLabel("Occupation: \(model.draft.jobTitle)")
-                Label {
-                    Text(model.draft.goal)
-                } icon: {
-                    Image(systemName: "bubble.left").font(.caption)
-                        .foregroundStyle(BrandTheme.secondaryInk)
-                }
-                .accessibilityLabel("About me: \(model.draft.goal)")
-                if hasProfilePhoto == false {
+                if photoIsMissing {
                     Text("Add your profile photo to get ready. You choose when your profile becomes visible in Scottsdale.")
                         .font(.callout).foregroundStyle(BrandTheme.secondaryInk)
                 }

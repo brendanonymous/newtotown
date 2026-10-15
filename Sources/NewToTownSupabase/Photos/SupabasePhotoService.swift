@@ -14,10 +14,12 @@ public final class SupabasePhotoService: PhotoService {
         return PhotoRequirements(reviewRequired: flags.photoReviewRequired)
     }
 
-    public func hasProfilePhoto() async throws -> Bool {
+    public func loadProfilePhoto() async throws -> Data? {
         let folder = try await ownerFolder()
-        return try await client.storage.from(bucket).list(path: folder)
-            .contains { $0.name == "profile.jpg" }
+        let storage = client.storage.from(bucket)
+        let names = Set(try await storage.list(path: folder).map(\.name))
+        guard names.contains("profile.jpg") else { return nil }
+        return try await storage.download(path: "\(folder)/profile.jpg")
     }
 
     public func load() async throws -> PrivatePhotos {

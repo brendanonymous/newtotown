@@ -15,7 +15,7 @@ private final class TestPhotoService: PhotoService {
         if failRequirements { throw Failure.unavailable }
         return policy
     }
-    func hasProfilePhoto() async throws -> Bool { stored.profile != nil }
+    func loadProfilePhoto() async throws -> Data? { stored.profile }
     func load() async throws -> PrivatePhotos { stored }
     func save(_ photos: PrivatePhotos) async throws {
         saves += 1

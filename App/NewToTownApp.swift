@@ -24,8 +24,12 @@ struct NewToTownApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                WelcomeView(onboardingModel: onboardingModel, photoService: photoService, discoveryService: discoveryService)
+            Group {
+                if let onboardingModel {
+                    AppEntryView(model: onboardingModel, photoService: photoService, discoveryService: discoveryService)
+                } else {
+                    NavigationStack { WelcomeView(onJoin: nil) }
+                }
             }
             .tint(BrandTheme.ink)
             .preferredColorScheme(.light)

@@ -19,7 +19,8 @@ public final class OnboardingModel {
     private var userID: UUID?
     private var hasAcceptedAgreement = false
 
-    public var canDeleteAccount: Bool { userID != nil }
+    public var isSignedIn: Bool { userID != nil }
+    public var canDeleteAccount: Bool { isSignedIn }
 
     public init(service: any OnboardingService) { self.service = service }
 

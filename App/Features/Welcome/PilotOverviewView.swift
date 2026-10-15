@@ -26,7 +26,7 @@ struct PilotOverviewView: View {
         }
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
-        .navigationTitle("The pilot")
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
     }
 
