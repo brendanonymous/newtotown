@@ -17,12 +17,14 @@ struct DiscoveryView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 if let feed = model.feed {
+
                     visibilityControls(feed)
                     if feed.state == .ready {
                         Picker("Browse", selection: $showsMatches) {
                             Text("Discover").tag(false)
                             Text("Connections").tag(true)
                         }.pickerStyle(.segmented)
+
                         if showsMatches {
                             connections(feed.matches)
                         } else if let profile = feed.candidates.first {
@@ -40,12 +42,16 @@ struct DiscoveryView: View {
                     } else {
                         Text(statusMessage(feed.state)).foregroundStyle(BrandTheme.secondaryInk)
                     }
+
+                    if feed.state != .hidden && !model.isBusy {
+                        Button("Refresh", systemImage: "arrow.clockwise") { Task { await model.load() } }
+                    }
                 }
                 if model.isBusy { ProgressView("Please wait…") }
                 if let message = model.errorMessage {
                     Text(message).foregroundStyle(.red).font(.callout)
+                    Button("Try again", systemImage: "arrow.clockwise") { Task { await model.load() } }
                 }
-                Button("Refresh", systemImage: "arrow.clockwise") { Task { await model.load() } }
             }
             .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
             .disabled(model.isBusy)
@@ -75,7 +81,7 @@ struct DiscoveryView: View {
     @ViewBuilder private func visibilityControls(_ feed: DiscoveryFeed) -> some View {
         if !feed.visible && feed.state != .restricted {
             Text("Meet local friends.").font(.system(.title, design: .serif))
-            Text("Joining shows your profile and photo to other members in Scottsdale. You can hide it at any time.")
+            Text("Joining shows your profile and photo to others. You can hide it at any time.")
                 .foregroundStyle(BrandTheme.secondaryInk)
             Button("Join discovery") { Task { await model.setVisible(true) } }
                 .buttonStyle(.borderedProminent).foregroundStyle(BrandTheme.background)
@@ -111,7 +117,7 @@ struct DiscoveryView: View {
 
     private func statusMessage(_ status: DiscoveryFeed.Status) -> String {
         switch status {
-        case .hidden: "Your profile is hidden. Join when you’re ready."
+        case .hidden: ""
         case .needsProfile: "Save your profile details first."
         case .needsPhoto: "Add your profile photo under My photos, then refresh."
         case .needsReview: "Your photos need approval before you can use discovery."

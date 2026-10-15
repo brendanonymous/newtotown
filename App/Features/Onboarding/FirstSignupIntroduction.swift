@@ -9,8 +9,8 @@ struct FirstSignupIntroduction: View {
 
     private let slides: [(symbol: String, title: String, message: String)] = [
         ("person.2", "Friends. Simply.", "newtotown is for platonic friendship. No dating or sexual solicitation."),
-        ("hand.raised", "Keep it respectful.", "Treat people with care. No harassment. You can block anyone and delete your account at any time."),
-        ("lock", "Your profile. Your choice.", "We store your account details and photos. Your birthday and any review selfie stay private. Joining discovery shares your first name, job, activity summary, and profile photo. You can hide your profile or remove your photos at any time.")
+        ("hand.raised", "Keep it respectful.", "Treat people with care. No harassment. You can block anyone or delete your account and all your data at any time."),
+        ("lock", "Your profile on your terms.", "We store your account details and photos. Joining discovery shares your first name, job, bio, and profile photo. You can remove your photos or hide your profile at any time.")
     ]
 
     var body: some View {

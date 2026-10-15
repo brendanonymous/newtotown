@@ -51,10 +51,10 @@ struct ProfileSettingsView: View {
     }
 
     @ViewBuilder private func visibility(_ model: DiscoveryModel) -> some View {
-        Text("Profile visibility").font(.headline)
+        Text("Privacy").font(.headline)
         if let feed = model.feed {
             if feed.visible {
-                Text("Your profile is visible in Scottsdale.")
+                Text("Your profile is visible.")
                     .foregroundStyle(BrandTheme.secondaryInk)
                 Button("Hide my profile") { Task { await model.setVisible(false) } }
                     .accessibilityIdentifier("settings.hideProfile")

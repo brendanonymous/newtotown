@@ -27,7 +27,7 @@ struct PhotoSubmissionView: View {
                     Text("Show up as yourself.").font(.system(.largeTitle, design: .serif))
                     Text(reviewRequired
                         ? "Choose a profile photo and take a private selfie for photo review. Only your profile photo is shared when you join discovery."
-                        : "Choose a profile photo. Only your profile photo is shared when you join discovery.")
+                        : "")
                         .foregroundStyle(BrandTheme.secondaryInk)
                     if model.isLoaded {
                         photoPreview("Profile photo", data: model.photos.profile)
