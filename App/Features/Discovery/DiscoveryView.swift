@@ -2,12 +2,14 @@ import NewToTownCore
 import SwiftUI
 
 struct DiscoveryView: View {
+    let isSelected: Bool
     @State private var model: DiscoveryModel
     @State private var showsMatches = false
     @State private var blockTarget: DiscoveryProfile?
     @Environment(\.scenePhase) private var scenePhase
 
-    init(service: any DiscoveryService) {
+    init(service: any DiscoveryService, isSelected: Bool) {
+        self.isSelected = isSelected
         _model = State(initialValue: DiscoveryModel(service: service))
     }
 
@@ -53,9 +55,11 @@ struct DiscoveryView: View {
         .navigationTitle("Scottsdale")
         .navigationBarTitleDisplayMode(.inline)
         .tint(BrandTheme.ink)
-        .task { await model.load() }
+        .task(id: isSelected) {
+            if isSelected { await model.load() }
+        }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { Task { await model.load() } }
+            if isSelected && phase == .active { Task { await model.load() } }
         }
         .confirmationDialog("Block this profile?", isPresented: Binding(
             get: { blockTarget != nil }, set: { if !$0 { blockTarget = nil } }

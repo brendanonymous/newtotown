@@ -2,7 +2,7 @@
 
 ## User flow
 
-Save profile details and a profile photo, then open **Discover local friends**. Tap **Join discovery** to share the first name, job, activity summary, and profile photo. The sharing terms are included in [first signup](onboarding-agreement.md); joining has no repeated agreement checkbox. Profiles start hidden, including existing accounts. Birthday, email, selfie, and moderation fields are never in discovery cards.
+Save profile details and a profile photo, then open the **Discovery** tab. Tap **Join discovery** to share the first name, job, activity summary, and profile photo. The sharing terms are included in [first signup](onboarding-agreement.md); joining has no repeated agreement checkbox. Profiles start hidden, including existing accounts. Birthday, email, selfie, and moderation fields are never in discovery cards.
 
 Tap **check** to connect or **X** to pass. A connection appears only when both people choose connect. Decisions are immutable in this pilot; there is no undo or unmatch yet. Connections are derived from the two decisions, so simultaneous checks cannot create duplicate matches. Repeating the same decision after a lost response is safe.
 
@@ -10,7 +10,7 @@ Tap **check** to connect or **X** to pass. A connection appears only when both p
 
 ## Structure
 
-- `App/Features/Profile`: saved-profile home with Profile/Settings tabs; visibility, sign-out, and deletion controls live in Settings.
+- `App/Features/Profile`: saved-profile home with Profile/Discovery/Settings tabs; visibility, sign-out, and deletion controls live in Settings.
 - `App/Features/Discovery`: screen and shared profile card; photos use the existing `brandPhotoStyle()`.
 - `NewToTownCore/Discovery`: public projection, feed, service interface, and observable workflow state.
 - `NewToTownSupabase/Discovery`: typed calls through the existing shared SDK client/session.
@@ -37,7 +37,7 @@ Tests cover visibility choices, current-card decisions, failed-action recovery, 
 
 Phone acceptance with two real volunteer accounts:
 
-1. Save each profile and profile photo. Open discovery without joining; neither should appear to the other.
+1. Save each profile and profile photo. Open the Discovery tab without joining; neither should appear to the other.
 2. Both tap **Join discovery**. Confirm only the public fields and profile photo appear, with rounded corners/shadows.
 3. Check from the first account; no connection yet. Check back from the second; both Connections lists show the match after refresh.
 4. Use a third volunteer to test pass, and confirm it disappears from that account's deck without a match.

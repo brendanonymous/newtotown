@@ -60,7 +60,7 @@ struct ProfileSettingsView: View {
                     .accessibilityIdentifier("settings.hideProfile")
             } else {
                 Label("Your profile is hidden", systemImage: "eye.slash")
-                Text("Join discovery from your profile when you’re ready to be seen.")
+                Text("Open the Discovery tab and join when you’re ready to be seen.")
                     .foregroundStyle(BrandTheme.secondaryInk)
             }
         }

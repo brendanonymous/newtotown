@@ -9,7 +9,7 @@ struct ProfileHomeView: View {
     let signOut: @MainActor () async -> Void
     let deleteAccount: () -> Void
 
-    private enum Tab: Hashable { case profile, settings }
+    private enum Tab: Hashable { case profile, discovery, settings }
     @State private var selectedTab = Tab.profile
     @State private var showsPhotos = false
     @State private var hasProfilePhoto: Bool?
@@ -19,6 +19,11 @@ struct ProfileHomeView: View {
             profile
                 .tabItem { Label("Profile", systemImage: "person.crop.circle") }
                 .tag(Tab.profile)
+            if let discoveryService {
+                DiscoveryView(service: discoveryService, isSelected: selectedTab == .discovery)
+                    .tabItem { Label("Discovery", systemImage: "person.2") }
+                    .tag(Tab.discovery)
+            }
             ProfileSettingsView(service: discoveryService, isSelected: selectedTab == .settings,
                 isAccountBusy: model.isBusy, accountError: model.errorMessage, signOut: signOut, deleteAccount: deleteAccount)
                 .tabItem { Label("Settings", systemImage: "gearshape") }
@@ -52,17 +57,26 @@ struct ProfileHomeView: View {
                         .foregroundStyle(BrandTheme.secondaryInk)
                 }
                 Label("Scottsdale", systemImage: "mappin")
-                Text(model.draft.jobTitle).font(.headline)
-                Text(model.draft.goal)
+                Label {
+                    Text(model.draft.jobTitle).font(.headline)
+                } icon: {
+                    Image(systemName: "briefcase").font(.caption)
+                        .foregroundStyle(BrandTheme.secondaryInk)
+                }
+                .accessibilityLabel("Occupation: \(model.draft.jobTitle)")
+                Label {
+                    Text(model.draft.goal)
+                } icon: {
+                    Image(systemName: "bubble.left").font(.caption)
+                        .foregroundStyle(BrandTheme.secondaryInk)
+                }
+                .accessibilityLabel("About me: \(model.draft.goal)")
                 if hasProfilePhoto == false {
                     Text("Add your profile photo to get ready. You choose when your profile becomes visible in Scottsdale.")
                         .font(.callout).foregroundStyle(BrandTheme.secondaryInk)
                 }
                 if photoService != nil {
                     Button("My photos") { showsPhotos = true }
-                }
-                if let discoveryService {
-                    NavigationLink("Discover local friends") { DiscoveryView(service: discoveryService) }
                 }
                 Button("Edit profile") { model.editProfile() }
             }
