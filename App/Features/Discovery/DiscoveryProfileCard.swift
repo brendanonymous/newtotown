@@ -11,7 +11,7 @@ struct DiscoveryProfileCard: View {
                 if let image = phase.image {
                     image.resizable().scaledToFill()
                 } else if phase.error != nil {
-                    Label("Photo unavailable. Refresh to try again.", systemImage: "photo")
+                    Label("Photo unavailable. Pull down to try again.", systemImage: "photo")
                         .font(.callout).padding()
                 } else {
                     ProgressView()

@@ -65,6 +65,11 @@ struct ProfileSettingsView: View {
             .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
             .disabled(isAccountBusy || discovery?.isBusy == true)
         }
+        .scrollBounceBehavior(.always, axes: .vertical)
+        .refreshable {
+            guard isSelected, !isAccountBusy else { return }
+            await discovery?.load()
+        }
         .background(BrandTheme.background)
         .task(id: isSelected) {
             if isSelected { await discovery?.load() }

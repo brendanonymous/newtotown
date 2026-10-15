@@ -19,6 +19,7 @@ struct DiscoveryView: View {
                 if let feed = model.feed {
 
                     visibilityControls(feed)
+
                     if feed.state == .ready {
                         Picker("Browse", selection: $showsMatches) {
                             Text("Discover").tag(false)
@@ -42,10 +43,6 @@ struct DiscoveryView: View {
                     } else {
                         Text(statusMessage(feed.state)).foregroundStyle(BrandTheme.secondaryInk)
                     }
-
-                    if feed.state != .hidden && !model.isBusy {
-                        Button("Refresh", systemImage: "arrow.clockwise") { Task { await model.load() } }
-                    }
                 }
                 if model.isBusy { ProgressView("Please wait…") }
                 if let message = model.errorMessage {
@@ -56,6 +53,8 @@ struct DiscoveryView: View {
             .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
             .disabled(model.isBusy)
         }
+        .scrollBounceBehavior(.always, axes: .vertical)
+        .refreshable { await model.load() }
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
         .navigationTitle("")
@@ -119,7 +118,7 @@ struct DiscoveryView: View {
         switch status {
         case .hidden: ""
         case .needsProfile: "Save your profile details first."
-        case .needsPhoto: "Add your profile photo under My photos, then refresh."
+        case .needsPhoto: "Add your profile photo under My photos, then pull down to refresh."
         case .needsReview: "Your photos need approval before you can use discovery."
         case .restricted: "Discovery isn’t available for your account."
         case .ready: ""

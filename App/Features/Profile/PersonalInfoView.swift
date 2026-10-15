@@ -27,6 +27,8 @@ struct PersonalInfoView: View {
             }
             .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
         }
+        .scrollBounceBehavior(.always, axes: .vertical)
+        .refreshable { await model.load() }
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
         .navigationTitle("")
