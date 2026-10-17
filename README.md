@@ -41,3 +41,5 @@ Swift Package tests validate configuration, profile rules, and onboarding transi
 See [architecture](docs/architecture.md) and [delivery plan](docs/delivery-plan.md).
 
 First-time onboarding and persistent agreement behavior: [onboarding agreement](docs/onboarding-agreement.md).
+
+Private contact details in Settings: [Personal info](docs/personal-info.md).

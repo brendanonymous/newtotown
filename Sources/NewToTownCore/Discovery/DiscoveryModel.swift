@@ -18,7 +18,7 @@ public final class DiscoveryModel {
             await withCheckedContinuation { refreshWaiters.append($0) }
         }
         guard !Task.isCancelled else { return }
-        await perform { try await self.service.load() }
+        await perform(preserveOnCancellation: true) { try await self.service.load() }
     }
 
     public func setVisible(_ visible: Bool) async {
@@ -34,7 +34,10 @@ public final class DiscoveryModel {
         await perform { try await self.service.block(profileID) }
     }
 
-    private func perform(_ action: () async throws -> DiscoveryFeed) async {
+    private func perform(
+        preserveOnCancellation: Bool = false,
+        _ action: () async throws -> DiscoveryFeed
+    ) async {
         guard !isBusy, !Task.isCancelled else { return }
         isBusy = true
         errorMessage = nil
@@ -46,14 +49,29 @@ public final class DiscoveryModel {
         }
         do {
             let updated = try await action()
-            feed = Task.isCancelled ? nil : updated
+            if Task.isCancelled {
+                finishCancellation(preserveFeed: preserveOnCancellation)
+            } else {
+                feed = updated
+            }
         } catch {
+            if Task.isCancelled {
+                finishCancellation(preserveFeed: preserveOnCancellation)
+                return
+            }
             // Discard cached people on uncertain authorization/visibility changes.
             // Decisions are idempotent; refresh safely restores the server's result.
             feed = nil
-            if !Task.isCancelled {
-                errorMessage = "We couldn’t update discovery. Refresh to check your connections and try again."
-            }
+            errorMessage = "We couldn’t update discovery. Pull down to refresh or try again."
+        }
+    }
+
+    private func finishCancellation(preserveFeed: Bool) {
+        // A cancelled read has no new server state to publish. Keep the current
+        // feed; uncertain mutations still discard it until a fresh read succeeds.
+        if !preserveFeed { feed = nil }
+        if feed == nil {
+            errorMessage = "Loading was interrupted. Pull down to refresh or try again."
         }
     }
 }

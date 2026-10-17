@@ -5,6 +5,7 @@ import UIKit
 /// Home for a saved profile; signup and account mutation remain in onboarding.
 struct ProfileHomeView: View {
     @Bindable var model: OnboardingModel
+    let personalInfoService: (any PersonalInfoService)?
     let photoService: (any PhotoService)?
     let discoveryService: (any DiscoveryService)?
     let signOut: @MainActor () async -> Void
@@ -27,8 +28,15 @@ struct ProfileHomeView: View {
                     .tabItem { Label("Discovery", systemImage: "person.2") }
                     .tag(Tab.discovery)
             }
-            ProfileSettingsView(service: discoveryService, isSelected: selectedTab == .settings,
-                isAccountBusy: model.isBusy, accountError: model.errorMessage, signOut: signOut, deleteAccount: deleteAccount)
+            ProfileSettingsView(
+                discoveryService: discoveryService,
+                personalInfoService: personalInfoService,
+                isSelected: selectedTab == .settings,
+                isAccountBusy: model.isBusy,
+                accountError: model.errorMessage,
+                signOut: signOut,
+                deleteAccount: deleteAccount
+            )
                 .tabItem { Label("Settings", systemImage: "gearshape") }
                 .tag(Tab.settings)
         }

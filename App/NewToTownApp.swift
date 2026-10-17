@@ -5,6 +5,7 @@ import SwiftUI
 @main
 struct NewToTownApp: App {
     @State private var onboardingModel: OnboardingModel?
+    private let personalInfoService: (any PersonalInfoService)?
     private let photoService: (any PhotoService)?
     private let discoveryService: (any DiscoveryService)?
 
@@ -18,6 +19,7 @@ struct NewToTownApp: App {
             services = SupabaseServices(configuration: configuration)
         }
         _onboardingModel = State(initialValue: services.map { OnboardingModel(service: $0.onboarding) })
+        personalInfoService = services?.personalInfo
         photoService = services?.photos
         discoveryService = services?.discovery
     }
@@ -26,7 +28,12 @@ struct NewToTownApp: App {
         WindowGroup {
             Group {
                 if let onboardingModel {
-                    AppEntryView(model: onboardingModel, photoService: photoService, discoveryService: discoveryService)
+                    AppEntryView(
+                        model: onboardingModel,
+                        personalInfoService: personalInfoService,
+                        photoService: photoService,
+                        discoveryService: discoveryService
+                    )
                 } else {
                     NavigationStack { WelcomeView(onJoin: nil) }
                 }

@@ -3,6 +3,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     let model: OnboardingModel?
+    let personalInfoService: (any PersonalInfoService)?
     let photoService: (any PhotoService)?
     let discoveryService: (any DiscoveryService)?
     let close: () -> Void
@@ -10,7 +11,13 @@ struct OnboardingView: View {
     var body: some View {
         NavigationStack {
             if let model {
-                OnboardingContent(model: model, photoService: photoService, discoveryService: discoveryService, close: close)
+                OnboardingContent(
+                    model: model,
+                    personalInfoService: personalInfoService,
+                    photoService: photoService,
+                    discoveryService: discoveryService,
+                    close: close
+                )
             } else {
                 ContentUnavailableView("Signup is temporarily unavailable", systemImage: "wrench.and.screwdriver", description: Text("Please try again later. You can still explore the welcome screen."))
             }
@@ -21,6 +28,7 @@ struct OnboardingView: View {
 
 private struct OnboardingContent: View {
     @Bindable var model: OnboardingModel
+    let personalInfoService: (any PersonalInfoService)?
     let photoService: (any PhotoService)?
     let discoveryService: (any DiscoveryService)?
     let close: () -> Void
@@ -31,8 +39,14 @@ private struct OnboardingContent: View {
     var body: some View {
         Group {
             if model.step == .saved {
-                ProfileHomeView(model: model, photoService: photoService, discoveryService: discoveryService,
-                    signOut: signOut, deleteAccount: { showsDeletionConfirmation = true })
+                ProfileHomeView(
+                    model: model,
+                    personalInfoService: personalInfoService,
+                    photoService: photoService,
+                    discoveryService: discoveryService,
+                    signOut: signOut,
+                    deleteAccount: { showsDeletionConfirmation = true }
+                )
             } else {
                 signupContent
             }
