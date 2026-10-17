@@ -4,7 +4,7 @@
 
 Signed-in users can choose **Delete account** from the profile form, saved profile, or account-recovery screen. A destructive confirmation explains permanence; Cancel makes no request. During deletion, other actions and sheet dismissal are disabled. Success clears the profile draft, email, resend cooldown, and device session, returning to email entry. Failure keeps the current screen and draft with recovery guidance.
 
-The onboarding service owns deletion while account management is the only signed-in feature. No generic account repository or extra session model is needed yet. Move account controls into dedicated settings when the signed-in app shell is introduced.
+The onboarding service owns deletion while account management is the only signed-in feature. No generic account repository or extra session model is needed yet. Saved-profile account controls now live in Settings; signup and recovery retain their account actions. Extract signed-in composition from onboarding as messaging is introduced; see the [code structure review](code-structure-review.md).
 
 ## Server boundary
 
@@ -44,4 +44,4 @@ Function version 2 (including private-photo cleanup) is deployed to project `pnl
 
 Revocation and Auth deletion are separate operations. If revocation succeeds but deletion fails, the account may remain with its sessions revoked; signing in again provides a fresh session for retry. A lost response after successful deletion is ambiguous to the client: it preserves the draft until the user retries or signs out and checks the account. Do not display a deletion-success message on an unconfirmed result.
 
-This version deletes private photos, active Auth records, the private profile, photo consent, and account-level onboarding acceptance. Provider backups/logs follow their own retention settings. The private-photos bucket is now included in cleanup. No matches or messages exist yet. Extend server cleanup before introducing those resources; Supabase cannot delete an Auth user who still owns Storage objects. This endpoint is not a complete future data-retention implementation.
+This version deletes private photos, active Auth records, the private profile, photo consent, account-level onboarding acceptance, discovery settings, outgoing/incoming connection decisions, and blocks. Provider backups/logs follow their own retention settings. The private-photos bucket is now included in cleanup. Connections are derived from decisions, so they have no separate row to delete. Messages are not implemented yet. Extend server cleanup before introducing those resources; Supabase cannot delete an Auth user who still owns Storage objects. This endpoint is not a complete future data-retention implementation.

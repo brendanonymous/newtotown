@@ -8,7 +8,7 @@ Use native SwiftUI for this iPhone-only pilot. Group screens and their state by 
 
 `NewToTownApp` reads configuration and owns the onboarding model. `AppEntryView` restores the session and routes welcome/signup/saved-account screens at the window root; the signed-in app is not presented inside a signup sheet. Views receive that model instead of creating backend clients. The welcome preview supplies only a navigation callback and makes no backend connection. The dependency direction is `App → NewToTownSupabase → NewToTownCore`, with views also importing the core directly. Feature screens own transient photo/discovery state. Private contact information has its own `Account` core model/service and Supabase adapter; [Personal info](personal-info.md) is a read-only Settings destination. Saved accounts render `ProfileHomeView` with native Profile/Discovery/Settings tabs; `ProfileSettingsView` owns its visibility model, while account mutations remain in onboarding.
 
-Supabase calls live in the onboarding, photo, and discovery services, behind their core interfaces. `SupabaseServices` shares one client/session between them. `OnboardingModel` owns transitions, loading, and retryable errors; SwiftUI views render it. Views do not construct database queries. `FirstSignupIntroduction` presents the one-time slides; `OnboardingModel` advances only after the account-level acceptance is persisted. See [onboarding agreement](onboarding-agreement.md). Add abstractions when a real integration or test requires them; avoid speculative base classes and generic repository layers.
+Supabase calls live in the account, onboarding, photo, and discovery services, behind their core interfaces. `SupabaseServices` shares one client/session between them. `OnboardingModel` owns transitions, loading, and retryable errors; SwiftUI views render it. Views do not construct database queries. `FirstSignupIntroduction` presents the one-time slides; `OnboardingModel` advances only after the account-level acceptance is persisted. See [onboarding agreement](onboarding-agreement.md). Add abstractions when a real integration or test requires them; avoid speculative base classes and generic repository layers.
 
 ## Configuration and data
 
@@ -39,3 +39,5 @@ Keep PRs focused and document user-visible behavior, validation, and limitations
 - `Configuration`, `scripts`, and `docs`: build settings, asset tooling, and operational documentation.
 
 A missing session clears the account ID, draft, and agreement state before returning to login. Discovery refreshes wait for an in-flight request to finish cancellation rather than dropping the new tab's refresh. Regression tests cover both lifecycle rules.
+
+The [October 17 code structure review](code-structure-review.md) records the current boundaries, growth risks, and planned messaging placement. The [messaging schema proposal](messaging-schema-proposal.md) is awaiting owner review; no messaging feature is implemented yet.
