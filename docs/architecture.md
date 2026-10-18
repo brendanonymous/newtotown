@@ -40,4 +40,4 @@ Keep PRs focused and document user-visible behavior, validation, and limitations
 
 A missing session clears the account ID, draft, and agreement state before returning to login. Discovery refreshes wait for an in-flight request to finish cancellation rather than dropping the new tab's refresh. Regression tests cover both lifecycle rules.
 
-The [October 17 code structure review](code-structure-review.md) records the current boundaries, growth risks, and planned messaging placement. The [messaging schema proposal](messaging-schema-proposal.md) is awaiting owner review; no messaging feature is implemented yet.
+The [October 17 code structure review](code-structure-review.md) records the current boundaries, growth risks, and planned messaging placement. The [messaging schema](messaging-schema-proposal.md) is approved. The [messaging backend](messaging.md) adds private tables and a separate endpoint with command/projection modules; `_shared` contains Auth/HTTP and profile-photo primitives used by multiple server features. Messaging UI/core/adapter files remain a separate PR; signed-in composition extraction belongs with that work.

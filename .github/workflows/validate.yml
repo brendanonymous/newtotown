@@ -54,7 +54,17 @@ jobs:
           for migration in supabase/migrations/*.sql; do
             psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f "$migration"
           done
-          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles.sql -f supabase/tests/photos.sql -f supabase/tests/photo_review_flag.sql -f supabase/tests/discovery.sql -f supabase/tests/account_agreements.sql
+          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles.sql -f supabase/tests/photos.sql -f supabase/tests/photo_review_flag.sql -f supabase/tests/discovery.sql -f supabase/tests/account_agreements.sql -f supabase/tests/messaging.sql
+
+      - name: Test concurrent messaging transactions
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGDATABASE: newtotown_test
+          PGPASSWORD: local-test-only
+          NEWTOTOWN_TEST_DATABASE: '1'
+        run: python3 supabase/tests/messaging_concurrency.py
 
   account-deletion:
     runs-on: ubuntu-latest
@@ -63,7 +73,9 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: v2.9.6
-      - name: Check and test account deletion handler
+      - name: Check, format, and test server handlers
         run: |
-          deno check supabase/functions/delete-account/index.ts supabase/functions/discovery/index.ts
-          deno test supabase/functions/delete-account/handler_test.ts supabase/functions/discovery/handler_test.ts
+          deno fmt --check supabase/functions
+          deno lint supabase/functions/_shared supabase/functions/messaging
+          deno check supabase/functions/delete-account/index.ts supabase/functions/discovery/index.ts supabase/functions/messaging/index.ts
+          deno test supabase/functions
