@@ -16,7 +16,7 @@ See [backend setup and phone journeys](docs/backend-setup.md) before testing liv
 
 The app targets iOS 17+. No paid membership is needed for simulator use. Public backend settings are included; live signup also needs the documented Supabase setup.
 
-For a physical iPhone, copy `Configuration/Local.xcconfig.example` to `Configuration/Local.xcconfig`, enter your Team ID and an available bundle identifier, then select the connected phone in Xcode. Local configuration is ignored by Git. TestFlight distribution requires an active Apple Developer membership and later release configuration, including an app icon.
+For a physical iPhone, copy `Configuration/Local.xcconfig.example` to `Configuration/Local.xcconfig`, enter your Team ID and an available bundle identifier, then select the connected phone in Xcode. Local configuration is ignored by Git. TestFlight distribution requires an active Apple Developer membership and later release configuration. The repository already includes the current app icon.
 
 ## Check
 
@@ -43,3 +43,5 @@ See [architecture](docs/architecture.md) and [delivery plan](docs/delivery-plan.
 First-time onboarding and persistent agreement behavior: [onboarding agreement](docs/onboarding-agreement.md).
 
 Private contact details in Settings: [Personal info](docs/personal-info.md).
+
+Messaging design awaiting review: [schema proposal](docs/messaging-schema-proposal.md). Code organization assessment: [structure review](docs/code-structure-review.md).

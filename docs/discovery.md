@@ -25,7 +25,7 @@ The Edge Function requires gateway JWT verification and independently resolves t
 
 `private.photo_eligibility` is the shared review/moderation check used by both the existing self-only flag function and server discovery. Its authenticated invoker calls remain limited by owner RLS. Server-only discovery additionally requires visibility consent for both parties and excludes a block in either direction. Review remains off by default; enabling it requires approval of both current photo versions. Suspension and rejection apply in either mode.
 
-The server explicitly projects public fields and signs only `<candidate UUID>/profile.jpg` paths from the authorized feed. The private bucket and owner-only Storage policies are unchanged. No selfie path is signed. URL responses use `Cache-Control: no-store`; photo links expire after **60 seconds**. A previously issued link or downloaded image cannot be instantly revoked by hiding/blocking—new requests enforce the updated state. The app offers Refresh when a photo link expires.
+The server explicitly projects public fields and signs only `<candidate UUID>/profile.jpg` paths from the authorized feed. The private bucket and owner-only Storage policies are unchanged. No selfie path is signed. URL responses use `Cache-Control: no-store`; photo links expire after **60 seconds**. A previously issued link or downloaded image cannot be instantly revoked by hiding/blocking—new requests enforce the updated state. The app supports pull-to-refresh when a photo link expires.
 
 The existing `discovery-v1` visibility receipt records a server timestamp when joining/rejoining; it records the explicit sharing choice, rather than a new terms acceptance. Hiding without joining creates no consent row. Profile edits and profile-photo replacements are reflected to other eligible members while visible; when review is required, replacing an approved photo makes it ineligible until approved again. Deleting an account cascades its visibility, decisions, and blocks; existing deletion cleanup still removes both photo keys.
 
@@ -43,7 +43,7 @@ Phone acceptance with two real volunteer accounts:
 4. Use a third volunteer to test pass, and confirm it disappears from that account's deck without a match.
 5. Open **Settings** on one account and tap **Hide my profile**; refresh the other and confirm the connection disappears. Rejoin and refresh.
 6. Block a connection and verify both directions disappear. Disconnect during a decision, then refresh to reconcile the saved result.
-7. Wait over a minute before loading an unviewed photo; Refresh must recover expired links. Delete a disposable account and confirm profile/photo/discovery data disappear.
+7. Wait over a minute before loading an unviewed photo; Pull-to-refresh must recover expired links. Delete a disposable account and confirm profile/photo/discovery data disappear.
 
 ## Limits and rollout
 
