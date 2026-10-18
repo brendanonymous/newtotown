@@ -83,7 +83,9 @@ struct ChatView: View {
                     {
                         MessageBubble(text: pending.body, timestamp: nil, isOwn: true)
                             .opacity(0.65)
-                        Text(model.isSending ? "Sending…" : "Not confirmed").font(.caption)
+                        Text(model.isSending ? "Sending…" : "Not confirmed")
+                            .font(.caption).foregroundStyle(BrandTheme.secondaryInk)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                     if model.isLoading { ProgressView("Loading conversation…") }
                     if model.isBlocking { ProgressView("Blocking…") }
@@ -132,6 +134,7 @@ struct ChatView: View {
                 }
                 .accessibilityLabel("Send message").accessibilityIdentifier("chat.send")
                 .disabled(!model.canSend)
+                .opacity(model.canSend ? 1 : 0.4)
             }
             if model.draft.unicodeScalars.count > MessageText.maximumLength {
                 Text("Keep your message under 2,000 characters.").font(.caption).foregroundStyle(.red)
