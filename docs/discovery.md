@@ -14,7 +14,7 @@ Tap **check** to connect or **X** to pass. A connection appears only when both p
 - `App/Features/Discovery`: screen and authorized-photo adapter for the shared `DesignSystem/ProfileCard`; the owner, discovery, and connections use the same public fields and icons. Photos use the existing `brandPhotoStyle()`.
 - `NewToTownCore/Discovery`: public projection, feed, service interface, and observable workflow state.
 - `NewToTownSupabase/Discovery`: typed calls through the existing shared SDK client/session.
-- `supabase/functions/discovery`: Auth/command handler plus public profile projection and photo-link delivery in `photos.ts`.
+- `supabase/functions/discovery`: Auth/command handler plus public profile projection and photo-link delivery in `_shared/profile-photos.ts`.
 - `supabase/migrations/*_scottsdale_discovery.sql`: visibility consent, immutable decisions, blocks, eligibility helpers, and bounded feed queries.
 
 Views construct no backend clients or queries. Discovery state belongs to its screen; signup does not own candidate cards. On a failed action, cached cards are discarded until refresh so an uncertain hide/block/authorization change does not keep presenting them.
@@ -31,7 +31,7 @@ The existing `discovery-v1` visibility receipt records a server timestamp when j
 
 ## Deployment and validation
 
-Apply `20261010201702_scottsdale_discovery.sql` once, then deploy `discovery` with `index.ts`, `handler.ts`, and `photos.ts`, keeping JWT verification enabled. Default settings do not publish existing profiles. No new secret belongs in the app. Earlier local/hosted profile-migration versions remain mismatched; see [photo deployment notes](private-photos.md) before CLI migration deployment.
+Apply `20261010201702_scottsdale_discovery.sql` once, then deploy `discovery` with `index.ts`, `handler.ts`, and their `_shared` dependencies, keeping JWT verification enabled. Default settings do not publish existing profiles. No new secret belongs in the app. Earlier local/hosted profile-migration versions remain mismatched; see [photo deployment notes](private-photos.md) before CLI migration deployment.
 
 Tests cover visibility choices, current-card decisions, failed-action recovery, mutual versus one-sided connections, passes, retry idempotency, hidden/restricted/review-required profiles, block filtering, deleted-account cleanup, direct-write denial, and caller impersonation. Handler tests check public projection and profile-only signing. SQL tests use transaction-only metadata fixtures; they do not upload files or sign real photo URLs.
 
@@ -54,3 +54,5 @@ This increment is for the controlled pilot, not the public launch. Messaging, re
 The migration is deployed to project `pnlpdevgwenkkoqjgcui`, and its local filename matches the hosted version. The `discovery` function version 2 is deployed with JWT verification. Review remains off. Hosted discovery and photo-review SQL suites pass in rollback-only transactions with no retained temporary users or metadata; an unauthenticated live endpoint request returns 401. Signed-photo HTTP delivery and the complete two-account journey still require device acceptance.
 
 Security advisors show no new findings. Existing RLS-helper [anonymous](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable) and [authenticated](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) execution-grant findings and disabled [leaked-password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection) are unchanged.
+
+The [messaging backend](messaging.md) reuses mutual connection/eligibility rules. Its migration adds a shared block/send transaction lock. The migration and refactored function bundles are not deployed by this PR.

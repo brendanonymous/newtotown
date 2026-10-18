@@ -22,7 +22,7 @@ Auth deletion does not retroactively invalidate every issued access JWT. The exi
 
 ## Deployment and verification
 
-Deploy the reviewed `delete-account` function with JWT verification enabled, using the versioned `index.ts`, `handler.ts`, and `photos.ts`. Supabase supplies `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` in its hosted function environment. No schema migration is required. Deploy the function before testing this app branch on a phone.
+Deploy the reviewed `delete-account` function with JWT verification enabled, using the versioned `index.ts`, `handler.ts`, `photos.ts`, and `_shared/auth.ts`/`_shared/http.ts` dependencies. Supabase supplies `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` in its hosted function environment. No schema migration is required. Deploy the function before testing this app branch on a phone.
 
 Run:
 
@@ -44,4 +44,4 @@ Function version 2 (including private-photo cleanup) is deployed to project `pnl
 
 Revocation and Auth deletion are separate operations. If revocation succeeds but deletion fails, the account may remain with its sessions revoked; signing in again provides a fresh session for retry. A lost response after successful deletion is ambiguous to the client: it preserves the draft until the user retries or signs out and checks the account. Do not display a deletion-success message on an unconfirmed result.
 
-This version deletes private photos, active Auth records, the private profile, photo consent, account-level onboarding acceptance, discovery settings, outgoing/incoming connection decisions, and blocks. Provider backups/logs follow their own retention settings. The private-photos bucket is now included in cleanup. Connections are derived from decisions, so they have no separate row to delete. Messages are not implemented yet. Extend server cleanup before introducing those resources; Supabase cannot delete an Auth user who still owns Storage objects. This endpoint is not a complete future data-retention implementation.
+This version deletes private photos, active Auth records, the private profile, photo consent, account-level onboarding acceptance, discovery settings, outgoing/incoming connection decisions, and blocks. Provider backups/logs follow their own retention settings. The private-photos bucket is now included in cleanup. Connections are derived from decisions, so they have no separate row to delete. The [messaging backend](messaging.md) adds cascade deletion of the entire conversation and all messages when either participant is deleted. This takes effect only after its migration is deployed. Extend server cleanup before introducing those resources; Supabase cannot delete an Auth user who still owns Storage objects. This endpoint is not a complete future data-retention implementation.

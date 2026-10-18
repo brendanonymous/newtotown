@@ -1,6 +1,6 @@
 # Private conversations: schema proposal
 
-**Status: awaiting owner review.** This is the design for the first messaging PR. No messaging migration, endpoint, or app feature has been implemented or deployed.
+**Status: approved October 17, 2026, and merged in PR #10.** Backend implementation follows this design; see [messaging](messaging.md) for the contract, tests, and deployment status. The iPhone messaging UI remains a separate PR.
 
 ## Scope
 
@@ -42,7 +42,7 @@ Enable RLS on both tables and explicitly revoke all direct table privileges from
 
 The server role bypasses RLS. Consequently, **function authorization checks and verified caller injection are essential**; RLS/default-deny grants protect direct client access, not mistakes in server functions. Test both boundaries. This follows the existing discovery model without adding broadly executable `SECURITY DEFINER` helpers.
 
-## Behavior needing owner approval
+## Approved behavior
 
 | Event | Proposed behavior |
 | --- | --- |
@@ -67,12 +67,12 @@ Blocking and sending must acquire the same transaction-scoped lock for the canon
 
 The use of UUID tie-breakers gives deterministic ordering when timestamps match. Explicit response projections contain only the authorized thread, its public participant summary, and the requested messages. Any profile-photo links use the existing profile-only signer; no private profile rows are returned. Responses are `no-store`, and logs omit message bodies and credentials.
 
-## Implementation and tests after approval
+## Implementation and test plan
 
 1. Create a migration through the Supabase CLI; add private tables, constraints, indexes, grants, functions, and the shared block/send lock. Follow the documented local/hosted migration-history mismatch before deployment.
 2. Add SQL tests for anonymous/direct access denial, unrelated and forged callers, one-sided interest, mutual access, hidden/ineligible/blocked pairs, duplicate opens, safe send retries, changed-body conflicts, validation, cursor paging, and account-deletion cascade. Add a two-session concurrency test for simultaneous open and block/send ordering.
 3. Add `supabase/functions/messaging/{index.ts,handler.ts}` with injected transport and handler tests for Auth, caller injection, bounded input, sanitized failures, and explicit output fields. Extract shared Auth/HTTP helpers only where the third endpoint makes duplication concrete.
-4. Include the messaging suites in CI; run local database checks and advisors before requesting implementation review. Provide device acceptance steps for the UI PR. Do not deploy or merge the design draft as a completed messaging feature.
+4. Include the messaging suites in CI; run local database checks and advisors before requesting implementation review. Provide device acceptance steps for the UI PR. Review the backend implementation separately from the approved design and the subsequent iPhone UI.
 
 ## References
 

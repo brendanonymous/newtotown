@@ -1,3 +1,4 @@
+import { authenticate } from "../_shared/auth.ts";
 import { removePrivatePhotos } from "./photos.ts";
 
 type Configuration = {
@@ -17,29 +18,10 @@ export function createDeleteAccountHandler(
     if (request.method !== "POST") {
       return reply(405, "Method not allowed", { Allow: "POST" });
     }
-    const authorization = request.headers.get("Authorization");
-    if (!authorization || !/^Bearer \S+$/i.test(authorization)) {
-      return reply(401, "Sign in before deleting your account");
-    }
-
     try {
-      // A network lookup rejects expired tokens and accounts already deleted.
-      // Merely decoding a JWT would not provide this guarantee.
-      const identity = await send(`${authURL}/user`, {
-        signal: AbortSignal.timeout(15_000),
-        headers: {
-          apikey: configuration.publicKey,
-          Authorization: authorization,
-        },
-      });
-      if (identity.status === 401 || identity.status === 403) {
-        return reply(401, "Sign in before deleting your account");
-      }
-      if (!identity.ok) return reply(503, "Account service unavailable");
-      const user = await identity.json();
-      if (typeof user.id !== "string" || !/^[0-9a-f-]{36}$/i.test(user.id)) {
-        return reply(503, "Account service unavailable");
-      }
+      const identity = await authenticate(request, configuration, send);
+      if (identity instanceof Response) return identity;
+      const { authorization, userID } = identity;
 
       const revoked = await send(`${authURL}/logout?scope=global`, {
         method: "POST",
@@ -54,13 +36,13 @@ export function createDeleteAccountHandler(
       const removed = await removePrivatePhotos(
         configuration.projectURL,
         configuration.adminKey,
-        user.id,
+        userID,
         send,
       );
       if (!removed) return reply(503, "Photo cleanup could not be completed");
 
       // Hard deletion cascades to profile and consent through their foreign keys.
-      const deleted = await send(`${authURL}/admin/users/${user.id}`, {
+      const deleted = await send(`${authURL}/admin/users/${userID}`, {
         method: "DELETE",
         signal: AbortSignal.timeout(15_000),
         headers: {

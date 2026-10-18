@@ -1,4 +1,9 @@
-import { type Card, readCards, signProfilePhotos } from "./photos.ts";
+import { authenticate } from "../_shared/auth.ts";
+import {
+  type Card,
+  readCards,
+  signProfilePhotos,
+} from "../_shared/profile-photos.ts";
 
 type Configuration = {
   projectURL: string;
@@ -41,26 +46,10 @@ export function createDiscoveryHandler(
     if (request.method !== "POST") {
       return reply(405, { error: "Method not allowed" });
     }
-    const authorization = request.headers.get("Authorization");
-    if (!authorization || !/^Bearer \S+$/i.test(authorization)) {
-      return reply(401, { error: "Sign in first" });
-    }
     try {
-      const identity = await send(`${config.projectURL}/auth/v1/user`, {
-        headers: { apikey: config.publicKey, Authorization: authorization },
-        signal: AbortSignal.timeout(15_000),
-      });
-      if ([401, 403].includes(identity.status)) {
-        return reply(401, { error: "Sign in first" });
-      }
-      if (!identity.ok) {
-        return reply(503, { error: "Account service unavailable" });
-      }
-      const user = await identity.json();
-      if (typeof user.id !== "string" || !uuid.test(user.id)) {
-        throw new Error("Invalid identity");
-      }
-      const person = user.id.toLowerCase();
+      const identity = await authenticate(request, config, send);
+      if (identity instanceof Response) return identity;
+      const person = identity.userID;
       const command = parseCommand(await request.text());
       if (!command) return reply(400, { error: "Invalid discovery request" });
       let mutation: Response | undefined;

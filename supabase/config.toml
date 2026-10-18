@@ -5,3 +5,6 @@ verify_jwt = true
 
 [functions.discovery]
 verify_jwt = true
+
+[functions.messaging]
+verify_jwt = true
