@@ -1,6 +1,6 @@
 # Private messaging backend
 
-The backend supports one text conversation per mutual connection. The iPhone conversation UI is a separate PR; the current app still displays its existing Connections screen. This implementation follows the [approved schema](messaging-schema-proposal.md).
+The backend supports one text conversation per mutual connection. The Messages tab lists conversations; a Message action on each mutual connection opens chat. The UI PR adds text composition, safe send retries, earlier-message paging, and blocking. This implementation follows the [approved schema](messaging-schema-proposal.md).
 
 ## Access and data
 
@@ -42,7 +42,7 @@ An active inbox can move between pages when new messages arrive. The UI must ded
 
 - `supabase/functions/messaging`: server bootstrap, command parsing, response projections, handler, and tests.
 - `supabase/functions/_shared`: verified Auth lookup, bounded HTTP input, and public profile-photo projection/signing shared with existing endpoints.
-- `supabase/migrations/20261018002833_private_messaging.sql`: private tables, indexes, server-only RPCs, and the shared block/send lock.
+- `supabase/migrations/20261018005802_private_messaging.sql`: private tables, indexes, server-only RPCs, and the shared block/send lock.
 - `supabase/tests/messaging.sql`: permission, retry, lifecycle, validation, pagination, and catalog-security checks.
 - `supabase/tests/messaging_concurrency.py`: real concurrent transaction tests using Python's standard library and `psql`.
 
@@ -65,6 +65,29 @@ Use ordinary `PGHOST`, `PGPORT`, `PGUSER`, and `PGDATABASE` settings for the iso
 
 ## Deployment and scope
 
-**Not deployed.** Do not blindly push all migrations: the historical profile migration has a documented local/hosted version mismatch; see [photo deployment notes](private-photos.md). Reconcile that history or apply only the reviewed new migration deliberately. Then deploy `messaging` with its shared dependencies and JWT verification enabled. Deploy the refactored discovery/deletion bundles with their shared Auth dependency as well; the currently hosted bundles remain unchanged until then. Run hosted advisors and authenticated acceptance checks before enabling the UI.
+**Deployed October 17, 2026 (Arizona).** Messaging version 1 and discovery/delete-account version 3 are active with gateway JWT verification. The approved messaging migration is deployed as `20261018005802`; its local filename is aligned to that hosted version, without changing its SQL. Live missing/malformed-token requests return 401, and hosted catalog checks confirm RLS and absent client table/RPC privileges. No real user received a test message. Authenticated two-account acceptance still requires owner device testing.
+
+Do not blindly push all migrations: the historical profile migration has a documented local/hosted version mismatch; see [photo deployment notes](private-photos.md). Reconcile that history or apply only the reviewed new migration deliberately. For fresh projects, apply the reviewed migration and deploy `messaging`, `discovery`, and `delete-account` with their shared dependencies and JWT verification enabled.
 
 No new bucket, paid service, extension, Realtime publication, or Swift dependency is needed. Live subscriptions, push notifications, attachments, message editing/deletion, read receipts, and moderation evidence retention are not implemented. Reporting/moderation and an explicit retention policy remain work before a broader rollout. Keep the existing controlled-pilot scope.
+
+## iPhone implementation
+
+`SignedInView` owns Profile/Discovery/Messages/Settings navigation. `ProfileHomeView` renders only the owner profile; signup no longer passes unrelated services through onboarding. The app root keys the signed-in shell by account UUID. Messaging state belongs to each screen and is reset on disappearance; generation checks discard late results after reset. Drafts and failed-send retry state are memory-only and cleared when leaving chat. An uncertain send may have committed: reopening fetches the server history before composing another message.
+
+`NewToTownCore/Messaging` contains values, cursor precision, text validation, inbox state, and chat state behind `MessagingService`. `NewToTownSupabase/Messaging` supplies an account-bound adapter. It uses the existing shared Auth/session and a lightweight official Functions client whose transport binds the request to that account, then rechecks the account before publishing a response. This avoids the shared SDK transport replacing a captured Authorization header with a newly signed-in account's token. No second Auth/session store is created.
+
+Chat accepts up to 2,000 Unicode code points. While a send is unconfirmed, its text is frozen and Retry send reuses the original UUID/body. Confirmed messages merge by server ID. A 401/404 clears private conversation state and disables composing; failed blocks immediately hide content and offer block retry. Cancelled refreshes preserve already loaded content. List/history pages deduplicate IDs. Pull-to-refresh, reopening, and returning from the background fetch replies; live subscriptions and push remain follow-up work.
+
+Swift tests cover history/inbox paging, cancellation, uncertain sends and recovery, blocking failures, late results after reset, actual SDK HTTP payloads, cursor microseconds, status mapping, and account changes during requests. Debug-only offline UI fixtures exercise the real shell, connection-to-chat navigation, retry controls, sign-out, and a second account. They are compiled out of release builds and never populate Supabase. CI saves the iPhone test result bundle, including a chat screenshot.
+
+Hosted advisors show informational [RLS without policies](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy) findings for the two private tables: this is intentional default-deny access with no client grants; server-only RPC checks enforce access. [Unused index](https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index) notices are expected before messaging traffic. Existing `rls_auto_enable` [anonymous](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable)/[authenticated](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable) execution warnings and disabled [leaked-password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection) are unchanged.
+
+## Phone acceptance
+
+1. Use two consenting real pilot accounts with visible, eligible, mutually connected profiles. Open Discovery → Connections → Message, then return and open the same thread from Messages.
+2. Send text from A. On B, open/refresh the thread and confirm one message with the correct sender. Reply and refresh A. Test a multi-line message, the keyboard/send controls, and earlier-history paging when sufficient messages exist.
+3. Interrupt connectivity during send. Confirm the draft stays frozen and Retry send recovers one server message; reopen/refresh to reconcile an ambiguous response before writing a new message.
+4. Hide or block one participant and refresh the other. Confirm access pauses, composing stops, and private history is cleared. Rejoining after a hide restores the same thread; blocking has no client undo.
+5. Sign out, then sign in as a different account on the same phone. Confirm no previous inbox, chat, draft, or retry state appears.
+6. With disposable consenting test accounts, verify deletion confirmation mentions conversations, cancellation makes no change, and confirmed deletion removes the thread from the other participant after refresh.

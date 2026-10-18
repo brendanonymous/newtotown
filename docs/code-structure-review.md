@@ -45,3 +45,7 @@ Create these files only with their implementations. Keep authorization in the da
 ## Validation baseline
 
 `swift test` passes all 42 tests. Deno formatting checks pass for all 8 function files. Both Deno entry-point checks and all 15 handler tests pass. No new behavior or schema exists in this draft, so there is no messaging test result yet. Existing SQL suites and full iPhone builds were green on the merged PR; they are not represented as newly executed local checks here.
+
+## Implementation follow-through
+
+The iPhone messaging PR introduces `SignedInView` outside onboarding, adds account-bound adapter/wire-contract tests and simulator account-switch coverage, and keeps messaging state in feature models. PR #11 extracted shared server Auth/HTTP and profile-photo helpers when adding the third endpoint. The historical findings above describe the pre-messaging baseline.

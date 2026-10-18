@@ -3,9 +3,6 @@ import SwiftUI
 
 struct OnboardingView: View {
     let model: OnboardingModel?
-    let personalInfoService: (any PersonalInfoService)?
-    let photoService: (any PhotoService)?
-    let discoveryService: (any DiscoveryService)?
     let close: () -> Void
 
     var body: some View {
@@ -13,13 +10,12 @@ struct OnboardingView: View {
             if let model {
                 OnboardingContent(
                     model: model,
-                    personalInfoService: personalInfoService,
-                    photoService: photoService,
-                    discoveryService: discoveryService,
                     close: close
                 )
             } else {
-                ContentUnavailableView("Signup is temporarily unavailable", systemImage: "wrench.and.screwdriver", description: Text("Please try again later. You can still explore the welcome screen."))
+                ContentUnavailableView(
+                    "Signup is temporarily unavailable", systemImage: "wrench.and.screwdriver",
+                    description: Text("Please try again later. You can still explore the welcome screen."))
             }
         }
         .tint(BrandTheme.ink)
@@ -28,54 +24,40 @@ struct OnboardingView: View {
 
 private struct OnboardingContent: View {
     @Bindable var model: OnboardingModel
-    let personalInfoService: (any PersonalInfoService)?
-    let photoService: (any PhotoService)?
-    let discoveryService: (any DiscoveryService)?
     let close: () -> Void
     @State private var email = ""
     @State private var code = ""
     @State private var showsDeletionConfirmation = false
 
     var body: some View {
-        Group {
-            if model.step == .saved {
-                ProfileHomeView(
-                    model: model,
-                    personalInfoService: personalInfoService,
-                    photoService: photoService,
-                    discoveryService: discoveryService,
-                    signOut: signOut,
-                    deleteAccount: { showsDeletionConfirmation = true }
+        signupContent
+            .scrollDismissesKeyboard(.interactively)
+            .foregroundStyle(BrandTheme.ink)
+            .background(BrandTheme.background)
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                BrandNavigationLogo()
+                if model.step == .email || model.step == .code {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Close", action: close).disabled(model.isBusy)
+                    }
+                }
+            }
+            .alert("Delete your account?", isPresented: $showsDeletionConfirmation) {
+                Button("Cancel", role: .cancel) {}
+                Button("Delete account", role: .destructive) {
+                    Task {
+                        await model.deleteAccount()
+                        if model.step == .email { clearSignInFields() }
+                    }
+                }
+            } message: {
+                Text(
+                    "This permanently deletes your account, private profile, and conversations for both participants. You’ll need to create a new account to use newtotown again."
                 )
-            } else {
-                signupContent
             }
-        }
-        .scrollDismissesKeyboard(.interactively)
-        .foregroundStyle(BrandTheme.ink)
-        .background(BrandTheme.background)
-        .navigationTitle("")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            BrandNavigationLogo()
-            if model.step == .email || model.step == .code {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", action: close).disabled(model.isBusy)
-                }
-            }
-        }
-        .alert("Delete your account?", isPresented: $showsDeletionConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete account", role: .destructive) {
-                Task {
-                    await model.deleteAccount()
-                    if model.step == .email { clearSignInFields() }
-                }
-            }
-        } message: {
-            Text("This permanently deletes your account and private profile. You’ll need to create a new account to use newtotown again.")
-        }
-        .interactiveDismissDisabled(model.isBusy)
+            .interactiveDismissDisabled(model.isBusy)
     }
 
     private var signupContent: some View {
@@ -85,7 +67,10 @@ private struct OnboardingContent: View {
                 case .loading:
                     ProgressView("Loading your account…")
                 case .email:
-                    title("Your next friend\nstarts here.", subtitle: "Create an account or sign in with an email code. Meet other men in Scottsdale.")
+                    title(
+                        "Your next friend\nstarts here.",
+                        subtitle:
+                            "Create an account or sign in with an email code. Meet other men in Scottsdale.")
                     TextField("Email address", text: $email)
                         .keyboardType(.emailAddress)
                         .textContentType(.emailAddress)
@@ -96,7 +81,9 @@ private struct OnboardingContent: View {
                         .disabled(model.isBusy)
                     primary("Send sign-in code") { await model.requestCode(email: email) }
                 case .code:
-                    title("Check your inbox.", subtitle: "Enter the code sent to \(model.email). Check spam if you don’t see it.")
+                    title(
+                        "Check your inbox.",
+                        subtitle: "Enter the code sent to \(model.email). Check spam if you don’t see it.")
                     TextField("Email code", text: $code)
                         .keyboardType(.numberPad)
                         .textContentType(.oneTimeCode)
@@ -105,7 +92,8 @@ private struct OnboardingContent: View {
                         .disabled(model.isBusy)
                     primary("Verify email") { await model.verify(code: code) }
                     TimelineView(.periodic(from: .now, by: 1)) { context in
-                        let seconds = max(0, Int(ceil(model.resendAvailableAt.timeIntervalSince(context.date))))
+                        let seconds = max(
+                            0, Int(ceil(model.resendAvailableAt.timeIntervalSince(context.date))))
                         Button(seconds > 0 ? "Resend in \(seconds)s" : "Resend code") {
                             Task { await model.resendCode() }
                         }
@@ -128,7 +116,7 @@ private struct OnboardingContent: View {
                     primary("Save my profile") { await model.saveProfile() }
                     accountActions
                 case .saved:
-                    EmptyView() // The saved account uses the profile home tabs.
+                    EmptyView()  // AppEntryView routes saved accounts into SignedInView.
                 case .restoreFailed:
                     title("Let’s reconnect.", subtitle: "We haven’t changed your saved profile.")
                     primary("Try again") { await model.restore() }
