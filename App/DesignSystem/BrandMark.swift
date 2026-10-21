@@ -9,7 +9,7 @@ struct BrandMark: View {
             .resizable()
             .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: size * 0.24, style: .continuous))
-            .accessibilityLabel("newtotown")
+            .accessibilityLabel("NewToTown")
     }
 }
 

@@ -137,7 +137,7 @@ struct ChatView: View {
                 .opacity(model.canSend ? 1 : 0.4)
             }
             if model.draft.unicodeScalars.count > MessageText.maximumLength {
-                Text("Keep your message under 2,000 characters.").font(.caption).foregroundStyle(.red)
+                Text("Keep your message under \(MessageText.maximumLength) characters.").font(.caption).foregroundStyle(.red)
             }
         }
         .padding(.horizontal, 28).padding(.vertical, 12)

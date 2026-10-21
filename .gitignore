@@ -8,3 +8,12 @@ Configuration/Local.xcconfig
 .env.*
 !.env.example
 supabase/.temp/
+
+# Local AI assistant instructions
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+CLAUDE.local.md
+GEMINI.md
+SKILL.md
+.github/copilot-instructions.md

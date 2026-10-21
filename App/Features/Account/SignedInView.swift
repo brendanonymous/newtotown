@@ -15,13 +15,7 @@ struct SignedInView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            NavigationStack {
-                ProfileHomeView(
-                    model: account, photoService: photoService, isSelected: selectedTab == .profile
-                )
-                .toolbar { BrandNavigationLogo() }
-            }
-            .tabItem { Label("Profile", systemImage: "person.crop.circle") }.tag(Tab.profile)
+            
             if let discoveryService {
                 NavigationStack {
                     DiscoveryView(
@@ -32,6 +26,7 @@ struct SignedInView: View {
                 }
                 .tabItem { Label("Discovery", systemImage: "person.2") }.tag(Tab.discovery)
             }
+            
             if let messagingService {
                 NavigationStack {
                     ConversationListView(
@@ -51,6 +46,14 @@ struct SignedInView: View {
                 .toolbar { BrandNavigationLogo() }
             }
             .tabItem { Label("Settings", systemImage: "gearshape") }.tag(Tab.settings)
+            
+            NavigationStack {
+                ProfileHomeView(
+                    model: account, photoService: photoService, isSelected: selectedTab == .profile
+                )
+                .toolbar { BrandNavigationLogo() }
+            }
+            .tabItem { Label("Profile", systemImage: "person.crop.circle") }.tag(Tab.profile)
         }
         .tint(BrandTheme.ink)
         .foregroundStyle(BrandTheme.ink)
