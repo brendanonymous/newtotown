@@ -17,3 +17,7 @@ Each increment gets a separate reviewable PR. The foundation is not the investor
 - Before collecting user data: support contact, privacy policy, community rules, selfie retention policy, and a designated reviewer.
 
 The [schema](messaging-schema-proposal.md) is approved. The [backend](messaging.md) is deployed; the iPhone messaging UI, account-bound adapter, and simulator journeys are in review. Live updates, push notifications, and the broader safety workflow remain follow-ups. See the [code structure review](code-structure-review.md) for the directory and dependency boundaries.
+
+## Next UI and messaging iterations
+
+See the [phased PR checklist](ui-messaging-roadmap.md) for profile toolbar navigation, separate Connections, conversation transitions, age preferences, and the 500-character message limit.

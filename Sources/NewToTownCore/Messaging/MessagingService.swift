@@ -109,7 +109,7 @@ public protocol MessagingService: Sendable {
 }
 
 public enum MessageText {
-    public static let maximumLength = 2000
+    public static let maximumLength = 500
     public static func isValid(_ value: String) -> Bool {
         let whitespace = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "\u{FEFF}"))
         return !value.trimmingCharacters(in: whitespace).isEmpty
