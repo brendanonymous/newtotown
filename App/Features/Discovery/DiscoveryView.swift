@@ -3,12 +3,19 @@ import SwiftUI
 
 struct DiscoveryView: View {
     let isSelected: Bool
+    let accountID: UUID?
+    let messagingService: (any MessagingService)?
     @State private var model: DiscoveryModel
     @State private var showsMatches = false
     @State private var blockTarget: DiscoveryProfile?
     @Environment(\.scenePhase) private var scenePhase
 
-    init(service: any DiscoveryService, isSelected: Bool) {
+    init(
+        service: any DiscoveryService, isSelected: Bool, accountID: UUID? = nil,
+        messagingService: (any MessagingService)? = nil
+    ) {
+        self.accountID = accountID
+        self.messagingService = messagingService
         self.isSelected = isSelected
         _model = State(initialValue: DiscoveryModel(service: service))
     }
@@ -66,15 +73,20 @@ struct DiscoveryView: View {
         .onChange(of: scenePhase) { _, phase in
             if isSelected && phase == .active { Task { await model.load() } }
         }
-        .confirmationDialog("Block this profile?", isPresented: Binding(
-            get: { blockTarget != nil }, set: { if !$0 { blockTarget = nil } }
-        ), titleVisibility: .visible) {
+        .confirmationDialog(
+            "Block this profile?",
+            isPresented: Binding(
+                get: { blockTarget != nil }, set: { if !$0 { blockTarget = nil } }
+            ), titleVisibility: .visible
+        ) {
             if let profile = blockTarget {
                 Button("Block \(profile.firstName)", role: .destructive) {
                     Task { await model.block(profile.id) }
                 }
             }
-        } message: { Text("You won’t see each other in discovery or connections.") }
+        } message: {
+            Text("You won’t see each other in discovery, connections, or messages.")
+        }
     }
 
     @ViewBuilder private func visibilityControls(_ feed: DiscoveryFeed) -> some View {
@@ -94,9 +106,16 @@ struct DiscoveryView: View {
                 Text("When you both tap the check, you’ll appear here.")
             } else {
                 Text("You both connected.").font(.title2)
-                Text("Messaging is coming next.").foregroundStyle(BrandTheme.secondaryInk)
                 ForEach(profiles) { profile in
                     DiscoveryProfileCard(profile: profile)
+                    if let messagingService, let accountID {
+                        NavigationLink {
+                            ChatView(
+                                accountID: accountID, target: .peer(profile.id), service: messagingService)
+                        } label: {
+                            Label("Message \(profile.firstName)", systemImage: "bubble.left")
+                        }
+                    }
                     Button("Block \(profile.firstName)", role: .destructive) { blockTarget = profile }
                     Divider()
                 }
@@ -105,7 +124,9 @@ struct DiscoveryView: View {
     }
 
     private func decisionButton(_ choice: ConnectionChoice, symbol: String, name: String) -> some View {
-        Button { Task { await model.decide(choice) } } label: {
+        Button {
+            Task { await model.decide(choice) }
+        } label: {
             Image(systemName: symbol).font(.title2.weight(.semibold))
                 .frame(width: 64, height: 64)
                 .foregroundStyle(choice == .connect ? BrandTheme.background : BrandTheme.ink)

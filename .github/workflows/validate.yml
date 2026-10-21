@@ -23,12 +23,21 @@ jobs:
           -configuration Debug -destination 'generic/platform=iOS Simulator'
           -derivedDataPath DerivedData CODE_SIGNING_ALLOWED=NO build
 
-      - name: Test signup entry on iPhone simulator
+      - name: Test signup and messaging journeys on iPhone simulator
         run: |
           simulator_id=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; data=json.load(sys.stdin); print(next(d["udid"] for group in data["devices"].values() for d in group if d["name"].startswith("iPhone")))')
           xcodebuild -project NewToTown.xcodeproj -scheme NewToTown \
             -configuration Debug -destination "platform=iOS Simulator,id=$simulator_id" \
-            -derivedDataPath DerivedData CODE_SIGNING_ALLOWED=NO test
+            -derivedDataPath DerivedData -resultBundlePath UITestResults.xcresult CODE_SIGNING_ALLOWED=NO test
+
+      - name: Save iPhone UI test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iphone-ui-results
+          path: UITestResults.xcresult
+          retention-days: 7
+          if-no-files-found: ignore
 
   profile-policies:
     runs-on: ubuntu-latest

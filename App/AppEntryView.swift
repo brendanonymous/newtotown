@@ -7,16 +7,23 @@ struct AppEntryView: View {
     let personalInfoService: (any PersonalInfoService)?
     let photoService: (any PhotoService)?
     let discoveryService: (any DiscoveryService)?
+    let makeMessagingService: (@Sendable (UUID) -> any MessagingService)?
     @State private var showsSignup = false
 
     var body: some View {
         Group {
-            if showsSignup || model.isSignedIn || model.step == .loading || model.step == .restoreFailed {
+            if model.step == .saved, let accountID = model.accountID {
+                SignedInView(
+                    account: model, accountID: accountID, personalInfoService: personalInfoService,
+                    photoService: photoService, discoveryService: discoveryService,
+                    messagingService: makeMessagingService?(accountID)
+                )
+                .id(accountID)
+            } else if showsSignup || model.isSignedIn || model.step == .loading
+                || model.step == .restoreFailed
+            {
                 OnboardingView(
-                    model: model,
-                    personalInfoService: personalInfoService,
-                    photoService: photoService,
-                    discoveryService: discoveryService
+                    model: model
                 ) {
                     model.changeEmail()
                     showsSignup = false
