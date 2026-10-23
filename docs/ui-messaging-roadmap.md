@@ -2,7 +2,7 @@
 
 Status: proposed October 21, 2026. Each item below is one focused implementation PR; check it off and add its PR URL when merged. No schema or deployed behavior changes are included in this plan.
 
-Target bottom navigation: **Profile · Discovery · Connections · Messages**. Profile gets Preferences immediately left of Settings at the top right. Preferences arrives with its working age screen, rather than a placeholder button.
+Target bottom navigation, preserving the owner’s revised order: **Discovery · Connections · Messages · Profile**. Profile gets Preferences immediately left of Settings at the top right. Preferences arrives with its working age screen, rather than a placeholder button.
 
 ## PR checklist
 
@@ -44,6 +44,6 @@ Review/merge in this order; each PR targets the preceding branch until that depe
 - Connections tab: [#16](https://github.com/brendanonymous/newtotown/pull/16).
 - First-message list transition: [#17](https://github.com/brendanonymous/newtotown/pull/17).
 - Approved age schema, filtering, and adapter: [#18](https://github.com/brendanonymous/newtotown/pull/18).
-- Preferences editor and profile icon: follow-up UI PR.
+- Preferences editor and profile icon: [#19](https://github.com/brendanonymous/newtotown/pull/19).
 
 Age schema/behavior was approved October 22. The first-successful-message rule was confirmed October 21. Backend deployments and TestFlight uploads remain separate from PR merges. The owner's 500-character client change is retained; server limit enforcement is not included in these remaining phases.

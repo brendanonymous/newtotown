@@ -115,6 +115,10 @@ final class MessagingJourneyTests: XCTestCase {
         preferences.tap()
         XCTAssertTrue(maximum.waitForExistence(timeout: 10))
         XCTAssertEqual(maximum.value as? String, "40")
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "Saved discovery age preferences"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
     }
 
     @MainActor private func launchFixture(emptyChat: Bool = false) -> XCUIApplication {
