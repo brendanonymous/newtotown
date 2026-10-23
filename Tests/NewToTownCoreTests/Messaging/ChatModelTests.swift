@@ -35,6 +35,43 @@ import Testing
     #expect(model.nextCursor == nil)
 }
 
+@Test @MainActor func draftCapsTypingAndPastingButStillAllowsEditingAndSending() async {
+    let service = MessagingTestService()
+    let model = ChatModel(
+        accountID: messagingOwner, target: .peer(messagingPeer.id), messagingService: service)
+    await model.load()
+    let full = String(repeating: "a", count: MessageText.maximumLength)
+    model.draft = full
+    model.draft += "b"
+    #expect(!model.canSend)
+    model.limitDraft()
+    #expect(model.draft == full && model.canSend)
+    model.draft.removeLast()
+    model.draft += "c"
+    #expect(model.draft == String(full.dropLast()) + "c")
+    model.draft = String(repeating: "x", count: 700)
+    model.limitDraft()
+    #expect(model.draft == String(repeating: "x", count: 500))
+    await model.send()
+    #expect(service.sendCalls.first?.1 == String(repeating: "x", count: 500))
+}
+
+@Test @MainActor func draftLimitNeverSplitsComposedCharacters() {
+    let model = ChatModel(
+        accountID: messagingOwner, target: .peer(messagingPeer.id), messagingService: MessagingTestService())
+    let prefix = String(repeating: "a", count: 499)
+    model.draft = prefix + "👨‍👩‍👧‍👦"
+    model.limitDraft()
+    #expect(model.draft == prefix)
+    model.draft = prefix + "e\u{301}"
+    model.limitDraft()
+    #expect(model.draft == prefix)
+    model.draft = String(repeating: "😀", count: 501)
+    model.limitDraft()
+    #expect(model.draft == String(repeating: "😀", count: 500))
+    #expect(MessageText.isValid(model.draft))
+}
+
 @Test @MainActor func uncertainSendReusesIdentityEvenAfterRefreshRecoversCommittedMessage() async throws {
     let service = MessagingTestService()
     let model = ChatModel(

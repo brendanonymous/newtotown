@@ -169,11 +169,14 @@ struct ChatView: View {
                             model.isSending || model.isLoading)
                 }
             }
+
             HStack(alignment: .bottom, spacing: 12) {
                 TextField("Message", text: $model.draft, axis: .vertical)
-                    .lineLimit(1...5).textFieldStyle(.roundedBorder)
+                    .lineLimit(1...5).textFieldStyle(BrandTextFieldStyle())
+                    .onChange(of: model.draft) { model.limitDraft() }
                     .accessibilityIdentifier("chat.composer")
                     .disabled(model.pending != nil || model.isSending)
+
                 Button {
                     Task { await model.send() }
                 } label: {
@@ -183,10 +186,15 @@ struct ChatView: View {
                 .disabled(!model.canSend)
                 .opacity(model.canSend ? 1 : 0.4)
             }
-            if model.draft.unicodeScalars.count > MessageText.maximumLength {
-                Text("Keep your message under \(MessageText.maximumLength) characters.").font(.caption)
-                    .foregroundStyle(.red)
-            }
+
+            Text(
+                model.draft.unicodeScalars.count == MessageText.maximumLength
+                    ? "Character limit reached · \(MessageText.maximumLength)/\(MessageText.maximumLength)"
+                    : "\(model.draft.unicodeScalars.count)/\(MessageText.maximumLength)"
+            )
+            .font(.caption)
+            .foregroundStyle(BrandTheme.secondaryInk)
+            .accessibilityIdentifier("chat.characterCount")
         }
         .padding(.horizontal, 28).padding(.vertical, 12)
         .background(BrandTheme.background)
@@ -204,7 +212,8 @@ private struct MessageBubble: View {
                 .foregroundStyle(isOwn ? BrandTheme.background : BrandTheme.ink)
                 .background(
                     isOwn ? BrandTheme.ink : BrandTheme.sage.opacity(0.25),
-                    in: RoundedRectangle(cornerRadius: 16))
+                    in: RoundedRectangle(cornerRadius: BrandTheme.textCornerRadius))
+
             if let timestamp, let date = MessageText.date(timestamp) {
                 Text(date, format: .dateTime.month(.abbreviated).day().hour().minute())
                     .font(.caption2).foregroundStyle(BrandTheme.secondaryInk)
