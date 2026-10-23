@@ -43,5 +43,6 @@ public enum ProfileReportingError: Error, Equatable, Sendable {
 
 /// The implementation is bound to the signed-in reporter; the command has no caller identity.
 public protocol ProfileReportingService: Sendable {
+    /// A receipt confirms that the report and pair-specific contact prevention committed together.
     func submit(_ report: ProfileReport) async throws -> UUID
 }

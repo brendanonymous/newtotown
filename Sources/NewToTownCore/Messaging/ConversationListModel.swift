@@ -9,9 +9,17 @@ public final class ConversationListModel {
     public private(set) var hasLoaded = false
     public private(set) var errorMessage: String?
     private let service: any MessagingService
+    private var excludedProfileIDs: Set<UUID> = []
     private var generation = 0
 
     public init(service: any MessagingService) { self.service = service }
+
+    public func excludeProfiles(_ ids: Set<UUID>) {
+        guard !ids.isSubset(of: excludedProfileIDs) else { return }
+        excludedProfileIDs.formUnion(ids)
+        conversations.removeAll { excludedProfileIDs.contains($0.participant.id) }
+        nextCursor = nil
+    }
 
     public func load(older: Bool = false) async {
         guard !isLoading, !Task.isCancelled, !older || nextCursor != nil else { return }
@@ -29,13 +37,18 @@ public final class ConversationListModel {
             // Activity can move a conversation between pages; keep each ID once.
             var unique = Dictionary(
                 (older ? conversations : []).map { ($0.id, $0) }, uniquingKeysWith: { _, new in new })
-            for conversation in page.conversations { unique[conversation.id] = conversation }
+            for conversation in page.conversations
+            where !excludedProfileIDs.contains(conversation.participant.id) {
+                unique[conversation.id] = conversation
+            }
             conversations = unique.values.sorted {
                 let first = MessageText.date($0.lastActivityAt) ?? .distantPast
                 let second = MessageText.date($1.lastActivityAt) ?? .distantPast
                 return first == second ? $0.id.uuidString > $1.id.uuidString : first > second
             }
-            nextCursor = page.nextCursor
+            nextCursor =
+                page.conversations.contains(where: { excludedProfileIDs.contains($0.participant.id) })
+                ? nil : page.nextCursor
             hasLoaded = true
         } catch {
             guard current == generation else { return }

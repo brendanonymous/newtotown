@@ -12,6 +12,7 @@ struct SignedInView: View {
     let preferencesService: (any DiscoveryPreferencesService)?
     let reportingService: (any ProfileReportingService)?
     @State private var discoveryRevision = 0
+    @State private var reportedProfileIDs: Set<UUID> = []
     private enum Tab: Hashable { case profile, discovery, connections, messages }
     @State private var selectedTab = Tab.profile
     @State private var confirmsDeletion = false
@@ -22,7 +23,8 @@ struct SignedInView: View {
             if let discoveryService {
                 NavigationStack {
                     DiscoveryView(
-                        service: discoveryService, isSelected: selectedTab == .discovery
+                        service: discoveryService, isSelected: selectedTab == .discovery,
+                        reportedProfileIDs: reportedProfileIDs
                     )
                     .id(discoveryRevision)
                     .navigationTitle("").navigationBarTitleDisplayMode(.inline)
@@ -33,7 +35,8 @@ struct SignedInView: View {
                     ConnectionsView(
                         service: discoveryService, accountID: accountID,
                         messagingService: messagingService, reportingService: reportingService,
-                        isSelected: selectedTab == .connections
+                        isSelected: selectedTab == .connections, reportedProfileIDs: reportedProfileIDs,
+                        onReportSubmitted: { reportedProfileIDs.insert($0) }
                     )
                     .navigationTitle("").navigationBarTitleDisplayMode(.inline)
                     .toolbar { BrandNavigationLogo() }
@@ -44,7 +47,9 @@ struct SignedInView: View {
             if let messagingService {
                 NavigationStack {
                     ConversationListView(
-                        accountID: accountID, service: messagingService, isSelected: selectedTab == .messages
+                        accountID: accountID, service: messagingService, isSelected: selectedTab == .messages,
+                        reportingService: reportingService, reportedProfileIDs: reportedProfileIDs,
+                        onReportSubmitted: { reportedProfileIDs.insert($0) }
                     )
                     .navigationTitle("").navigationBarTitleDisplayMode(.inline)
                     .toolbar { BrandNavigationLogo() }

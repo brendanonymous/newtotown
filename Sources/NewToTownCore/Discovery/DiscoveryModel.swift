@@ -7,9 +7,23 @@ public final class DiscoveryModel {
     public private(set) var isBusy = false
     public private(set) var errorMessage: String?
     private let service: any DiscoveryService
+    private var excludedProfileIDs: Set<UUID> = []
     private var refreshWaiters: [CheckedContinuation<Void, Never>] = []
 
     public init(service: any DiscoveryService) { self.service = service }
+
+    /// Confirmed reports remove cached people immediately, including late read responses.
+    public func excludeProfiles(_ ids: Set<UUID>) {
+        excludedProfileIDs.formUnion(ids)
+        if let feed { self.feed = excludingReportedProfiles(from: feed) }
+    }
+
+    private func excludingReportedProfiles(from feed: DiscoveryFeed) -> DiscoveryFeed {
+        DiscoveryFeed(
+            state: feed.state, visible: feed.visible,
+            candidates: feed.candidates.filter { !excludedProfileIDs.contains($0.id) },
+            matches: feed.matches.filter { !excludedProfileIDs.contains($0.id) })
+    }
 
     public func load() async {
         // A returning tab may refresh before its cancelled request has unwound.
@@ -52,7 +66,7 @@ public final class DiscoveryModel {
             if Task.isCancelled {
                 finishCancellation(preserveFeed: preserveOnCancellation)
             } else {
-                feed = updated
+                feed = excludingReportedProfiles(from: updated)
             }
         } catch {
             if Task.isCancelled {

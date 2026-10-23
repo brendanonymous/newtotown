@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import NewToTownCore
 
 @MainActor private final class TestDiscoveryService: DiscoveryService {
@@ -35,7 +36,8 @@ import Testing
     }
 }
 
-private let localFriend = DiscoveryProfile(id: UUID(), firstName: "Alex", jobTitle: "Designer",
+private let localFriend = DiscoveryProfile(
+    id: UUID(), firstName: "Alex", jobTitle: "Designer",
     goal: "Find a hiking buddy.", city: "Scottsdale", photoURL: URL(string: "https://example.com/photo.jpg")!)
 
 @Test @MainActor func discoveryJoinAndHideAreChoicesWithoutRepeatedAgreement() async {
@@ -198,4 +200,28 @@ func cancelledDiscoveryRefreshKeepsLoadedFeedAndCanRefreshAgain(throwsCancellati
     #expect(model.feed == nil)
     #expect(model.errorMessage != nil)
     #expect(!model.isBusy)
+}
+
+@Test @MainActor func confirmedReportPrunesDiscoveryAndConnectionsDespiteLateRead() async {
+    let service = TestDiscoveryService()
+    let other = DiscoveryProfile(
+        id: UUID(), firstName: "Sam", jobTitle: "Teacher", goal: "Go hiking.",
+        city: "Scottsdale", photoURL: localFriend.photoURL)
+    service.feed = DiscoveryFeed(
+        state: .ready, visible: true, candidates: [localFriend, other], matches: [localFriend, other])
+    let model = DiscoveryModel(service: service)
+    await model.load()
+    var response: CheckedContinuation<DiscoveryFeed, Never>?
+    service.onLoad = { await withCheckedContinuation { response = $0 } }
+    let refresh = Task { await model.load() }
+    while response == nil { await Task.yield() }
+    model.excludeProfiles([localFriend.id])
+    #expect(model.feed?.candidates.map(\.id) == [other.id])
+    #expect(model.feed?.matches.map(\.id) == [other.id])
+    response?.resume(returning: service.feed)
+    await refresh.value
+    #expect(model.feed?.candidates.map(\.id) == [other.id])
+    #expect(model.feed?.matches.map(\.id) == [other.id])
+    await model.decide(.connect)
+    #expect(service.decisions == [other.id])
 }

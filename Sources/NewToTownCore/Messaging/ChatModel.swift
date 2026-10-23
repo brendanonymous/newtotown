@@ -24,12 +24,30 @@ public final class ChatModel {
     private let target: ConversationTarget
     private let messagingService: any MessagingService
     private var generation = 0
+    private var excludedProfileIDs: Set<UUID> = []
     private var blockedPeer: UUID?
 
     public init(accountID: UUID, target: ConversationTarget, messagingService: any MessagingService) {
         self.accountID = accountID
         self.target = target
         self.messagingService = messagingService
+    }
+
+    public func excludeProfiles(_ ids: Set<UUID>) {
+        excludedProfileIDs.formUnion(ids)
+        let peer: UUID?
+        if let conversation {
+            peer = conversation.participant.id
+        } else if case .peer(let id) = target {
+            peer = id
+        } else {
+            peer = nil
+        }
+        guard let peer, excludedProfileIDs.contains(peer) else { return }
+        generation += 1
+        clearContent()
+        isUnavailable = true
+        errorMessage = "This connection has been removed."
     }
 
     public var canSend: Bool {
@@ -66,6 +84,9 @@ public final class ChatModel {
                 interruptedLoad()
                 return
             }
+            guard !excludedProfileIDs.contains(page.conversation.participant.id) else {
+                throw MessagingError.unavailable
+            }
             conversation = page.conversation
             messages = merge(older ? messages : [], with: page.messages)
             nextCursor = page.nextCursor
@@ -90,7 +111,8 @@ public final class ChatModel {
         sendError = nil
         defer { if current == generation { isSending = false } }
         do {
-            let sent = try await messagingService.send(in: conversation.id, retryID: pending.id, body: pending.body)
+            let sent = try await messagingService.send(
+                in: conversation.id, retryID: pending.id, body: pending.body)
             guard current == generation else { return }
             guard !Task.isCancelled else {
                 sendError = "Send was interrupted. Retry the same message safely."

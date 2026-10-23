@@ -4,7 +4,10 @@ import SwiftUI
 struct ChatView: View {
     @State private var model: ChatModel
     private let messagingService: any MessagingService
-    let reportingService: (any ProfileReportingService)?
+    private let reportingService: (any ProfileReportingService)?
+    let reportedProfileIDs: Set<UUID>
+    let onReportSubmitted: (UUID) -> Void
+    @Environment(\.dismiss) private var dismiss
     @State private var reportTarget: DiscoveryProfile?
     @State private var showsProfile = false
     @Environment(\.scenePhase) private var scenePhase
@@ -13,11 +16,16 @@ struct ChatView: View {
         accountID: UUID,
         target: ConversationTarget,
         messagingService: any MessagingService,
-        reportingService: (any ProfileReportingService)?
+        reportingService: (any ProfileReportingService)?,
+        reportedProfileIDs: Set<UUID>,
+        onReportSubmitted: @escaping (UUID) -> Void
     ) {
         self.messagingService = messagingService
         self.reportingService = reportingService
-        _model = State(initialValue: ChatModel(accountID: accountID, target: target, service: service))
+        self.reportedProfileIDs = reportedProfileIDs
+        self.onReportSubmitted = onReportSubmitted
+        _model = State(
+            initialValue: ChatModel(accountID: accountID, target: target, messagingService: messagingService))
     }
 
     var body: some View {
@@ -61,22 +69,36 @@ struct ChatView: View {
                 }
             }
         }
-        .confirmationDialog("Block this connection?", isPresented: $confirmsBlock, titleVisibility: .visible)
-        {
-            Button("Block connection", role: .destructive) { Task { await model.block() } }
-        } message: {
-            Text("You won’t see each other in discovery, connections, or messages.")
+        .sheet(item: $reportTarget, onDismiss: { Task { await model.load() } }) { profile in
+            if let reportingService {
+                ReportProfileView(profile: profile, service: reportingService) {
+                    model.reset()
+                    onReportSubmitted(profile.id)
+                    dismiss()
+                }
+            }
         }
         .navigationDestination(isPresented: $showsProfile) {
             if let conversation = model.conversation {
-                ConnectionProfileView(conversationID: conversation.id, service: service)
+                ConnectionProfileView(conversationID: conversation.id, service: messagingService)
             }
         }
-        .task { if !showsProfile { await model.load() } }
-        .onChange(of: scenePhase) { _, phase in
-            if phase == .active && !showsProfile { Task { await model.load() } }
+        .task {
+            model.excludeProfiles(reportedProfileIDs)
+            if !showsProfile && reportTarget == nil { await model.load() }
         }
-        .onDisappear { if !showsProfile { model.reset() } }
+        .onChange(of: reportedProfileIDs) { _, ids in
+            let removesCurrent = model.conversation.map { ids.contains($0.participant.id) } ?? false
+            model.excludeProfiles(ids)
+            if removesCurrent {
+                showsProfile = false
+                dismiss()
+            }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active && !showsProfile && reportTarget == nil { Task { await model.load() } }
+        }
+        .onDisappear { if !showsProfile && reportTarget == nil { model.reset() } }
         .privacySensitive()
     }
 
@@ -116,15 +138,12 @@ struct ChatView: View {
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                     if model.isLoading { ProgressView() }
-                    if model.isBlocking { ProgressView("Blocking…") }
                     if let error = model.errorMessage {
                         Text(error).font(.callout).foregroundStyle(
                             model.isUnavailable ? BrandTheme.secondaryInk : .red
                         )
                         .accessibilityIdentifier("chat.error")
-                        if model.blockFailed {
-                            Button("Try blocking again") { Task { await model.block() } }
-                        } else if !model.isUnavailable {
+                        if !model.isUnavailable {
                             Button("Try again") { Task { await model.load() } }
                         }
                     }

@@ -25,7 +25,8 @@ import Testing
         MessagePage(conversation: messagingThread, messages: [newer], nextCursor: cursor),
         MessagePage(conversation: messagingThread, messages: [newer, older], nextCursor: nil),
     ]
-    let model = ChatModel(accountID: messagingOwner, target: .peer(messagingPeer.id), service: service)
+    let model = ChatModel(
+        accountID: messagingOwner, target: .peer(messagingPeer.id), messagingService: service)
     await model.load()
     await model.load(older: true)
     #expect(service.historyCursors.count == 2)
@@ -37,7 +38,7 @@ import Testing
 @Test @MainActor func uncertainSendReusesIdentityEvenAfterRefreshRecoversCommittedMessage() async throws {
     let service = MessagingTestService()
     let model = ChatModel(
-        accountID: messagingOwner, target: .conversation(messagingThread.id), service: service)
+        accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
     await model.load()
     model.draft = "Coffee on Saturday?"
     var committed: ChatMessage?
@@ -67,7 +68,7 @@ import Testing
 @Test @MainActor func unavailableConversationClearsMessagesDraftAndPendingSend() async {
     let service = MessagingTestService()
     let model = ChatModel(
-        accountID: messagingOwner, target: .conversation(messagingThread.id), service: service)
+        accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
     await model.load()
     model.draft = "A private draft"
     service.onSend = { _, _ in throw MessagingError.connection }
@@ -81,7 +82,7 @@ import Testing
 @Test @MainActor func leavingAccountRejectsLateHistoryAndAllowsFreshReload() async {
     let service = MessagingTestService()
     let model = ChatModel(
-        accountID: messagingOwner, target: .conversation(messagingThread.id), service: service)
+        accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
     let started = AsyncStream<Void>.makeStream()
     var events = started.stream.makeAsyncIterator()
     var response: CheckedContinuation<MessagePage, any Error>?
@@ -107,7 +108,7 @@ import Testing
 @Test @MainActor func leavingAccountRejectsLateSendResultAndClearsRetryState() async throws {
     let service = MessagingTestService()
     let model = ChatModel(
-        accountID: messagingOwner, target: .conversation(messagingThread.id), service: service)
+        accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
     await model.load()
     let started = AsyncStream<Void>.makeStream()
     var events = started.stream.makeAsyncIterator()
@@ -136,7 +137,7 @@ import Testing
 @Test @MainActor func failedBlockHidesPrivateContentAndRetriesOnlyTheBlock() async {
     let service = MessagingTestService()
     let model = ChatModel(
-        accountID: messagingOwner, target: .conversation(messagingThread.id), service: service)
+        accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
     await model.load()
     model.draft = "Private draft"
     service.blockFails = true
@@ -157,10 +158,42 @@ import Testing
         throw CancellationError()
     }
     let model = ChatModel(
-        accountID: messagingOwner, target: .conversation(messagingThread.id), service: service)
+        accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
     await Task { await model.load() }.value
     #expect(!model.isLoading && model.errorMessage != nil)
     service.onHistory = nil
     await model.load()
     #expect(model.conversation != nil && model.errorMessage == nil)
+}
+
+@Test @MainActor func confirmedReportInvalidatesAnInflightSendAndClearsOnlyItsChat() async {
+    let service = MessagingTestService()
+    let model = ChatModel(
+        accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
+    await model.load()
+    model.draft = "Unsent plan"
+    model.excludeProfiles([UUID()])
+    #expect(model.conversation != nil && model.draft == "Unsent plan" && !model.isUnavailable)
+    var response: CheckedContinuation<ChatMessage, Never>?
+    service.onSend = { _, _ in await withCheckedContinuation { response = $0 } }
+    let sending = Task { await model.send() }
+    while response == nil { await Task.yield() }
+    model.excludeProfiles([messagingPeer.id])
+    let retry = service.sendCalls[0].0
+    response?.resume(
+        returning: ChatMessage(
+            id: UUID(), conversationID: messagingThread.id,
+            senderID: messagingOwner, clientMessageID: retry, body: "Unsent plan", createdAt: messagingTime))
+    await sending.value
+    #expect(model.conversation == nil && model.messages.isEmpty && model.draft.isEmpty)
+    #expect(model.pending == nil && model.isUnavailable && !model.canSend)
+}
+
+@Test @MainActor func reportedPeerIsRejectedWhenAnUnknownThreadFinishesLoading() async {
+    let service = MessagingTestService()
+    let model = ChatModel(
+        accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
+    model.excludeProfiles([messagingPeer.id])
+    await model.load()
+    #expect(model.conversation == nil && model.messages.isEmpty && model.isUnavailable)
 }

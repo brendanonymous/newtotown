@@ -3,11 +3,13 @@ import SwiftUI
 
 struct ReportProfileView: View {
     let name: String
+    let onSubmitted: () -> Void
     @State private var model: ReportProfileModel
     @Environment(\.dismiss) private var dismiss
 
-    init(profile: DiscoveryProfile, service: any ProfileReportingService) {
+    init(profile: DiscoveryProfile, service: any ProfileReportingService, onSubmitted: @escaping () -> Void) {
         name = profile.firstName
+        self.onSubmitted = onSubmitted
         _model = State(initialValue: ReportProfileModel(targetID: profile.id, service: service))
     }
 
@@ -17,7 +19,7 @@ struct ReportProfileView: View {
                 if model.receiptID != nil {
                     Section {
                         Label("Report submitted", systemImage: "checkmark.circle")
-                        Text("Thank you for letting us know. Reporting does not block this connection.")
+                        Text("Your connection has been removed. You can no longer see or message each other.")
                         Button("Done") { dismiss() }
                     }
                 } else {
@@ -38,8 +40,10 @@ struct ReportProfileView: View {
                             .font(.caption).foregroundStyle(BrandTheme.secondaryInk)
                     }
                     Section {
-                        Text("Your report is private and does not automatically block this connection.")
-                            .font(.callout)
+                        Text(
+                            "Submitting a report removes this connection and prevents further contact between you. The report is private."
+                        )
+                        .font(.callout)
                         if let error = model.errorMessage { Text(error).foregroundStyle(.red) }
                         Button(model.pending == nil ? "Submit report" : "Retry submission") {
                             Task { await model.submit() }
@@ -51,11 +55,20 @@ struct ReportProfileView: View {
                 }
             }
             .navigationTitle("Report \(name)").navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } } }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }.disabled(model.isSending)
+                }
+            }
             .scrollContentBackground(.hidden)
             .background(BrandTheme.background).foregroundStyle(BrandTheme.ink)
         }
-        .onDisappear { model.reset() }
+        .interactiveDismissDisabled(model.isSending)
+        .onDisappear {
+            let submitted = model.receiptID != nil
+            model.reset()
+            if submitted { onSubmitted() }
+        }
         .privacySensitive()
     }
 }
