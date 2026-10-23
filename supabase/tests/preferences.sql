@@ -42,6 +42,25 @@ do $$ begin
     if private.discovery_age_allowed('30000000-0000-0000-0000-000000000001','30000000-0000-0000-0000-000000000003') then raise exception 'Tomorrow birthday included early'; end if;
 end $$;
 reset role;
+-- Filtering happens before the twenty-card limit, even with many older out-of-range rows.
+insert into auth.users(id)
+select ('40000000-0000-0000-0000-' || lpad(i::text, 12, '0'))::uuid from generate_series(1,31) i;
+insert into public.profiles(id,first_name,job_title,goal,date_of_birth,city,platonic_agreement,created_at)
+select id,'Alex','Designer','Find a coffee buddy.',
+    ((current_timestamp at time zone 'UTC')::date - case when right(id::text,2)='31' then interval '30 years' else interval '20 years' end)::date,
+    'Scottsdale',true,now() - interval '1 day'
+from auth.users where id::text like '40000000-%';
+insert into storage.objects(bucket_id,name)
+select 'private-photos',id::text || '/profile.jpg' from public.profiles where id::text like '40000000-%';
+insert into public.discovery_settings(user_id,visible)
+select id,true from public.profiles where id::text like '40000000-%';
+set local role service_role;
+do $$ declare feed jsonb; begin
+    feed := public.pilot_discovery_feed('30000000-0000-0000-0000-000000000001');
+    if jsonb_array_length(feed->'candidates') <> 1 or feed->'candidates'->0->>'id' <> '40000000-0000-0000-0000-000000000031' then
+        raise exception 'Age filtering ran after card limit'; end if;
+end $$;
+reset role;
 set local role authenticated;
 set local request.jwt.claim.sub = '30000000-0000-0000-0000-000000000002';
 do $$ begin
