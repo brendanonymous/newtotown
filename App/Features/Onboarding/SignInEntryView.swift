@@ -21,11 +21,11 @@ struct SignInEntryView: View {
                 TextField("Email address", text: $email)
                     .keyboardType(.emailAddress).textContentType(.emailAddress)
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
-                    .textFieldStyle(.roundedBorder).accessibilityIdentifier("signup.email")
+                    .textFieldStyle(BrandTextFieldStyle()).accessibilityIdentifier("signup.email")
             } else {
                 TextField("Phone number", text: $phone)
                     .keyboardType(.phonePad).textContentType(.telephoneNumber)
-                    .textFieldStyle(.roundedBorder).accessibilityIdentifier("signup.phone")
+                    .textFieldStyle(BrandTextFieldStyle()).accessibilityIdentifier("signup.phone")
                 Text(
                     "US numbers can be entered without +1. For other countries, include + and the country code."
                 )

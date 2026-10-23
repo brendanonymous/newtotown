@@ -55,6 +55,13 @@ public final class ChatModel {
             && MessageText.isValid(draft)
     }
 
+    /// Apply after a field edit so SwiftUI observes both the edit and its correction.
+    public func limitDraft() {
+        if draft.unicodeScalars.count > MessageText.maximumLength {
+            draft = MessageText.limitedDraft(draft)
+        }
+    }
+
     public func load(older: Bool = false) async {
         guard !isLoading, !isSending, !isUnavailable, !Task.isCancelled, !older || nextCursor != nil else {
             return

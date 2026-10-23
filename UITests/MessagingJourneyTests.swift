@@ -2,6 +2,32 @@ import XCTest
 
 final class MessagingJourneyTests: XCTestCase {
     @MainActor
+    func testMessageInputStopsAtLimitAndAllowsDeletion() {
+        let app = launchFixture(emptyChat: true)
+        app.tabBars.buttons["Connections"].tap()
+        let message = app.buttons["Message Alex"]
+        XCTAssertTrue(message.waitForExistence(timeout: 10))
+        message.tap()
+        let composer = app.textFields["chat.composer"]
+        XCTAssertTrue(composer.waitForExistence(timeout: 10))
+        composer.tap()
+        composer.typeText(String(repeating: "a", count: 501))
+        XCTAssertEqual(composer.value as? String, String(repeating: "a", count: 500))
+        let counter = app.staticTexts["chat.characterCount"]
+        XCTAssertEqual(counter.label, "Character limit reached · 500/500")
+        XCTAssertTrue(app.buttons["chat.send"].isEnabled)
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "Message character limit and rounded input"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        composer.typeText(XCUIKeyboardKey.delete.rawValue)
+        XCTAssertEqual(counter.label, "499/500")
+        composer.typeText("b")
+        XCTAssertEqual(composer.value as? String, String(repeating: "a", count: 499) + "b")
+        XCTAssertEqual(counter.label, "Character limit reached · 500/500")
+    }
+
+    @MainActor
     func testConnectionOpensChatAndLostSendResponseRetriesOnce() {
         let app = launchFixture(emptyChat: true)
         app.tabBars.buttons["Connections"].tap()
