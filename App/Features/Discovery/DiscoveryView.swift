@@ -42,7 +42,7 @@ struct DiscoveryView: View {
           Button("Try again", systemImage: "arrow.clockwise") { Task { await model.load() } }
         }
       }
-      .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
+      .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)
       .disabled(model.isBusy)
     }
     .scrollBounceBehavior(.always, axes: .vertical)

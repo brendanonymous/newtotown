@@ -55,7 +55,7 @@ struct ConversationListView: View {
                     Button("Try again") { Task { await model.load() } }
                 }
             }
-            .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
+            .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)
         }
         .background(BrandTheme.background).foregroundStyle(BrandTheme.ink)
         .scrollBounceBehavior(.always, axes: .vertical)
