@@ -12,12 +12,27 @@
         private let second = JourneyMessagingService(
             owner: JourneyIDs.second, name: "Taylor", marker: "Account B conversation")
 
+        private let firstPreferences = JourneyPreferencesService()
+        private let secondPreferences = JourneyPreferencesService()
+
         var body: some View {
             AppEntryView(
                 model: account, personalInfoService: nil, photoService: nil,
                 discoveryService: JourneyDiscoveryService(
                     messages: account.accountID == JourneyIDs.second ? second : first),
-                makeMessagingService: { id in id == JourneyIDs.second ? second : first })
+                makeMessagingService: { id in id == JourneyIDs.second ? second : first },
+                makeDiscoveryPreferencesService: { id in
+                    id == JourneyIDs.second ? secondPreferences : firstPreferences
+                })
+        }
+    }
+
+    private actor JourneyPreferencesService: DiscoveryPreferencesService {
+        private var value = AgePreferences()
+        func load() -> AgePreferences { value }
+        func save(_ preferences: AgePreferences) -> AgePreferences {
+            value = preferences
+            return value
         }
     }
 

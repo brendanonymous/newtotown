@@ -97,6 +97,26 @@ final class MessagingJourneyTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Start with hello."].waitForExistence(timeout: 10))
     }
 
+    @MainActor
+    func testAgePreferencesSaveAndReopen() {
+        let app = launchFixture()
+        app.tabBars.buttons["Profile"].tap()
+        let preferences = app.buttons["profile.preferences"]
+        XCTAssertTrue(preferences.waitForExistence(timeout: 10))
+        preferences.tap()
+        let maximum = app.textFields["preferences.maximumAge"]
+        XCTAssertTrue(maximum.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["preferences.save"].isEnabled)
+        maximum.tap()
+        maximum.typeText("40")
+        app.swipeUp()
+        app.buttons["preferences.save"].tap()
+        XCTAssertTrue(preferences.waitForExistence(timeout: 10))
+        preferences.tap()
+        XCTAssertTrue(maximum.waitForExistence(timeout: 10))
+        XCTAssertEqual(maximum.value as? String, "40")
+    }
+
     @MainActor private func launchFixture(emptyChat: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-messaging"]
