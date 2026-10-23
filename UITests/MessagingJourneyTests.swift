@@ -3,7 +3,7 @@ import XCTest
 final class MessagingJourneyTests: XCTestCase {
     @MainActor
     func testConnectionOpensChatAndLostSendResponseRetriesOnce() {
-        let app = launchFixture()
+        let app = launchFixture(emptyChat: true)
         app.tabBars.buttons["Connections"].tap()
         XCTAssertFalse(app.segmentedControls["Browse"].exists)
         let message = app.buttons["Message Alex"]
@@ -26,6 +26,12 @@ final class MessagingJourneyTests: XCTestCase {
         screenshot.name = "Conversation after safe send retry"
         screenshot.lifetime = .keepAlways
         add(screenshot)
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.staticTexts["No connections yet."].waitForExistence(timeout: 10))
+        app.tabBars.buttons["Messages"].tap()
+        XCTAssertTrue(
+            app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Coffee on Saturday?")).firstMatch
+                .waitForExistence(timeout: 10))
     }
 
     @MainActor
@@ -77,9 +83,24 @@ final class MessagingJourneyTests: XCTestCase {
         XCTAssertTrue(app.buttons["profile.settings"].waitForExistence(timeout: 5))
     }
 
-    @MainActor private func launchFixture() -> XCUIApplication {
+    @MainActor
+    func testOpeningAnEmptyChatKeepsTheConnection() {
+        let app = launchFixture(emptyChat: true)
+        app.tabBars.buttons["Connections"].tap()
+        let message = app.buttons["Message Alex"]
+        XCTAssertTrue(message.waitForExistence(timeout: 10))
+        message.tap()
+        XCTAssertTrue(app.staticTexts["Say hello."].waitForExistence(timeout: 10))
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(message.waitForExistence(timeout: 10))
+        app.tabBars.buttons["Messages"].tap()
+        XCTAssertTrue(app.staticTexts["Start with hello."].waitForExistence(timeout: 10))
+    }
+
+    @MainActor private func launchFixture(emptyChat: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-messaging"]
+        if emptyChat { app.launchArguments.append("--ui-test-empty-chat") }
         app.launch()
         XCTAssertTrue(app.tabBars.buttons["Messages"].waitForExistence(timeout: 10))
         return app

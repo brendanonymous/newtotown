@@ -91,3 +91,7 @@ Hosted advisors show informational [RLS without policies](https://supabase.com/d
 4. Hide or block one participant and refresh the other. Confirm access pauses, composing stops, and private history is cleared. Rejoining after a hide restores the same thread; blocking has no client undo.
 5. Sign out, then sign in as a different account on the same phone. Confirm no previous inbox, chat, draft, or retry state appears.
 6. With disposable consenting test accounts, verify deletion confirmation mentions conversations, cancellation makes no change, and confirmed deletion removes the thread from the other participant after refresh.
+
+## First-message transition
+
+The `started_conversations` migration changes list queries only. Empty conversations stay in Connections; Messages lists only conversations with at least one committed message. The first saved message moves both participants on their next refresh. Opening a thread, an invalid send, or an uncommitted failure does not move it. A lost response after a committed send still moves it on refresh; the existing retry key prevents duplicate messages. Mutual decisions and blocking/visibility authorization remain unchanged. Apply the migration after review before distributing the updated iPhone app. No hosted deployment is included in this PR.
