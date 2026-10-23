@@ -12,6 +12,8 @@ struct NewToTownApp: App {
     private let makeDiscoveryPreferencesService: (@Sendable (UUID) -> any DiscoveryPreferencesService)?
     private let makeMessagingService: (@Sendable (UUID) -> any MessagingService)?
 
+    private let makeReportingService: (@Sendable (UUID) -> any ProfileReportingService)?
+
     init() {
         // Construct the backend once at the app boundary; feature views receive state.
         var services: SupabaseServices?
@@ -27,6 +29,9 @@ struct NewToTownApp: App {
         photoService = services?.photos
         discoveryService = services?.discovery
         if let shared = services {
+            makeReportingService = { @Sendable (accountID: UUID) -> any ProfileReportingService in
+                shared.reporting(for: accountID)
+            }
             makeDiscoveryPreferencesService = {
                 @Sendable (accountID: UUID) -> any DiscoveryPreferencesService in
                 shared.discoveryPreferences(for: accountID)
@@ -35,6 +40,7 @@ struct NewToTownApp: App {
                 shared.messaging(for: accountID)
             }
         } else {
+            makeReportingService = nil
             makeMessagingService = nil
             makeDiscoveryPreferencesService = nil
         }
@@ -64,7 +70,8 @@ struct NewToTownApp: App {
                 model: onboardingModel, personalInfoService: personalInfoService,
                 photoService: photoService, discoveryService: discoveryService,
                 makeMessagingService: makeMessagingService,
-                makeDiscoveryPreferencesService: makeDiscoveryPreferencesService)
+                makeDiscoveryPreferencesService: makeDiscoveryPreferencesService,
+                makeReportingService: makeReportingService)
         } else {
             NavigationStack { WelcomeView(onJoin: nil) }
         }

@@ -98,6 +98,23 @@ final class MessagingJourneyTests: XCTestCase {
     }
 
     @MainActor
+    func testReportingAConnectionKeepsItAvailable() {
+        let app = launchFixture(emptyChat: true)
+        app.tabBars.buttons["Connections"].tap()
+        let report = app.buttons["Report Alex"]
+        XCTAssertTrue(report.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["Block Alex"].exists)
+        report.tap()
+        XCTAssertFalse(app.buttons["report.submit"].isEnabled)
+        app.buttons["report.reason"].tap()
+        app.buttons["Spam"].tap()
+        app.buttons["report.submit"].tap()
+        XCTAssertTrue(app.staticTexts["Report submitted"].waitForExistence(timeout: 10))
+        app.buttons["Done"].tap()
+        XCTAssertTrue(app.buttons["Message Alex"].waitForExistence(timeout: 10))
+    }
+
+    @MainActor
     func testAgePreferencesSaveAndReopen() {
         let app = launchFixture()
         app.tabBars.buttons["Profile"].tap()
