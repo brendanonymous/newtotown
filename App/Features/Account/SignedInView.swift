@@ -10,6 +10,7 @@ struct SignedInView: View {
     let discoveryService: (any DiscoveryService)?
     let messagingService: (any MessagingService)?
     let preferencesService: (any DiscoveryPreferencesService)?
+    let reportingService: (any ProfileReportingService)?
     @State private var discoveryRevision = 0
     private enum Tab: Hashable { case profile, discovery, connections, messages }
     @State private var selectedTab = Tab.profile
@@ -31,7 +32,8 @@ struct SignedInView: View {
                 NavigationStack {
                     ConnectionsView(
                         service: discoveryService, accountID: accountID,
-                        messagingService: messagingService, isSelected: selectedTab == .connections
+                        messagingService: messagingService, reportingService: reportingService,
+                        isSelected: selectedTab == .connections
                     )
                     .navigationTitle("").navigationBarTitleDisplayMode(.inline)
                     .toolbar { BrandNavigationLogo() }

@@ -23,8 +23,12 @@
                 makeMessagingService: { id in id == JourneyIDs.second ? second : first },
                 makeDiscoveryPreferencesService: { id in
                     id == JourneyIDs.second ? secondPreferences : firstPreferences
-                })
+                }, makeReportingService: { _ in JourneyReportingService() })
         }
+    }
+
+    private actor JourneyReportingService: ProfileReportingService {
+        func submit(_ report: ProfileReport) -> UUID { report.retryID }
     }
 
     private actor JourneyPreferencesService: DiscoveryPreferencesService {
