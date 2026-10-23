@@ -4,8 +4,8 @@ final class MessagingJourneyTests: XCTestCase {
     @MainActor
     func testConnectionOpensChatAndLostSendResponseRetriesOnce() {
         let app = launchFixture()
-        app.tabBars.buttons["Discovery"].tap()
-        app.segmentedControls.buttons["Connections"].tap()
+        app.tabBars.buttons["Connections"].tap()
+        XCTAssertFalse(app.segmentedControls["Browse"].exists)
         let message = app.buttons["Message Alex"]
         XCTAssertTrue(message.waitForExistence(timeout: 10))
         message.tap()

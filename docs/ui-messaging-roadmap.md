@@ -33,3 +33,5 @@ Each implementation PR includes its behavior, touched boundaries, applicable tes
 ## Implementation notes — October 22
 
 The owner’s `chat-msg-limits-and-tab-order` branch supplies the 500-character client change and Discovery-first/Profile-last tab order. Follow-up PRs preserve that order: Discovery · Connections · Messages · Profile. PR 2 moves Settings into Profile and updates the existing message-length test to match the owner’s change. Server limits remain a separate follow-up; this navigation PR does not deploy backend changes.
+
+Connections is extracted into its own feature view. It reloads on tab activation, foreground, pull, and return from Chat so blocked or newly messaged connections reconcile from the server. Discovery retains candidate browsing only.
