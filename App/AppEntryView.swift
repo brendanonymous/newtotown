@@ -29,20 +29,20 @@ struct AppEntryView: View {
                 OnboardingView(
                     model: model
                 ) {
-                    model.changeEmail()
+                    model.restartSignIn()
                     showsSignup = false
                 }
             } else {
                 NavigationStack {
                     WelcomeView {
-                        model.changeEmail()
+                        model.restartSignIn()
                         showsSignup = true
                     }
                 }
             }
         }
         .onChange(of: model.step) { old, new in
-            if new == .email && [.saved, .profile, .introduction, .restoreFailed].contains(old) {
+            if new == .signIn && [.saved, .profile, .introduction, .restoreFailed].contains(old) {
                 showsSignup = false
             }
         }

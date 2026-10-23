@@ -15,12 +15,23 @@ public final class SupabaseOnboardingService: OnboardingService {
         }
     }
 
-    public func sendCode(to email: String) async throws {
-        try await client.auth.signInWithOTP(email: email, shouldCreateUser: true)
+    public func sendCode(to identifier: SignInIdentifier) async throws {
+        switch identifier {
+        case .phone(let number):
+            try await client.auth.signInWithOTP(phone: number.rawValue, channel: .sms, shouldCreateUser: true)
+        case .email(let email):
+            // Existing email accounts keep their profile; new accounts use phone signup.
+            try await client.auth.signInWithOTP(email: email, shouldCreateUser: false)
+        }
     }
 
-    public func verifyCode(_ code: String, email: String) async throws -> UUID {
-        try await client.auth.verifyOTP(email: email, token: code, type: .email)
+    public func verifyCode(_ code: String, identifier: SignInIdentifier) async throws -> UUID {
+        switch identifier {
+        case .phone(let number):
+            try await client.auth.verifyOTP(phone: number.rawValue, token: code, type: .sms)
+        case .email(let email):
+            try await client.auth.verifyOTP(email: email, token: code, type: .email)
+        }
         return try await client.auth.session.user.id
     }
 

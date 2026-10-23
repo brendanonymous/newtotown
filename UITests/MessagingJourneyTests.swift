@@ -47,6 +47,7 @@ final class MessagingJourneyTests: XCTestCase {
         app.buttons["Sign out"].tap()
         XCTAssertTrue(app.buttons["Join or sign in"].waitForExistence(timeout: 10))
         app.buttons["Join or sign in"].tap()
+        app.buttons["signup.switchMethod"].tap()
         let email = app.textFields["signup.email"]
         XCTAssertTrue(email.waitForExistence(timeout: 10))
         email.tap()
@@ -67,6 +68,31 @@ final class MessagingJourneyTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["chat.peer"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["chat.peer"].label, "Taylor")
         XCTAssertFalse(previous.exists)
+    }
+
+    @MainActor
+    func testPhoneCodeSignsIntoTheNextAccount() {
+        let app = launchFixture()
+        app.tabBars.buttons["Profile"].tap()
+        app.buttons["profile.settings"].tap()
+        app.buttons["Sign out"].tap()
+        XCTAssertTrue(app.buttons["Join or sign in"].waitForExistence(timeout: 10))
+        app.buttons["Join or sign in"].tap()
+        let phone = app.textFields["signup.phone"]
+        XCTAssertTrue(phone.waitForExistence(timeout: 10))
+        phone.tap()
+        phone.typeText("4805550142")
+        app.buttons["Send sign-in code"].tap()
+        let code = app.textFields["signup.code"]
+        XCTAssertTrue(code.waitForExistence(timeout: 10))
+        code.tap()
+        code.typeText("123456")
+        app.buttons["Verify phone"].tap()
+        XCTAssertTrue(app.tabBars.buttons["Messages"].waitForExistence(timeout: 10))
+        app.tabBars.buttons["Messages"].tap()
+        XCTAssertTrue(
+            app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Account B conversation"))
+                .firstMatch.waitForExistence(timeout: 10))
     }
 
     @MainActor

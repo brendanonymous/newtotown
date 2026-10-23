@@ -51,8 +51,8 @@
     private actor JourneyAccountService: OnboardingService {
         private var owner: UUID? = JourneyIDs.first
         func currentUserID() -> UUID? { owner }
-        func sendCode(to email: String) {}
-        func verifyCode(_ code: String, email: String) -> UUID {
+        func sendCode(to identifier: SignInIdentifier) {}
+        func verifyCode(_ code: String, identifier: SignInIdentifier) -> UUID {
             owner = JourneyIDs.second
             return JourneyIDs.second
         }
