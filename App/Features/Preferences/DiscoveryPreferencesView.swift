@@ -54,8 +54,8 @@ struct DiscoveryPreferencesView: View {
                     }
                 }
                 .buttonStyle(.borderedProminent).tint(BrandTheme.ink)
-                .foregroundStyle(BrandTheme.background)
-                .disabled(!model.canSave).opacity(model.canSave ? 1 : 0.4)
+                .foregroundStyle(model.canSave ? BrandTheme.background : BrandTheme.secondaryInk)
+                .disabled(!model.canSave).opacity(model.canSave ? 1 : 0.75)
                 .accessibilityIdentifier("preferences.save")
             }
             .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
