@@ -49,8 +49,6 @@ struct DiscoveryView: View {
     .refreshable { await model.load() }
     .foregroundStyle(BrandTheme.ink)
     .background(BrandTheme.background)
-    .navigationTitle("")
-    .navigationBarTitleDisplayMode(.inline)
     .tint(BrandTheme.ink)
     .task(id: isSelected) {
       if isSelected { await model.load() }

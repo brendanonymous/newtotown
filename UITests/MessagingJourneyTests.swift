@@ -121,6 +121,31 @@ final class MessagingJourneyTests: XCTestCase {
         add(screenshot)
     }
 
+    @MainActor
+    func testTabTitlesUseTheSameVerticalPosition() {
+        let app = launchFixture()
+        app.tabBars.buttons["Messages"].tap()
+        let messages = app.staticTexts["messages.title"]
+        XCTAssertTrue(messages.waitForExistence(timeout: 10))
+        let preferredTop = messages.frame.minY
+        let preferredLeft = messages.frame.minX
+        let logoTop = app.images["NewToTown"].frame.minY
+
+        app.tabBars.buttons["Connections"].tap()
+        let connections = app.staticTexts["connections.title"]
+        XCTAssertTrue(connections.waitForExistence(timeout: 10))
+        XCTAssertEqual(connections.frame.minY, preferredTop, accuracy: 1)
+        XCTAssertEqual(connections.frame.minX, preferredLeft, accuracy: 1)
+
+        for tab in ["Discovery", "Profile", "Messages"] {
+            app.tabBars.buttons[tab].tap()
+            let logo = app.images["NewToTown"]
+            XCTAssertTrue(logo.waitForExistence(timeout: 10))
+            XCTAssertEqual(logo.frame.minY, logoTop, accuracy: 1, "Navigation height changed on \(tab)")
+        }
+        XCTAssertEqual(messages.frame.minY, preferredTop, accuracy: 1)
+    }
+
     @MainActor private func launchFixture(emptyChat: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-messaging"]

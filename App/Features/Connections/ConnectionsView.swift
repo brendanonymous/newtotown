@@ -23,8 +23,9 @@ struct ConnectionsView: View {
 
   var body: some View {
     ScrollView {
-      VStack(alignment: .leading, spacing: 28) {
+      VStack(alignment: .leading, spacing: 24) {
         Text("Connections").font(.system(.largeTitle, design: .serif))
+          .accessibilityIdentifier("connections.title")
         if let feed = model.feed {
           if feed.matches.isEmpty {
             Text("No connections yet.").font(.title2)
