@@ -36,7 +36,7 @@ struct SignedInView: View {
                     .navigationTitle("").navigationBarTitleDisplayMode(.inline)
                     .toolbar { BrandNavigationLogo() }
                 }
-                .tabItem { Label("Connections", systemImage: "person.2.fill") }.tag(Tab.connections)
+                .tabItem { Label("Connections", systemImage: "hands.clap.fill") }.tag(Tab.connections)
             }
 
             if let messagingService {
