@@ -21,7 +21,7 @@ struct ConversationListView: View {
                 Text("Messages").font(.system(.largeTitle, design: .serif))
                 if model.hasLoaded && model.conversations.isEmpty {
                     Text("Start with hello.").font(.title2)
-                    Text("Open a mutual connection in Discovery to start a conversation.")
+                    Text("Open a mutual connection in Connections to start a conversation.")
                         .foregroundStyle(BrandTheme.secondaryInk)
                 }
                 ForEach(model.conversations) { conversation in
