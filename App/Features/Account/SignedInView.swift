@@ -3,82 +3,96 @@ import SwiftUI
 
 /// The signed-in shell owns tabs and navigation; onboarding owns signup/profile editing.
 struct SignedInView: View {
-  @Bindable var account: OnboardingModel
-  let accountID: UUID
-  let personalInfoService: (any PersonalInfoService)?
-  let photoService: (any PhotoService)?
-  let discoveryService: (any DiscoveryService)?
-  let messagingService: (any MessagingService)?
-  private enum Tab: Hashable { case profile, discovery, connections, messages }
-  @State private var selectedTab = Tab.profile
-  @State private var confirmsDeletion = false
+    @Bindable var account: OnboardingModel
+    let accountID: UUID
+    let personalInfoService: (any PersonalInfoService)?
+    let photoService: (any PhotoService)?
+    let discoveryService: (any DiscoveryService)?
+    let messagingService: (any MessagingService)?
+    let preferencesService: (any DiscoveryPreferencesService)?
+    @State private var discoveryRevision = 0
+    private enum Tab: Hashable { case profile, discovery, connections, messages }
+    @State private var selectedTab = Tab.profile
+    @State private var confirmsDeletion = false
 
-  var body: some View {
-    TabView(selection: $selectedTab) {
+    var body: some View {
+        TabView(selection: $selectedTab) {
 
-      if let discoveryService {
-        NavigationStack {
-          DiscoveryView(
-            service: discoveryService, isSelected: selectedTab == .discovery
-          )
-          .toolbar { BrandNavigationLogo() }
-        }
-        .tabItem { Label("Discovery", systemImage: "person.2") }.tag(Tab.discovery)
-        NavigationStack {
-          ConnectionsView(
-            service: discoveryService, accountID: accountID,
-            messagingService: messagingService, isSelected: selectedTab == .connections
-          )
-          .toolbar { BrandNavigationLogo() }
-        }
-        .tabItem { Label("Connections", systemImage: "person.2.fill") }.tag(Tab.connections)
-      }
-
-      if let messagingService {
-        NavigationStack {
-          ConversationListView(
-            accountID: accountID, service: messagingService, isSelected: selectedTab == .messages
-          )
-          .toolbar { BrandNavigationLogo() }
-        }
-        .tabItem { Label("Messages", systemImage: "bubble.left.and.bubble.right") }.tag(
-          Tab.messages)
-      }
-      NavigationStack {
-        ProfileHomeView(
-          model: account, photoService: photoService, isSelected: selectedTab == .profile
-        )
-        .toolbar {
-          BrandNavigationLogo()
-          ToolbarItem(placement: .topBarTrailing) {
-            NavigationLink {
-              ProfileSettingsView(
-                discoveryService: discoveryService, personalInfoService: personalInfoService,
-                isSelected: true, isAccountBusy: account.isBusy,
-                accountError: account.errorMessage, signOut: { await account.signOut() },
-                deleteAccount: { confirmsDeletion = true }
-              )
-              .navigationBarTitleDisplayMode(.inline)
-              .toolbar { BrandNavigationLogo() }
-              .toolbar(.hidden, for: .tabBar)
-            } label: {
-              Image(systemName: "gearshape")
+            if let discoveryService {
+                NavigationStack {
+                    DiscoveryView(
+                        service: discoveryService, isSelected: selectedTab == .discovery
+                    )
+                    .id(discoveryRevision)
+                    .toolbar { BrandNavigationLogo() }
+                }
+                .tabItem { Label("Discovery", systemImage: "person.2") }.tag(Tab.discovery)
+                NavigationStack {
+                    ConnectionsView(
+                        service: discoveryService, accountID: accountID,
+                        messagingService: messagingService, isSelected: selectedTab == .connections
+                    )
+                    .toolbar { BrandNavigationLogo() }
+                }
+                .tabItem { Label("Connections", systemImage: "person.2.fill") }.tag(Tab.connections)
             }
-            .accessibilityLabel("Settings")
-            .accessibilityIdentifier("profile.settings")
-          }
+
+            if let messagingService {
+                NavigationStack {
+                    ConversationListView(
+                        accountID: accountID, service: messagingService, isSelected: selectedTab == .messages
+                    )
+                    .toolbar { BrandNavigationLogo() }
+                }
+                .tabItem { Label("Messages", systemImage: "bubble.left.and.bubble.right") }.tag(
+                    Tab.messages)
+            }
+            NavigationStack {
+                ProfileHomeView(
+                    model: account, photoService: photoService, isSelected: selectedTab == .profile
+                )
+                .toolbar {
+                    BrandNavigationLogo()
+                    ToolbarItemGroup(placement: .topBarTrailing) {
+                        if let preferencesService {
+                            NavigationLink {
+                                DiscoveryPreferencesView(service: preferencesService) {
+                                    discoveryRevision += 1
+                                }
+                            } label: {
+                                Image(systemName: "slider.horizontal.3")
+                            }
+                            .accessibilityLabel("Preferences")
+                            .accessibilityIdentifier("profile.preferences")
+                        }
+                        NavigationLink {
+                            ProfileSettingsView(
+                                discoveryService: discoveryService, personalInfoService: personalInfoService,
+                                isSelected: true, isAccountBusy: account.isBusy,
+                                accountError: account.errorMessage, signOut: { await account.signOut() },
+                                deleteAccount: { confirmsDeletion = true }
+                            )
+                            .navigationBarTitleDisplayMode(.inline)
+                            .toolbar { BrandNavigationLogo() }
+                            .toolbar(.hidden, for: .tabBar)
+                        } label: {
+                            Image(systemName: "gearshape")
+                        }
+                        .accessibilityLabel("Settings")
+                        .accessibilityIdentifier("profile.settings")
+                    }
+                }
+            }
+            .tabItem { Label("Profile", systemImage: "person.crop.circle") }.tag(Tab.profile)
         }
-      }
-      .tabItem { Label("Profile", systemImage: "person.crop.circle") }.tag(Tab.profile)
+        .tint(BrandTheme.ink)
+        .foregroundStyle(BrandTheme.ink)
+        .alert("Delete your account?", isPresented: $confirmsDeletion) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete account", role: .destructive) { Task { await account.deleteAccount() } }
+        } message: {
+            Text(
+                "This permanently deletes your account, profile, and conversations for both participants.")
+        }
     }
-    .tint(BrandTheme.ink)
-    .foregroundStyle(BrandTheme.ink)
-    .alert("Delete your account?", isPresented: $confirmsDeletion) {
-      Button("Cancel", role: .cancel) {}
-      Button("Delete account", role: .destructive) { Task { await account.deleteAccount() } }
-    } message: {
-      Text(
-        "This permanently deletes your account, profile, and conversations for both participants.")
-    }
-  }
 }
