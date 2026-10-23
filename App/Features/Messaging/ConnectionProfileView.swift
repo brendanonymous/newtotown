@@ -16,7 +16,7 @@ struct ConnectionProfileView: View {
                     DiscoveryProfileCard(profile: profile)
                         .accessibilityIdentifier("connectionProfile.card")
                 }
-                if model.isLoading { ProgressView("Loading profile…") }
+                if model.isLoading { ProgressView() }
                 if let error = model.errorMessage {
                     Text(error).font(.callout).foregroundStyle(.red)
                     Button("Try again") { Task { await model.load() } }

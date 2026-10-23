@@ -3,13 +3,20 @@ import SwiftUI
 
 struct ChatView: View {
     @State private var model: ChatModel
-    @State private var confirmsBlock = false
+    private let messagingService: any MessagingService
+    let reportingService: (any ProfileReportingService)?
+    @State private var reportTarget: DiscoveryProfile?
     @State private var showsProfile = false
-    private let service: any MessagingService
     @Environment(\.scenePhase) private var scenePhase
 
-    init(accountID: UUID, target: ConversationTarget, service: any MessagingService) {
-        self.service = service
+    init(
+        accountID: UUID,
+        target: ConversationTarget,
+        messagingService: any MessagingService,
+        reportingService: (any ProfileReportingService)?
+    ) {
+        self.messagingService = messagingService
+        self.reportingService = reportingService
         _model = State(initialValue: ChatModel(accountID: accountID, target: target, service: service))
     }
 
@@ -46,7 +53,11 @@ struct ChatView: View {
             BrandNavigationLogo()
             if model.conversation != nil {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Block", systemImage: "hand.raised") { confirmsBlock = true }
+                    if reportingService != nil {
+                        Button("Report", systemImage: "flag") {
+                            reportTarget = model.conversation?.participant
+                        }
+                    }
                 }
             }
         }
@@ -104,7 +115,7 @@ struct ChatView: View {
                             .font(.caption).foregroundStyle(BrandTheme.secondaryInk)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
-                    if model.isLoading { ProgressView("Loading conversation…") }
+                    if model.isLoading { ProgressView() }
                     if model.isBlocking { ProgressView("Blocking…") }
                     if let error = model.errorMessage {
                         Text(error).font(.callout).foregroundStyle(

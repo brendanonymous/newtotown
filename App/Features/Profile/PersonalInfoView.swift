@@ -19,7 +19,7 @@ struct PersonalInfoView: View {
                     Divider()
                     detail("Phone number", symbol: "phone", value: info.phone, identifier: "account.phone")
                 }
-                if model.isBusy { ProgressView("Loading your details…") }
+                if model.isBusy { ProgressView() }
                 if let error = model.errorMessage {
                     Text(error).font(.callout).foregroundStyle(.red)
                     Button("Try again") { Task { await model.load() } }

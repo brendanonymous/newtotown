@@ -11,6 +11,7 @@ struct ProfileCard<Photo: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
+            Text(firstName).font(.system(.title, design: .serif))
             // Constrain aspect-fill images to the available card width. Their
             // intrinsic width must not expand the scroll content past its margins.
             GeometryReader { geometry in
@@ -21,7 +22,6 @@ struct ProfileCard<Photo: View>: View {
             .frame(height: 300)
             .background(BrandTheme.sage.opacity(0.22))
             .brandPhotoStyle()
-            Text(firstName).font(.system(.title, design: .serif))
             Label {
                 Text(jobTitle).font(.headline)
             } icon: {

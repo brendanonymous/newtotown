@@ -49,7 +49,7 @@ struct ConversationListView: View {
                     Button("Load more conversations") { Task { await model.load(older: true) } }
                         .disabled(model.isLoading)
                 }
-                if model.isLoading { ProgressView("Loading messages…") }
+                if model.isLoading { ProgressView() }
                 if let error = model.errorMessage {
                     Text(error).font(.callout).foregroundStyle(.red)
                     Button("Try again") { Task { await model.load() } }

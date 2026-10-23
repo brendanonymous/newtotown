@@ -64,7 +64,7 @@ private struct OnboardingContent: View {
             VStack(alignment: .leading, spacing: 24) {
                 switch model.step {
                 case .loading:
-                    ProgressView("Loading your account…")
+                    ProgressView()
                 case .signIn:
                     SignInEntryView(model: model)
                 case .code:

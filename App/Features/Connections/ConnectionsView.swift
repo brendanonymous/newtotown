@@ -13,8 +13,10 @@ struct ConnectionsView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     init(
-        service: any DiscoveryService, accountID: UUID,
-        messagingService: (any MessagingService)?, reportingService: (any ProfileReportingService)?,
+        service: any DiscoveryService,
+        accountID: UUID,
+        messagingService: (any MessagingService)?,
+        reportingService: (any ProfileReportingService)?,
         isSelected: Bool
     ) {
         self.accountID = accountID
@@ -41,18 +43,18 @@ struct ConnectionsView: View {
                             Button {
                                 chatTarget = .peer(profile.id)
                             } label: {
-                                Label("Message \(profile.firstName)", systemImage: "bubble.left")
+                                Label("Message", systemImage: "bubble.left")
                             }
                         }
                         if reportingService != nil {
-                            Button("Report \(profile.firstName)", systemImage: "flag") {
+                            Button("Report", systemImage: "flag") {
                                 reportTarget = profile
                             }
                         }
                         Divider()
                     }
                 }
-                if model.isBusy { ProgressView("Loading connections…") }
+                if model.isBusy {  }
                 if let error = model.errorMessage {
                     Text(error).font(.callout).foregroundStyle(.red)
                     Button("Try again") { Task { await model.load() } }
@@ -73,7 +75,7 @@ struct ConnectionsView: View {
         }
         .navigationDestination(item: $chatTarget) { target in
             if let messagingService {
-                ChatView(accountID: accountID, target: target, service: messagingService)
+                ChatView(accountID: accountID, target: target, messagingService: messagingService, reportingService: reportingService)
             }
         }
         .sheet(item: $reportTarget) { profile in

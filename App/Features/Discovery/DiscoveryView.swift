@@ -36,7 +36,7 @@ struct DiscoveryView: View {
             Text(statusMessage(feed.state)).foregroundStyle(BrandTheme.secondaryInk)
           }
         }
-        if model.isBusy { ProgressView("Please wait…") }
+        if model.isBusy { ProgressView() }
         if let message = model.errorMessage {
           Text(message).foregroundStyle(.red).font(.callout)
           Button("Try again", systemImage: "arrow.clockwise") { Task { await model.load() } }
