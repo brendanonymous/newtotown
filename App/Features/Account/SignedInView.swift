@@ -9,7 +9,7 @@ struct SignedInView: View {
     let photoService: (any PhotoService)?
     let discoveryService: (any DiscoveryService)?
     let messagingService: (any MessagingService)?
-    private enum Tab: Hashable { case profile, discovery, messages, settings }
+    private enum Tab: Hashable { case profile, discovery, messages }
     @State private var selectedTab = Tab.profile
     @State private var confirmsDeletion = false
 
@@ -37,21 +37,29 @@ struct SignedInView: View {
                 .tabItem { Label("Messages", systemImage: "bubble.left.and.bubble.right") }.tag(Tab.messages)
             }
             NavigationStack {
-                ProfileSettingsView(
-                    discoveryService: discoveryService, personalInfoService: personalInfoService,
-                    isSelected: selectedTab == .settings, isAccountBusy: account.isBusy,
-                    accountError: account.errorMessage, signOut: { await account.signOut() },
-                    deleteAccount: { confirmsDeletion = true }
-                )
-                .toolbar { BrandNavigationLogo() }
-            }
-            .tabItem { Label("Settings", systemImage: "gearshape") }.tag(Tab.settings)
-            
-            NavigationStack {
                 ProfileHomeView(
                     model: account, photoService: photoService, isSelected: selectedTab == .profile
                 )
-                .toolbar { BrandNavigationLogo() }
+                .toolbar {
+                    BrandNavigationLogo()
+                    ToolbarItem(placement: .topBarTrailing) {
+                        NavigationLink {
+                            ProfileSettingsView(
+                                discoveryService: discoveryService, personalInfoService: personalInfoService,
+                                isSelected: true, isAccountBusy: account.isBusy,
+                                accountError: account.errorMessage, signOut: { await account.signOut() },
+                                deleteAccount: { confirmsDeletion = true }
+                            )
+                            .navigationBarTitleDisplayMode(.inline)
+                            .toolbar { BrandNavigationLogo() }
+                            .toolbar(.hidden, for: .tabBar)
+                        } label: {
+                            Image(systemName: "gearshape")
+                        }
+                        .accessibilityLabel("Settings")
+                        .accessibilityIdentifier("profile.settings")
+                    }
+                }
             }
             .tabItem { Label("Profile", systemImage: "person.crop.circle") }.tag(Tab.profile)
         }
