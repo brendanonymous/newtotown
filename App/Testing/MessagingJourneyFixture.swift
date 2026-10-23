@@ -7,7 +7,8 @@
     struct MessagingJourneyFixture: View {
         @State private var account = OnboardingModel(service: JourneyAccountService())
         private let first = JourneyMessagingService(
-            owner: JourneyIDs.first, name: "Alex", marker: "Account A conversation")
+            owner: JourneyIDs.first, name: "Alex", marker: "Account A conversation",
+            startsEmpty: ProcessInfo.processInfo.arguments.contains("--ui-test-empty-chat"))
         private let second = JourneyMessagingService(
             owner: JourneyIDs.second, name: "Taylor", marker: "Account B conversation")
 
@@ -55,14 +56,17 @@
     @MainActor private final class JourneyMessagingService: MessagingService {
         private let owner: UUID
         private let marker: String
+        private let startsEmpty: Bool
+        var hasStarted: Bool { !startsEmpty || !sent.isEmpty }
         private var sent: [ChatMessage] = []
         private var failedFirstSend = false
         private(set) var blocked = false
         let thread: Conversation
 
-        init(owner: UUID, name: String, marker: String) {
+        init(owner: UUID, name: String, marker: String, startsEmpty: Bool = false) {
             self.owner = owner
             self.marker = marker
+            self.startsEmpty = startsEmpty
             let peer = DiscoveryProfile(
                 id: JourneyIDs.peer, firstName: name, jobTitle: "Designer",
                 goal: "Find a hiking buddy.", city: "Scottsdale",
@@ -80,7 +84,7 @@
             let summary = Conversation(
                 id: thread.id, participant: thread.participant, createdAt: thread.createdAt,
                 lastActivityAt: thread.lastActivityAt, lastMessage: sent.last ?? greeting)
-            return ConversationPage(conversations: blocked ? [] : [summary], nextCursor: nil)
+            return ConversationPage(conversations: blocked || !hasStarted ? [] : [summary], nextCursor: nil)
         }
         func open(with peerID: UUID) throws -> Conversation {
             guard !blocked else { throw MessagingError.unavailable }
@@ -88,7 +92,8 @@
         }
         func history(in conversationID: UUID, before cursor: MessageCursor?) throws -> MessagePage {
             guard !blocked else { throw MessagingError.unavailable }
-            return MessagePage(conversation: thread, messages: [greeting] + sent, nextCursor: nil)
+            return MessagePage(
+                conversation: thread, messages: (startsEmpty ? [] : [greeting]) + sent, nextCursor: nil)
         }
         func send(in conversationID: UUID, retryID: UUID, body: String) throws -> ChatMessage {
             guard !blocked else { throw MessagingError.unavailable }
@@ -111,7 +116,8 @@
         init(messages: JourneyMessagingService) { self.messages = messages }
         func load() -> DiscoveryFeed {
             DiscoveryFeed(
-                state: .ready, visible: true, matches: messages.blocked ? [] : [messages.thread.participant])
+                state: .ready, visible: true,
+                matches: messages.blocked || messages.hasStarted ? [] : [messages.thread.participant])
         }
         func setVisible(_ visible: Bool) -> DiscoveryFeed { load() }
         func decide(on profileID: UUID, choice: ConnectionChoice) -> DiscoveryFeed { load() }
