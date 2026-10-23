@@ -7,20 +7,27 @@ struct ConnectionsView: View {
     let messagingService: (any MessagingService)?
     let reportingService: (any ProfileReportingService)?
     let isSelected: Bool
+    let reportedProfileIDs: Set<UUID>
+    let onReportSubmitted: (UUID) -> Void
     @State private var model: DiscoveryModel
     @State private var chatTarget: ConversationTarget?
     @State private var reportTarget: DiscoveryProfile?
     @Environment(\.scenePhase) private var scenePhase
 
     init(
-        service: any DiscoveryService, accountID: UUID,
-        messagingService: (any MessagingService)?, reportingService: (any ProfileReportingService)?,
-        isSelected: Bool
+        service: any DiscoveryService,
+        accountID: UUID,
+        messagingService: (any MessagingService)?,
+        reportingService: (any ProfileReportingService)?,
+        isSelected: Bool, reportedProfileIDs: Set<UUID>,
+        onReportSubmitted: @escaping (UUID) -> Void
     ) {
         self.accountID = accountID
         self.messagingService = messagingService
         self.reportingService = reportingService
         self.isSelected = isSelected
+        self.reportedProfileIDs = reportedProfileIDs
+        self.onReportSubmitted = onReportSubmitted
         _model = State(initialValue: DiscoveryModel(service: service))
     }
 
@@ -41,18 +48,20 @@ struct ConnectionsView: View {
                             Button {
                                 chatTarget = .peer(profile.id)
                             } label: {
-                                Label("Message \(profile.firstName)", systemImage: "bubble.left")
+                                Label("Message", systemImage: "bubble.left")
                             }
+                            .accessibilityLabel("Message \(profile.firstName)")
                         }
                         if reportingService != nil {
-                            Button("Report \(profile.firstName)", systemImage: "flag") {
+                            Button("Report", systemImage: "flag") {
                                 reportTarget = profile
                             }
+                            .accessibilityLabel("Report \(profile.firstName)")
                         }
                         Divider()
                     }
                 }
-                if model.isBusy { ProgressView("Loading connections…") }
+                if model.isBusy { ProgressView() }
                 if let error = model.errorMessage {
                     Text(error).font(.callout).foregroundStyle(.red)
                     Button("Try again") { Task { await model.load() } }
@@ -66,18 +75,31 @@ struct ConnectionsView: View {
         .refreshable { await model.load() }
         // Returning from a chat must reconcile sends/blocks, including lost responses.
         .task(id: isSelected && chatTarget == nil) {
+            model.excludeProfiles(reportedProfileIDs)
             if isSelected && chatTarget == nil { await model.load() }
+        }
+        .onChange(of: reportedProfileIDs) { _, ids in
+            model.excludeProfiles(ids)
+            if ids.contains(where: { chatTarget == .peer($0) }) { chatTarget = nil }
+            Task { await model.load() }
         }
         .onChange(of: scenePhase) { _, phase in
             if isSelected && chatTarget == nil && phase == .active { Task { await model.load() } }
         }
         .navigationDestination(item: $chatTarget) { target in
             if let messagingService {
-                ChatView(accountID: accountID, target: target, service: messagingService)
+                ChatView(
+                    accountID: accountID, target: target, messagingService: messagingService,
+                    reportingService: reportingService, reportedProfileIDs: reportedProfileIDs,
+                    onReportSubmitted: onReportSubmitted)
             }
         }
-        .sheet(item: $reportTarget) { profile in
-            if let reportingService { ReportProfileView(profile: profile, service: reportingService) }
+        .sheet(item: $reportTarget, onDismiss: { Task { await model.load() } }) { profile in
+            if let reportingService {
+                ReportProfileView(profile: profile, service: reportingService) {
+                    onReportSubmitted(profile.id)
+                }
+            }
         }
         .privacySensitive()
     }

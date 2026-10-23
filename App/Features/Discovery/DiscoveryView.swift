@@ -3,12 +3,14 @@ import SwiftUI
 
 struct DiscoveryView: View {
   let isSelected: Bool
+  let reportedProfileIDs: Set<UUID>
   @State private var model: DiscoveryModel
   @State private var blockTarget: DiscoveryProfile?
   @Environment(\.scenePhase) private var scenePhase
 
-  init(service: any DiscoveryService, isSelected: Bool) {
+  init(service: any DiscoveryService, isSelected: Bool, reportedProfileIDs: Set<UUID>) {
     self.isSelected = isSelected
+    self.reportedProfileIDs = reportedProfileIDs
     _model = State(initialValue: DiscoveryModel(service: service))
   }
 
@@ -36,7 +38,7 @@ struct DiscoveryView: View {
             Text(statusMessage(feed.state)).foregroundStyle(BrandTheme.secondaryInk)
           }
         }
-        if model.isBusy { ProgressView("Please wait…") }
+        if model.isBusy { ProgressView() }
         if let message = model.errorMessage {
           Text(message).foregroundStyle(.red).font(.callout)
           Button("Try again", systemImage: "arrow.clockwise") { Task { await model.load() } }
@@ -51,7 +53,12 @@ struct DiscoveryView: View {
     .background(BrandTheme.background)
     .tint(BrandTheme.ink)
     .task(id: isSelected) {
+      model.excludeProfiles(reportedProfileIDs)
       if isSelected { await model.load() }
+    }
+    .onChange(of: reportedProfileIDs) { _, ids in
+      model.excludeProfiles(ids)
+      Task { await model.load() }
     }
     .onChange(of: scenePhase) { _, phase in
       if isSelected && phase == .active { Task { await model.load() } }
@@ -82,8 +89,7 @@ struct DiscoveryView: View {
     }
   }
 
-  private func decisionButton(_ choice: ConnectionChoice, symbol: String, name: String) -> some View
-  {
+  private func decisionButton(_ choice: ConnectionChoice, symbol: String, name: String) -> some View {
     Button {
       Task { await model.decide(choice) }
     } label: {

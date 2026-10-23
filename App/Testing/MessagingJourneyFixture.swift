@@ -23,12 +23,26 @@
                 makeMessagingService: { id in id == JourneyIDs.second ? second : first },
                 makeDiscoveryPreferencesService: { id in
                     id == JourneyIDs.second ? secondPreferences : firstPreferences
-                }, makeReportingService: { _ in JourneyReportingService() })
+                },
+                makeReportingService: { id in
+                    JourneyReportingService(messages: id == JourneyIDs.second ? second : first)
+                })
         }
     }
 
     private actor JourneyReportingService: ProfileReportingService {
-        func submit(_ report: ProfileReport) -> UUID { report.retryID }
+        let messages: JourneyMessagingService
+        private var receipts: Set<UUID> = []
+        init(messages: JourneyMessagingService) { self.messages = messages }
+        func submit(_ report: ProfileReport) async throws -> UUID {
+            await messages.block(report.targetID)
+            if receipts.insert(report.retryID).inserted
+                && ProcessInfo.processInfo.arguments.contains("--ui-test-report-lost-response")
+            {
+                throw ProfileReportingError.connection
+            }
+            return report.retryID
+        }
     }
 
     private actor JourneyPreferencesService: DiscoveryPreferencesService {

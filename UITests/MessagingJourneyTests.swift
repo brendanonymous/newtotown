@@ -124,7 +124,7 @@ final class MessagingJourneyTests: XCTestCase {
     }
 
     @MainActor
-    func testReportingAConnectionKeepsItAvailable() {
+    func testReportingAConnectionRemovesItFromEveryList() {
         let app = launchFixture(emptyChat: true)
         app.tabBars.buttons["Connections"].tap()
         let report = app.buttons["Report Alex"]
@@ -137,7 +137,46 @@ final class MessagingJourneyTests: XCTestCase {
         app.buttons["report.submit"].tap()
         XCTAssertTrue(app.staticTexts["Report submitted"].waitForExistence(timeout: 10))
         app.buttons["Done"].tap()
-        XCTAssertTrue(app.buttons["Message Alex"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["No connections yet."].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["Message Alex"].exists)
+        app.tabBars.buttons["Messages"].tap()
+        XCTAssertTrue(app.staticTexts["Start with hello."].waitForExistence(timeout: 10))
+        app.tabBars.buttons["Discovery"].tap()
+        XCTAssertFalse(app.buttons["Connect with Alex"].exists)
+    }
+
+    @MainActor
+    func testReportFromMessagesCancelsWithoutLosingDraftThenRetriesAndRemovesChat() {
+        let app = launchFixture(lostReportResponse: true)
+        app.tabBars.buttons["Messages"].tap()
+        let thread = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Account A conversation"))
+            .firstMatch
+        XCTAssertTrue(thread.waitForExistence(timeout: 10))
+        thread.tap()
+        let composer = app.descendants(matching: .any).matching(identifier: "chat.composer").firstMatch
+        XCTAssertTrue(composer.waitForExistence(timeout: 10))
+        composer.tap()
+        composer.typeText("Unsaved draft")
+        app.buttons["Report"].tap()
+        XCTAssertTrue(app.buttons["Close"].waitForExistence(timeout: 10))
+        app.buttons["Close"].tap()
+        XCTAssertTrue(composer.waitForExistence(timeout: 10))
+        XCTAssertEqual(composer.value as? String, "Unsaved draft")
+        app.buttons["Report"].tap()
+        app.buttons["report.reason"].tap()
+        app.buttons["Spam"].tap()
+        app.buttons["report.submit"].tap()
+        XCTAssertTrue(
+            app.staticTexts["We couldn’t confirm your report. Try again to check its submission."]
+                .waitForExistence(timeout: 10))
+        app.buttons["report.submit"].tap()
+        XCTAssertTrue(app.staticTexts["Report submitted"].waitForExistence(timeout: 10))
+        app.buttons["Done"].tap()
+        XCTAssertTrue(app.staticTexts["Start with hello."].waitForExistence(timeout: 10))
+        XCTAssertFalse(composer.exists)
+        XCTAssertFalse(thread.exists)
+        app.tabBars.buttons["Connections"].tap()
+        XCTAssertTrue(app.staticTexts["No connections yet."].waitForExistence(timeout: 10))
     }
 
     @MainActor
@@ -229,10 +268,13 @@ final class MessagingJourneyTests: XCTestCase {
         XCTAssertEqual(messages.frame.minY, preferredTop, accuracy: 1)
     }
 
-    @MainActor private func launchFixture(emptyChat: Bool = false) -> XCUIApplication {
+    @MainActor private func launchFixture(emptyChat: Bool = false, lostReportResponse: Bool = false)
+        -> XCUIApplication
+    {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-messaging"]
         if emptyChat { app.launchArguments.append("--ui-test-empty-chat") }
+        if lostReportResponse { app.launchArguments.append("--ui-test-report-lost-response") }
         app.launch()
         XCTAssertTrue(app.tabBars.buttons["Messages"].waitForExistence(timeout: 10))
         return app

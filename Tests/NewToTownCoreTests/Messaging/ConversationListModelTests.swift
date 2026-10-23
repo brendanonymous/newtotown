@@ -54,3 +54,28 @@ import Testing
     #expect(model.conversations.isEmpty && !model.hasLoaded && !model.isLoading)
     started.continuation.finish()
 }
+
+@Test @MainActor func reportedPeerCannotReturnInLateInboxResponseAndOtherThreadsRemain() async {
+    let service = MessagingTestService()
+    let otherPeer = DiscoveryProfile(
+        id: UUID(), firstName: "Sam", jobTitle: "Teacher", goal: "Go hiking.",
+        city: "Scottsdale", photoURL: messagingPeer.photoURL)
+    let other = Conversation(
+        id: UUID(), participant: otherPeer, createdAt: messagingTime,
+        lastActivityAt: messagingTime, lastMessage: nil)
+    let page = ConversationPage(
+        conversations: [messagingThread, other],
+        nextCursor: MessageCursor(time: messagingTime, id: messagingThread.id))
+    service.listPages = [page]
+    let model = ConversationListModel(service: service)
+    await model.load()
+    var response: CheckedContinuation<ConversationPage, Never>?
+    service.onList = { await withCheckedContinuation { response = $0 } }
+    let refresh = Task { await model.load() }
+    while response == nil { await Task.yield() }
+    model.excludeProfiles([messagingPeer.id])
+    #expect(model.conversations.map(\.id) == [other.id])
+    response?.resume(returning: page)
+    await refresh.value
+    #expect(model.conversations.map(\.id) == [other.id] && model.nextCursor == nil)
+}

@@ -56,7 +56,7 @@ struct ProfileSettingsView: View {
                 Button("Sign out") { Task { await signOut() } }
                 Button("Delete account", role: .destructive, action: deleteAccount)
                     .accessibilityIdentifier("account.delete")
-                if isAccountBusy { ProgressView("Please wait…") }
+                if isAccountBusy { ProgressView() }
                 if let accountError {
                     Text(accountError).font(.callout).foregroundStyle(.red)
                         .accessibilityIdentifier("signup.error")
@@ -99,7 +99,7 @@ struct ProfileSettingsView: View {
                     .foregroundStyle(BrandTheme.secondaryInk)
             }
         }
-        if model.isBusy { ProgressView("Please wait…") }
+        if model.isBusy { ProgressView() }
         if let error = model.errorMessage {
             Text(error).font(.callout).foregroundStyle(.red)
             Button("Try again") { Task { await model.load() } }
