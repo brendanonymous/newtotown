@@ -135,7 +135,7 @@ final class MessagingJourneyTests: XCTestCase {
         composer.tap()
         composer.typeText("Unsaved plan")
         app.buttons["chat.viewProfile"].tap()
-        XCTAssertTrue(app.staticTexts["Find a hiking buddy."].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["About me: Find a hiking buddy."].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["Scottsdale"].exists)
         XCTAssertFalse(composer.exists)
         app.navigationBars.buttons.element(boundBy: 0).tap()
