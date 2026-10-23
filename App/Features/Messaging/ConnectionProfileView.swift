@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ConnectionProfileView: View {
     @State private var model: ConnectionProfileModel
+    @Environment(\.scenePhase) private var scenePhase
 
     init(conversationID: UUID, service: any MessagingService) {
         _model = State(initialValue: ConnectionProfileModel(conversationID: conversationID, service: service))
@@ -27,8 +28,12 @@ struct ConnectionProfileView: View {
         .navigationTitle("").navigationBarTitleDisplayMode(.inline)
         .toolbar { BrandNavigationLogo() }
         .toolbar(.hidden, for: .tabBar)
+        .scrollBounceBehavior(.always, axes: .vertical)
         .refreshable { await model.load() }
         .task { await model.load() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { Task { await model.load() } }
+        }
         .onDisappear { model.reset() }
         .privacySensitive()
     }
