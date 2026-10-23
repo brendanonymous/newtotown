@@ -19,6 +19,7 @@ struct ConversationListView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 Text("Messages").font(.system(.largeTitle, design: .serif))
+                    .accessibilityIdentifier("messages.title")
                 if model.hasLoaded && model.conversations.isEmpty {
                     Text("Start with hello.").font(.title2)
                     Text("Open a mutual connection in Connections to start a conversation.")
@@ -54,10 +55,9 @@ struct ConversationListView: View {
                     Button("Try again") { Task { await model.load() } }
                 }
             }
-            .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
+            .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)
         }
         .background(BrandTheme.background).foregroundStyle(BrandTheme.ink)
-        .navigationTitle("").navigationBarTitleDisplayMode(.inline)
         .scrollBounceBehavior(.always, axes: .vertical)
         .refreshable { await model.load() }
         .task(id: isSelected) { if isSelected { await model.load() } }

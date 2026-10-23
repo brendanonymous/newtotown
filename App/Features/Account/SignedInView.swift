@@ -24,6 +24,7 @@ struct SignedInView: View {
                         service: discoveryService, isSelected: selectedTab == .discovery
                     )
                     .id(discoveryRevision)
+                    .navigationTitle("").navigationBarTitleDisplayMode(.inline)
                     .toolbar { BrandNavigationLogo() }
                 }
                 .tabItem { Label("Discovery", systemImage: "person.2") }.tag(Tab.discovery)
@@ -32,6 +33,7 @@ struct SignedInView: View {
                         service: discoveryService, accountID: accountID,
                         messagingService: messagingService, isSelected: selectedTab == .connections
                     )
+                    .navigationTitle("").navigationBarTitleDisplayMode(.inline)
                     .toolbar { BrandNavigationLogo() }
                 }
                 .tabItem { Label("Connections", systemImage: "person.2.fill") }.tag(Tab.connections)
@@ -42,6 +44,7 @@ struct SignedInView: View {
                     ConversationListView(
                         accountID: accountID, service: messagingService, isSelected: selectedTab == .messages
                     )
+                    .navigationTitle("").navigationBarTitleDisplayMode(.inline)
                     .toolbar { BrandNavigationLogo() }
                 }
                 .tabItem { Label("Messages", systemImage: "bubble.left.and.bubble.right") }.tag(
@@ -51,6 +54,7 @@ struct SignedInView: View {
                 ProfileHomeView(
                     model: account, photoService: photoService, isSelected: selectedTab == .profile
                 )
+                .navigationTitle("").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     BrandNavigationLogo()
                     ToolbarItemGroup(placement: .topBarTrailing) {

@@ -69,7 +69,7 @@ struct ProfileHomeView: View {
                 }
                 Button("Edit profile") { model.editProfile() }
             }
-            .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
+            .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)
             .disabled(model.isBusy)
         }
         .background(BrandTheme.background)

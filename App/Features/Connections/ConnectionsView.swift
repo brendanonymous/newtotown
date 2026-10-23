@@ -23,8 +23,9 @@ struct ConnectionsView: View {
 
   var body: some View {
     ScrollView {
-      VStack(alignment: .leading, spacing: 28) {
+      VStack(alignment: .leading, spacing: 24) {
         Text("Connections").font(.system(.largeTitle, design: .serif))
+          .accessibilityIdentifier("connections.title")
         if let feed = model.feed {
           if feed.matches.isEmpty {
             Text("No connections yet.").font(.title2)
@@ -50,7 +51,7 @@ struct ConnectionsView: View {
           Button("Try again") { Task { await model.load() } }
         }
       }
-      .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
+      .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)
       .disabled(model.isBusy)
     }
     .background(BrandTheme.background).foregroundStyle(BrandTheme.ink)
