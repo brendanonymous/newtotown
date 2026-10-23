@@ -1,3 +1,4 @@
+import { type AgePreferences, agePreferences } from "./preferences.ts";
 import { authenticate } from "../_shared/auth.ts";
 import {
   type Card,
@@ -12,6 +13,8 @@ type Configuration = {
 };
 type Command =
   | { action: "feed" }
+  | { action: "preferences" }
+  | ({ action: "save_preferences" } & AgePreferences)
   | { action: "visibility"; enabled: boolean }
   | { action: "decide"; target_id: string; choice: "connect" | "pass" }
   | { action: "block"; target_id: string };
@@ -52,6 +55,22 @@ export function createDiscoveryHandler(
       const person = identity.userID;
       const command = parseCommand(await request.text());
       if (!command) return reply(400, { error: "Invalid discovery request" });
+      if (
+        command.action === "preferences" ||
+        command.action === "save_preferences"
+      ) {
+        const response = command.action === "preferences"
+          ? await rpc("pilot_discovery_preferences", { person })
+          : await rpc("pilot_discovery_save_preferences", {
+            person,
+            minimum_age: command.minimum_age,
+            maximum_age: command.maximum_age,
+          });
+        if (!response.ok) throw new Error("Preferences unavailable");
+        const preferences = agePreferences(await response.json());
+        if (!preferences) throw new Error("Invalid preferences response");
+        return reply(200, preferences);
+      }
       let mutation: Response | undefined;
       switch (command.action) {
         case "visibility":
@@ -123,6 +142,11 @@ function parseCommand(text: string): Command | undefined {
   if (!value || typeof value !== "object" || Array.isArray(value)) return;
   const keys = Object.keys(value).sort().join(",");
   if (value.action === "feed" && keys === "action") return value;
+  if (value.action === "preferences" && keys === "action") return value;
+  if (
+    value.action === "save_preferences" &&
+    keys === "action,maximum_age,minimum_age" && agePreferences(value)
+  ) return value;
   if (
     value.action === "visibility" && keys === "action,enabled" &&
     typeof value.enabled === "boolean"

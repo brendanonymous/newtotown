@@ -1,0 +1,11 @@
+# Discovery age preferences
+
+Approved October 22, 2026: add `minimum_age` (integer, default 18) and nullable `maximum_age` (no upper preference) to the existing `public.discovery_settings`. A check constraint requires minimum ≥ 18 and maximum ≥ minimum. Existing owner-only SELECT policy remains; clients cannot write directly. Only verified-caller, service-role RPCs can read/save through the discovery endpoint. Saving before joining discovery creates a hidden row; joining still requires the existing explicit visibility action.
+
+Commands: `{ "action": "preferences" }` reads the current range. `{ "action": "save_preferences", "minimum_age": 25, "maximum_age": null }` saves it. Both return only the two age fields. Unknown fields, caller IDs, fractional ages, inverted ranges and values outside PostgreSQL integer bounds are rejected. Dates of birth never leave the server. SDK requests capture the signed-in owner's token and reject responses after account changes, sharing the existing messaging transport behavior.
+
+Discovery computes whole years using UTC calendar dates and filters candidates before ordering/limiting. It uses the viewer's preferences only. A preference change never removes an existing connection or revokes messaging; the shared pair authorization is unchanged. Defaults preserve existing discovery. All participants continue to satisfy the app's existing eligibility rules.
+
+Deploy order after review: `started_conversations` migration, `discovery_age_preferences` migration, updated `discovery` Edge Function, then the preferences iPhone UI. Do not blindly push the whole migration directory: the historic initial profile migration has a different hosted timestamp, as documented in backend setup. Nothing in these PRs deploys to the hosted project automatically.
+
+Tests cover inclusive bounds, a birthday tomorrow, defaults, saving while hidden, unchanged connections/chat, owner-only access, forbidden client writes/RPCs, strict Edge commands, sanitized responses and account switching. Run `supabase/tests/preferences.sql` with the other SQL suites; handler tests use the existing Deno test command. No production accounts or messages are created by tests.

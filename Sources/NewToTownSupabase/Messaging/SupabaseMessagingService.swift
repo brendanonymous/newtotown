@@ -13,24 +13,8 @@ public final class SupabaseMessagingService: MessagingService {
         session: URLSession = .shared
     ) {
         self.accountID = accountID
-        functions = FunctionsClient(
-            url: configuration.projectURL.appendingPathComponent("functions/v1"),
-            headers: ["apikey": configuration.publishableKey],
-            fetch: { request in
-                let credentials: Session
-                do { credentials = try await client.auth.session } catch AuthError.sessionMissing {
-                    throw MessagingError.signedOut
-                }
-                guard credentials.user.id == accountID, !Task.isCancelled else {
-                    throw MessagingError.signedOut
-                }
-                var request = request
-                request.setValue("Bearer \(credentials.accessToken)", forHTTPHeaderField: "Authorization")
-                let response = try await session.data(for: request)
-                guard client.auth.currentSession?.user.id == accountID else { throw MessagingError.signedOut }
-                return response
-            }
-        )
+        functions = accountFunctionsClient(
+            client: client, accountID: accountID, configuration: configuration, session: session)
     }
 
     public func conversations(before cursor: MessageCursor?) async throws -> ConversationPage {
@@ -85,6 +69,7 @@ public final class SupabaseMessagingService: MessagingService {
     }
     private func translated(_ error: Error) -> Error {
         if let typed = error as? MessagingError { return typed }
+        if error is AccountSessionError { return MessagingError.signedOut }
         if case FunctionsError.httpError(let status, _) = error {
             switch status {
             case 401: return MessagingError.signedOut

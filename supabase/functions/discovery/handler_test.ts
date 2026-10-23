@@ -24,6 +24,12 @@ const request = (body: unknown, token = "Bearer token") =>
     body: JSON.stringify(body),
   });
 
+const mockFetch = (
+  respond: (input: RequestInfo | URL, options?: RequestInit) => Response,
+): typeof fetch =>
+  ((input, options) =>
+    Promise.resolve(respond(input, options))) as typeof fetch;
+
 Deno.test("discovery rejects missing and invalid authentication before any admin call", async () => {
   let calls = 0;
   const handler = createDiscoveryHandler(
@@ -56,7 +62,7 @@ Deno.test("feed projects public fields and signs profile-only paths for sixty se
   const calls: { url: string; body: Record<string, unknown> }[] = [];
   const handler = createDiscoveryHandler(
     config,
-    (async (input, options) => {
+    mockFetch((input, options) => {
       const url = String(input);
       const body = options?.body ? JSON.parse(String(options.body)) : {};
       calls.push({ url, body });
@@ -74,7 +80,7 @@ Deno.test("feed projects public fields and signs profile-only paths for sixty se
         signedURL:
           `/object/sign/private-photos/${target}/profile.jpg?token=short`,
       }]);
-    }) as typeof fetch,
+    }),
   );
   const response = await handler(request({ action: "feed" }));
   assert(response.status === 200);
@@ -93,11 +99,11 @@ Deno.test("decision supplies verified caller and returns conflict without exposi
   let body: Record<string, unknown> = {};
   const handler = createDiscoveryHandler(
     config,
-    (async (input, options) => {
+    mockFetch((input, options) => {
       if (String(input).endsWith("/user")) return Response.json({ id: person });
       body = JSON.parse(String(options?.body));
       return new Response("secret upstream detail", { status: 400 });
-    }) as typeof fetch,
+    }),
   );
   const response = await handler(
     request({ action: "decide", target_id: target, choice: "connect" }),
@@ -111,7 +117,7 @@ Deno.test("restricted feeds never sign photos and malformed eligible feeds fail 
     let calls = 0;
     const handler = createDiscoveryHandler(
       config,
-      (async () => {
+      mockFetch(() => {
         calls++;
         if (calls === 1) return Response.json({ id: person });
         return Response.json({
@@ -120,7 +126,7 @@ Deno.test("restricted feeds never sign photos and malformed eligible feeds fail 
           candidates,
           matches: [],
         });
-      }) as typeof fetch,
+      }),
     );
     assert(
       (await handler(request({ action: "feed" }))).status ===
@@ -132,7 +138,7 @@ Deno.test("restricted feeds never sign photos and malformed eligible feeds fail 
 Deno.test("signing failures and unexpected URL paths fail without leaking data", async () => {
   const handler = createDiscoveryHandler(
     config,
-    (async (input) => {
+    mockFetch((input) => {
       if (String(input).endsWith("/user")) return Response.json({ id: person });
       if (String(input).includes("/rpc/")) {
         return Response.json({
@@ -146,7 +152,7 @@ Deno.test("signing failures and unexpected URL paths fail without leaking data",
         path: `${target}/profile.jpg`,
         signedURL: `/object/sign/private-photos/${target}/selfie.jpg?token=bad`,
       }]);
-    }) as typeof fetch,
+    }),
   );
   assert((await handler(request({ action: "feed" }))).status === 503);
 });
@@ -160,7 +166,7 @@ Deno.test("visibility and blocking use only the verified caller", async () => {
     let mutation: Record<string, unknown> = {};
     const handler = createDiscoveryHandler(
       config,
-      (async (input, options) => {
+      mockFetch((input, options) => {
         if (String(input).endsWith("/user")) {
           return Response.json({ id: person });
         }
@@ -174,9 +180,94 @@ Deno.test("visibility and blocking use only the verified caller", async () => {
           candidates: [],
           matches: [],
         });
-      }) as typeof fetch,
+      }),
     );
     assert((await handler(request(command))).status === 200);
     assert(mutation.person === person);
   }
+});
+
+Deno.test("preferences save binds the caller and projects only the age range", async () => {
+  const calls: { url: string; body: Record<string, unknown> }[] = [];
+  const handler = createDiscoveryHandler(
+    config,
+    mockFetch((input, options) => {
+      const url = String(input);
+      if (url.endsWith("/user")) return Response.json({ id: person });
+      calls.push({ url, body: JSON.parse(String(options?.body)) });
+      return Response.json({
+        minimum_age: 25,
+        maximum_age: null,
+        date_of_birth: "private",
+      });
+    }),
+  );
+  const response = await handler(
+    request({ action: "save_preferences", minimum_age: 25, maximum_age: null }),
+  );
+  assert(response.status === 200);
+  const result = await response.json();
+  assert(
+    JSON.stringify(result) ===
+      JSON.stringify({ minimum_age: 25, maximum_age: null }),
+  );
+  assert(
+    calls.length === 1 &&
+      calls[0].url.endsWith("/rpc/pilot_discovery_save_preferences"),
+  );
+  assert(calls[0].body.person === person && calls[0].body.maximum_age === null);
+  assert(response.headers.get("Cache-Control") === "no-store");
+});
+
+Deno.test("preferences reject invalid bounds, extra identities and fractional ages before RPC", async () => {
+  let rpcCalls = 0;
+  const handler = createDiscoveryHandler(
+    config,
+    mockFetch((input) => {
+      if (String(input).endsWith("/user")) return Response.json({ id: person });
+      rpcCalls++;
+      return Response.json({});
+    }),
+  );
+  for (
+    const body of [
+      { action: "preferences", person: target },
+      { action: "save_preferences", minimum_age: 17, maximum_age: null },
+      { action: "save_preferences", minimum_age: 30, maximum_age: 29 },
+      { action: "save_preferences", minimum_age: 18.5, maximum_age: 50 },
+      {
+        action: "save_preferences",
+        minimum_age: 18,
+        maximum_age: null,
+        user_id: target,
+      },
+      { action: "save_preferences", minimum_age: 18 },
+      {
+        action: "save_preferences",
+        minimum_age: 2147483648,
+        maximum_age: null,
+      },
+    ]
+  ) assert((await handler(request(body))).status === 400);
+  assert(rpcCalls === 0);
+});
+
+Deno.test("preferences read returns defaults and rejects an invalid upstream range", async () => {
+  let invalid = false;
+  const handler = createDiscoveryHandler(
+    config,
+    mockFetch((input) => {
+      if (String(input).endsWith("/user")) return Response.json({ id: person });
+      return Response.json(
+        invalid
+          ? { minimum_age: 50, maximum_age: 20 }
+          : { minimum_age: 18, maximum_age: null },
+      );
+    }),
+  );
+  const response = await handler(request({ action: "preferences" }));
+  assert(response.status === 200 && (await response.json()).minimum_age === 18);
+  invalid = true;
+  const failed = await handler(request({ action: "preferences" }));
+  assert(failed.status === 503 && !(await failed.text()).includes("50"));
 });
