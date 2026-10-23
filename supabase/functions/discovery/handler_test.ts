@@ -180,3 +180,88 @@ Deno.test("visibility and blocking use only the verified caller", async () => {
     assert(mutation.person === person);
   }
 });
+
+Deno.test("preferences save binds the caller and projects only the age range", async () => {
+  const calls: { url: string; body: Record<string, unknown> }[] = [];
+  const handler = createDiscoveryHandler(
+    config,
+    (async (input, options) => {
+      const url = String(input);
+      if (url.endsWith("/user")) return Response.json({ id: person });
+      calls.push({ url, body: JSON.parse(String(options?.body)) });
+      return Response.json({
+        minimum_age: 25,
+        maximum_age: null,
+        date_of_birth: "private",
+      });
+    }) as typeof fetch,
+  );
+  const response = await handler(
+    request({ action: "save_preferences", minimum_age: 25, maximum_age: null }),
+  );
+  assert(response.status === 200);
+  const result = await response.json();
+  assert(
+    JSON.stringify(result) ===
+      JSON.stringify({ minimum_age: 25, maximum_age: null }),
+  );
+  assert(
+    calls.length === 1 &&
+      calls[0].url.endsWith("/rpc/pilot_discovery_save_preferences"),
+  );
+  assert(calls[0].body.person === person && calls[0].body.maximum_age === null);
+  assert(response.headers.get("Cache-Control") === "no-store");
+});
+
+Deno.test("preferences reject invalid bounds, extra identities and fractional ages before RPC", async () => {
+  let rpcCalls = 0;
+  const handler = createDiscoveryHandler(
+    config,
+    (async (input) => {
+      if (String(input).endsWith("/user")) return Response.json({ id: person });
+      rpcCalls++;
+      return Response.json({});
+    }) as typeof fetch,
+  );
+  for (
+    const body of [
+      { action: "preferences", person: target },
+      { action: "save_preferences", minimum_age: 17, maximum_age: null },
+      { action: "save_preferences", minimum_age: 30, maximum_age: 29 },
+      { action: "save_preferences", minimum_age: 18.5, maximum_age: 50 },
+      {
+        action: "save_preferences",
+        minimum_age: 18,
+        maximum_age: null,
+        user_id: target,
+      },
+      { action: "save_preferences", minimum_age: 18 },
+      {
+        action: "save_preferences",
+        minimum_age: 2147483648,
+        maximum_age: null,
+      },
+    ]
+  ) assert((await handler(request(body))).status === 400);
+  assert(rpcCalls === 0);
+});
+
+Deno.test("preferences read returns defaults and rejects an invalid upstream range", async () => {
+  let invalid = false;
+  const handler = createDiscoveryHandler(
+    config,
+    (async (input) => {
+      if (String(input).endsWith("/user")) return Response.json({ id: person });
+      return Response.json(
+        invalid
+          ? { minimum_age: 50, maximum_age: 20 }
+          : { minimum_age: 18, maximum_age: null },
+      );
+    }) as typeof fetch,
+  );
+  const response = await handler(request({ action: "preferences" }));
+  assert(response.status === 200 && (await response.json()).minimum_age === 18);
+  invalid = true;
+  const failed = await handler(request({ action: "preferences" }));
+  assert(failed.status === 503 && !(await failed.text()).includes("50"));
+});

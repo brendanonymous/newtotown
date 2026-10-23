@@ -63,7 +63,7 @@ jobs:
           for migration in supabase/migrations/*.sql; do
             psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f "$migration"
           done
-          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles.sql -f supabase/tests/photos.sql -f supabase/tests/photo_review_flag.sql -f supabase/tests/discovery.sql -f supabase/tests/account_agreements.sql -f supabase/tests/messaging.sql
+          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles.sql -f supabase/tests/photos.sql -f supabase/tests/photo_review_flag.sql -f supabase/tests/discovery.sql -f supabase/tests/account_agreements.sql -f supabase/tests/messaging.sql -f supabase/tests/preferences.sql
 
       - name: Test concurrent messaging transactions
         env:
