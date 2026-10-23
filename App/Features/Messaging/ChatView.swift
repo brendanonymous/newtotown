@@ -4,24 +4,36 @@ import SwiftUI
 struct ChatView: View {
     @State private var model: ChatModel
     @State private var confirmsBlock = false
+    @State private var showsProfile = false
+    private let service: any MessagingService
     @Environment(\.scenePhase) private var scenePhase
 
     init(accountID: UUID, target: ConversationTarget, service: any MessagingService) {
+        self.service = service
         _model = State(initialValue: ChatModel(accountID: accountID, target: target, service: service))
     }
 
     var body: some View {
         VStack(spacing: 0) {
             if let peer = model.conversation?.participant {
-                HStack(spacing: 16) {
-                    MessagePhoto(url: peer.photoURL)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(peer.firstName).font(.title2).accessibilityIdentifier("chat.peer")
-                        Label(peer.jobTitle, systemImage: "briefcase")
-                            .font(.caption).foregroundStyle(BrandTheme.secondaryInk)
-                    }
-                    Spacer()
-                }.padding(.horizontal, 28).padding(.vertical, 16)
+                Button {
+                    showsProfile = true
+                } label: {
+                    HStack(spacing: 16) {
+                        MessagePhoto(url: peer.photoURL)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(peer.firstName).font(.title2).accessibilityIdentifier("chat.peer")
+                            Label(peer.jobTitle, systemImage: "briefcase")
+                                .font(.caption).foregroundStyle(BrandTheme.secondaryInk)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right").font(.caption)
+                    }.padding(.horizontal, 28).padding(.vertical, 16)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("View \(peer.firstName)’s profile")
+                .accessibilityIdentifier("chat.viewProfile")
                 Divider()
             }
             history
@@ -44,11 +56,16 @@ struct ChatView: View {
         } message: {
             Text("You won’t see each other in discovery, connections, or messages.")
         }
-        .task { await model.load() }
-        .onChange(of: scenePhase) { _, phase in
-            if phase == .active { Task { await model.load() } }
+        .navigationDestination(isPresented: $showsProfile) {
+            if let conversation = model.conversation {
+                ConnectionProfileView(conversationID: conversation.id, service: service)
+            }
         }
-        .onDisappear { model.reset() }
+        .task { if !showsProfile { await model.load() } }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active && !showsProfile { Task { await model.load() } }
+        }
+        .onDisappear { if !showsProfile { model.reset() } }
         .privacySensitive()
     }
 
@@ -137,7 +154,8 @@ struct ChatView: View {
                 .opacity(model.canSend ? 1 : 0.4)
             }
             if model.draft.unicodeScalars.count > MessageText.maximumLength {
-                Text("Keep your message under \(MessageText.maximumLength) characters.").font(.caption).foregroundStyle(.red)
+                Text("Keep your message under \(MessageText.maximumLength) characters.").font(.caption)
+                    .foregroundStyle(.red)
             }
         }
         .padding(.horizontal, 28).padding(.vertical, 12)

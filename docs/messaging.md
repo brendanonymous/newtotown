@@ -95,3 +95,7 @@ Hosted advisors show informational [RLS without policies](https://supabase.com/d
 ## First-message transition
 
 The `started_conversations` migration changes list queries only. Empty conversations stay in Connections; Messages lists only conversations with at least one committed message. The first saved message moves both participants on their next refresh. Opening a thread, an invalid send, or an uncommitted failure does not move it. A lost response after a committed send still moves it on refresh; the existing retry key prevents duplicate messages. Mutual decisions and blocking/visibility authorization remain unchanged. Apply the migration after review before distributing the updated iPhone app. No hosted deployment is included in this PR.
+
+## Profile from a conversation
+
+Tap the participant header in Chat to open their public profile, then use Back to return to the draft. The screen reuses `DiscoveryProfileCard` and reloads through the existing conversation-authorized history endpoint for a fresh signed photo. That endpoint returns up to 50 messages alongside the conversation; the profile model retains only the public profile. No contact details, exact birthday, selfie, or edit actions are shown. A failed authorization refresh clears the cached profile. Account-bound transport and model reset discard late responses.

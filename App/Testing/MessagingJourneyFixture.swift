@@ -128,13 +128,18 @@
 
     @MainActor private final class JourneyDiscoveryService: DiscoveryService {
         let messages: JourneyMessagingService
+        private var visible = true
         init(messages: JourneyMessagingService) { self.messages = messages }
         func load() -> DiscoveryFeed {
             DiscoveryFeed(
-                state: .ready, visible: true,
-                matches: messages.blocked || messages.hasStarted ? [] : [messages.thread.participant])
+                state: visible ? .ready : .hidden, visible: visible,
+                matches: !visible || messages.blocked || messages.hasStarted
+                    ? [] : [messages.thread.participant])
         }
-        func setVisible(_ visible: Bool) -> DiscoveryFeed { load() }
+        func setVisible(_ visible: Bool) -> DiscoveryFeed {
+            self.visible = visible
+            return load()
+        }
         func decide(on profileID: UUID, choice: ConnectionChoice) -> DiscoveryFeed { load() }
         func block(_ profileID: UUID) -> DiscoveryFeed {
             messages.block(profileID)

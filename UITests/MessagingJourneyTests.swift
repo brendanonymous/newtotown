@@ -122,6 +122,46 @@ final class MessagingJourneyTests: XCTestCase {
     }
 
     @MainActor
+    func testMessageProfileOpensAndReturnsWithDraft() {
+        let app = launchFixture()
+        app.tabBars.buttons["Messages"].tap()
+        let thread = app.buttons.matching(
+            NSPredicate(format: "label CONTAINS %@", "Account A conversation")
+        ).firstMatch
+        XCTAssertTrue(thread.waitForExistence(timeout: 10))
+        thread.tap()
+        let composer = app.descendants(matching: .any).matching(identifier: "chat.composer").firstMatch
+        XCTAssertTrue(composer.waitForExistence(timeout: 10))
+        composer.tap()
+        composer.typeText("Unsaved plan")
+        app.buttons["chat.viewProfile"].tap()
+        XCTAssertTrue(app.staticTexts["Find a hiking buddy."].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["Scottsdale"].exists)
+        XCTAssertFalse(composer.exists)
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(composer.waitForExistence(timeout: 10))
+        XCTAssertEqual(composer.value as? String, "Unsaved plan")
+    }
+
+    @MainActor
+    func testVisibilityTogglePersistsWhenSettingsReopens() {
+        let app = launchFixture()
+        app.tabBars.buttons["Profile"].tap()
+        app.buttons["profile.settings"].tap()
+        let toggle = app.switches["settings.profileVisibility"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        XCTAssertEqual(toggle.value as? String, "1")
+        toggle.tap()
+        XCTAssertTrue(app.staticTexts["Your profile is hidden"].waitForExistence(timeout: 10))
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.buttons["profile.settings"].tap()
+        XCTAssertTrue(toggle.waitForExistence(timeout: 10))
+        XCTAssertEqual(toggle.value as? String, "0")
+        toggle.tap()
+        XCTAssertEqual(toggle.value as? String, "1")
+    }
+
+    @MainActor
     func testTabTitlesUseTheSameVerticalPosition() {
         let app = launchFixture()
         app.tabBars.buttons["Messages"].tap()
