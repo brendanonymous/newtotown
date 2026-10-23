@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import NewToTownCore
 
 @MainActor
@@ -11,7 +12,7 @@ private final class TestOnboardingService: OnboardingService {
     var failAcceptance = false
     var acceptances = 0
     var storedProfile: Profile?
-    var sentEmails: [String] = []
+    var sentIdentifiers: [SignInIdentifier] = []
     var failSend = false
     var failVerify = false
     var failLoad = false
@@ -21,11 +22,11 @@ private final class TestOnboardingService: OnboardingService {
     var deletions = 0
 
     func currentUserID() async throws -> UUID? { signedIn ? id : nil }
-    func sendCode(to email: String) async throws {
+    func sendCode(to identifier: SignInIdentifier) async throws {
         if failSend { throw Failure.unavailable }
-        sentEmails.append(email)
+        sentIdentifiers.append(identifier)
     }
-    func verifyCode(_ code: String, email: String) async throws -> UUID {
+    func verifyCode(_ code: String, identifier: SignInIdentifier) async throws -> UUID {
         if failVerify { throw Failure.unavailable }
         signedIn = true
         return id
@@ -62,10 +63,10 @@ private final class TestOnboardingService: OnboardingService {
     let service = TestOnboardingService()
     let model = OnboardingModel(service: service)
     await model.restore()
-    #expect(model.step == .email)
+    #expect(model.step == .signIn)
     #expect(!model.isSignedIn)
     await model.requestCode(email: "  ALEX@example.com ")
-    #expect(service.sentEmails == ["alex@example.com"])
+    #expect(service.sentIdentifiers == [.email("alex@example.com")])
     #expect(model.step == .code)
     await model.verify(code: "123456")
     #expect(model.step == .profile)
@@ -79,7 +80,7 @@ private final class TestOnboardingService: OnboardingService {
     #expect(restored.step == .saved)
     #expect(restored.draft.firstName == "Alex")
     await restored.signOut()
-    #expect(restored.step == .email)
+    #expect(restored.step == .signIn)
     #expect(!restored.isSignedIn)
     #expect(restored.draft == ProfileDraft())
 }
@@ -89,10 +90,10 @@ private final class TestOnboardingService: OnboardingService {
     let model = OnboardingModel(service: service)
     await model.restore()
     await model.requestCode(email: "invalid")
-    #expect(service.sentEmails.isEmpty)
+    #expect(service.sentIdentifiers.isEmpty)
     service.failSend = true
     await model.requestCode(email: "alex@example.com")
-    #expect(model.step == .email)
+    #expect(model.step == .signIn)
     #expect(model.errorMessage != nil)
     #expect(!model.isBusy)
 }
@@ -106,7 +107,7 @@ private final class TestOnboardingService: OnboardingService {
     #expect(model.step == .code)
     #expect(!service.signedIn)
     await model.resendCode()
-    #expect(service.sentEmails.count == 1)
+    #expect(service.sentIdentifiers.count == 1)
 }
 
 @Test @MainActor func loadFailureDoesNotOverwriteExistingProfile() async {
@@ -148,9 +149,9 @@ private final class TestOnboardingService: OnboardingService {
     #expect(!model.isSignedIn)
     #expect(!service.signedIn)
     #expect(service.storedProfile == nil)
-    #expect(model.step == .email)
+    #expect(model.step == .signIn)
     #expect(model.draft == ProfileDraft())
-    #expect(model.email.isEmpty)
+    #expect(model.signInIdentifier == nil)
     #expect(model.resendAvailableAt == .distantPast)
     #expect(model.errorMessage == nil)
     #expect(!model.isBusy)
@@ -176,7 +177,7 @@ private final class TestOnboardingService: OnboardingService {
     #expect(service.deletions == 0)
     service.failDelete = false
     await model.deleteAccount()
-    #expect(model.step == .email)
+    #expect(model.step == .signIn)
     #expect(service.deletions == 1)
 }
 
@@ -224,7 +225,7 @@ private final class TestOnboardingService: OnboardingService {
     #expect(model.step == .introduction)
     #expect(service.acceptances == 0)
     await model.signOut()
-    #expect(model.step == .email)
+    #expect(model.step == .signIn)
 }
 
 @Test @MainActor func existingPilotAccountAcceptsOnceWithoutChangingSavedProfile() async throws {
@@ -256,10 +257,47 @@ private final class TestOnboardingService: OnboardingService {
     // The session may disappear between a failed restore and its retry.
     service.signedIn = false
     await model.restore()
-    #expect(model.step == .email)
+    #expect(model.step == .signIn)
     #expect(!model.isSignedIn)
     #expect(!model.canDeleteAccount)
     #expect(model.draft == ProfileDraft())
     model.editProfile()
-    #expect(model.step == .email)
+    #expect(model.step == .signIn)
+}
+
+@Test @MainActor func phoneSignupUsesOneVerifiedIdentifierAndKeepsAgreementFlow() async throws {
+    let service = TestOnboardingService()
+    service.acceptedAgreement = false
+    let model = OnboardingModel(service: service)
+    await model.restore()
+    await model.requestCode(phone: "(480) 555-0142")
+    let number = try #require(PhoneNumber(rawValue: "+14805550142"))
+    #expect(service.sentIdentifiers == [.phone(number)])
+    #expect(model.signInIdentifier == .phone(number) && model.step == .code)
+    await model.resendCode()
+    #expect(service.sentIdentifiers.count == 1)
+    await model.verify(code: "abc")
+    #expect(!model.isSignedIn && model.errorMessage?.contains("text message") == true)
+    await model.verify(code: "123456")
+    #expect(model.step == .introduction && model.isSignedIn)
+    await model.acceptIntroduction()
+    #expect(model.step == .profile)
+    await model.signOut()
+    #expect(model.signInIdentifier == nil && model.step == .signIn)
+}
+
+@Test @MainActor func invalidPhoneAndSwitchingMethodsNeverVerifyOldIdentifier() async {
+    let service = TestOnboardingService()
+    let model = OnboardingModel(service: service)
+    await model.restore()
+    await model.requestCode(phone: "480")
+    #expect(service.sentIdentifiers.isEmpty && model.step == .signIn)
+    await model.requestCode(email: "alex@example.com")
+    model.restartSignIn()
+    #expect(model.signInIdentifier == nil)
+    await model.verify(code: "123456")
+    #expect(!model.isSignedIn && model.step == .signIn)
+    service.failSend = true
+    await model.requestCode(phone: "4805550142")
+    #expect(model.signInIdentifier == nil && model.step == .signIn)
 }

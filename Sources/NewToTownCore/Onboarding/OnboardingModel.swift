@@ -5,13 +5,13 @@ import Observation
 @Observable
 public final class OnboardingModel {
     public enum Step: Equatable {
-        case loading, email, code, introduction, profile, saved, restoreFailed
+        case loading, signIn, code, introduction, profile, saved, restoreFailed
     }
 
     public private(set) var step: Step = .loading
     public private(set) var isBusy = false
     public private(set) var errorMessage: String?
-    public private(set) var email = ""
+    public private(set) var signInIdentifier: SignInIdentifier?
     public private(set) var resendAvailableAt = Date.distantPast
     public var draft = ProfileDraft()
 
@@ -50,42 +50,61 @@ public final class OnboardingModel {
             errorMessage = "Enter a valid email address."
             return
         }
+        await requestCode(to: .email(normalized))
+    }
+
+    public func requestCode(phone input: String) async {
+        guard !isBusy else { return }
+        guard let number = PhoneNumber(rawValue: input) else {
+            errorMessage = "Enter a valid phone number, including the country code outside the US."
+            return
+        }
+        await requestCode(to: .phone(number))
+    }
+
+    private func requestCode(to identifier: SignInIdentifier) async {
+        guard !isBusy else { return }
         isBusy = true
         errorMessage = nil
         defer { isBusy = false }
         do {
-            try await service.sendCode(to: normalized)
-            email = normalized
+            try await service.sendCode(to: identifier)
+            signInIdentifier = identifier
             resendAvailableAt = Date.now.addingTimeInterval(60)
             step = .code
         } catch {
-            errorMessage = "We couldn’t send a code. Check your connection or wait a minute before trying again."
+            errorMessage =
+                "We couldn’t send a code. Check your connection or wait a minute before trying again."
         }
     }
 
     public func resendCode() async {
-        guard Date.now >= resendAvailableAt else { return }
-        await requestCode(email: email)
+        guard step == .code, Date.now >= resendAvailableAt, let signInIdentifier else { return }
+        await requestCode(to: signInIdentifier)
     }
 
-    public func changeEmail() {
+    public func restartSignIn() {
         guard !isBusy else { return }
-        step = .email
+        step = .signIn
+        signInIdentifier = nil
         errorMessage = nil
     }
 
     public func verify(code: String) async {
-        guard !isBusy else { return }
+        guard !isBusy, step == .code, let signInIdentifier else { return }
         let code = code.trimmingCharacters(in: .whitespacesAndNewlines)
         guard (6...10).contains(code.count), code.allSatisfy({ $0.isASCII && $0.isNumber }) else {
-            errorMessage = "Enter the numeric code from your email."
+            errorMessage =
+                signInIdentifier.isPhone
+                ? "Enter the numeric code from your text message."
+                : "Enter the numeric code from your email."
             return
         }
         isBusy = true
         errorMessage = nil
         defer { isBusy = false }
         do {
-            let id = try await service.verifyCode(code, email: email)
+            let id = try await service.verifyCode(code, identifier: signInIdentifier)
             userID = id
             do {
                 try await loadProfile(for: id)
@@ -157,7 +176,8 @@ public final class OnboardingModel {
             try await service.deleteAccount()
             clearAccount()
         } catch {
-            errorMessage = "We couldn’t confirm account deletion. Try again, or sign out and sign in to check your account."
+            errorMessage =
+                "We couldn’t confirm account deletion. Try again, or sign out and sign in to check your account."
         }
     }
 
@@ -165,9 +185,9 @@ public final class OnboardingModel {
         userID = nil
         hasAcceptedAgreement = false
         draft = ProfileDraft()
-        email = ""
+        signInIdentifier = nil
         resendAvailableAt = .distantPast
-        step = .email
+        step = .signIn
     }
 
     private func loadProfile(for id: UUID) async throws {

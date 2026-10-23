@@ -22,6 +22,10 @@ References: [email OTP](https://supabase.com/docs/reference/swift/auth-signinwit
 
 `Configuration/Public.xcconfig` contains only the supplied project host and publishable key. Both are public client values. Override them in ignored `Local.xcconfig` when using another project. Never add database passwords, secret keys, or service-role keys.
 
+## Phone sign-in rollout
+
+The phone-sign-in PR changes new signup to SMS while retaining email login for existing accounts. Follow [phone sign-in](phone-sign-in.md) before distributing it: enable/configure a supported SMS provider in Supabase and keep the current Email provider, Resend SMTP, and code templates. These require no DNS changes for SMS. No SMS provider is selected or configured automatically. The email-only setup and device notes below describe the earlier pilot baseline.
+
 ## Test on your iPhone
 
 Use this PR's branch. Open the project, select your team and phone, and run. A new checkout needs its own ignored `Configuration/Local.xcconfig` signing values; your original checkout's settings have not been changed.
