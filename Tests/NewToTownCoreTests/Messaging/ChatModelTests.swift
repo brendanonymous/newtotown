@@ -4,8 +4,8 @@ import Testing
 @testable import NewToTownCore
 
 @Test func messageValidationCountsScalarsRatherThanVisibleGraphemes() {
-    #expect(MessageText.isValid(String(repeating: "😀", count: 2000)))
-    #expect(!MessageText.isValid(String(repeating: "😀", count: 2001)))
+    #expect(MessageText.isValid(String(repeating: "😀", count: 500)))
+    #expect(!MessageText.isValid(String(repeating: "😀", count: 501)))
     #expect(MessageText.isValid("  Hello\nthere  "))
     #expect(!MessageText.isValid("\t\n\u{FEFF}\u{00A0}"))
     #expect(!MessageText.isValid("Hello\0"))

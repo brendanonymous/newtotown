@@ -19,7 +19,7 @@ final class SignupEntryTests: XCTestCase {
         XCTAssertFalse(app.textFields["signup.code"].exists)
         // Signup is rooted in the window, rather than a partially raised sheet.
         XCTAssertFalse(app.sheets.firstMatch.exists)
-        XCTAssertTrue(app.images["newtotown"].exists)
+        XCTAssertTrue(app.images["NewToTown"].exists)
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "Signup validation"
         screenshot.lifetime = .keepAlways

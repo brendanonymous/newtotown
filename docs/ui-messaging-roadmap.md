@@ -29,3 +29,7 @@ Keep that boundary: SwiftUI presentation under `App/Features`, domain rules/stat
 ## Verification and tracking
 
 Each implementation PR includes its behavior, touched boundaries, applicable tests, rollout order, and a short phone acceptance journey. Run focused Swift/adapter tests for rule/model changes, SQL and Edge handler tests for server changes, and relevant simulator journeys for navigation/state transitions. Include a Release build before distributing a TestFlight candidate. Verify on two separate app accounts for PR 4. Keep the owner's current local source edits out of a documentation-only commit.
+
+## Implementation notes — October 22
+
+The owner’s `chat-msg-limits-and-tab-order` branch supplies the 500-character client change and Discovery-first/Profile-last tab order. Follow-up PRs preserve that order: Discovery · Connections · Messages · Profile. PR 2 moves Settings into Profile and updates the existing message-length test to match the owner’s change. Server limits remain a separate follow-up; this navigation PR does not deploy backend changes.

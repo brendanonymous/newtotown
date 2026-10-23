@@ -36,7 +36,8 @@ final class MessagingJourneyTests: XCTestCase {
             NSPredicate(format: "label CONTAINS %@", "Account A conversation")
         ).firstMatch
         XCTAssertTrue(previous.waitForExistence(timeout: 10))
-        app.tabBars.buttons["Settings"].tap()
+        app.tabBars.buttons["Profile"].tap()
+        app.buttons["profile.settings"].tap()
         app.buttons["Sign out"].tap()
         XCTAssertTrue(app.buttons["Join or sign in"].waitForExistence(timeout: 10))
         app.buttons["Join or sign in"].tap()
@@ -60,6 +61,20 @@ final class MessagingJourneyTests: XCTestCase {
         XCTAssertTrue(app.staticTexts["chat.peer"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.staticTexts["chat.peer"].label, "Taylor")
         XCTAssertFalse(previous.exists)
+    }
+
+    @MainActor
+    func testSettingsOpensFromProfileAndReturnsToProfile() {
+        let app = launchFixture()
+        XCTAssertFalse(app.tabBars.buttons["Settings"].exists)
+        app.tabBars.buttons["Profile"].tap()
+        app.buttons["profile.settings"].tap()
+        XCTAssertTrue(app.buttons["account.delete"].waitForExistence(timeout: 10))
+        app.buttons["account.delete"].tap()
+        XCTAssertTrue(app.alerts["Delete your account?"].waitForExistence(timeout: 5))
+        app.alerts.buttons["Cancel"].tap()
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.buttons["profile.settings"].waitForExistence(timeout: 5))
     }
 
     @MainActor private func launchFixture() -> XCUIApplication {
