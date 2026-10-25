@@ -21,6 +21,10 @@ jobs:
         run: |
           swiftc App/Images/ProfileImageDecoder.swift scripts/PhotoImageDecoderChecks.swift -o "$RUNNER_TEMP/photo-decoder-checks"
           "$RUNNER_TEMP/photo-decoder-checks"
+      - name: Test demo portrait normalization
+        run: |
+          swiftc scripts/seed-demo/NormalizePhoto.swift -o "$RUNNER_TEMP/normalize-demo-photo"
+          swift scripts/seed-demo/PhotoNormalizationChecks.swift "$RUNNER_TEMP/normalize-demo-photo"
       - name: Build iPhone app
         run: >-
           xcodebuild -project NewToTown.xcodeproj -scheme NewToTown
@@ -94,3 +98,8 @@ jobs:
           deno lint supabase/functions/_shared supabase/functions/messaging supabase/functions/reports supabase/functions/interests
           deno check supabase/functions/delete-account/index.ts supabase/functions/discovery/index.ts supabase/functions/messaging/index.ts supabase/functions/reports/index.ts supabase/functions/interests/index.ts
           deno test supabase/functions
+          deno fmt --check scripts/seed-demo
+          deno lint scripts/seed-demo
+          deno check scripts/seed-demo/seed.ts
+          deno test --allow-read=scripts/seed-demo scripts/seed-demo
+          deno run --allow-read=scripts/seed-demo scripts/seed-demo/seed.ts --dry-run
