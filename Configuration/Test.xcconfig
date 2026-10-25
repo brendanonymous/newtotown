@@ -2,6 +2,6 @@
 #include "Base.xcconfig"
 
 PRODUCT_BUNDLE_IDENTIFIER = com.newtotown.ios.test
-APP_DISPLAY_NAME = newtotown Test
+APP_DISPLAY_NAME = NewToTown Test
 #include "Test.Public.xcconfig"
 #include? "Test.Local.xcconfig"

@@ -7,6 +7,7 @@ struct BrandMark: View {
     var body: some View {
         Image("BrandLogo")
             .resizable()
+            .scaledToFill()
             .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: size * 0.24, style: .continuous))
             .accessibilityLabel("NewToTown")
