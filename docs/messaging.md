@@ -100,6 +100,10 @@ The `started_conversations` migration changes list queries only. Empty conversat
 
 Tap the participant header in Chat to open their public profile, then use Back to return to the draft. The screen reuses `DiscoveryProfileCard` and reloads through the existing conversation-authorized history endpoint for a fresh signed photo. That endpoint returns up to 50 messages alongside the conversation; the profile model retains only the public profile. No contact details, exact birthday, selfie, or edit actions are shown. A failed authorization refresh clears the cached profile. Account-bound transport and model reset discard late responses.
 
+## Chat history scrolling
+
+Conversations open at the newest message. The backend already returns only the newest 50 messages; the client requests an older page only when the user scrolls to the first loaded message or chooses Load earlier messages. SwiftUI tracks the visible message ID to preserve the reading position while prepending history. A failed older-page request keeps the loaded conversation, cursor, and draft and offers a retry. Authorization failures still clear private content. A manual refresh returns to the latest page.
+
 ## Message input
 
 The iPhone composer caps drafts at 500 Unicode code points, matching `MessageText` validation. Typing and pasting keep only the fitting prefix without splitting a composed character. A counter shows the current count through `500/500` and displays “Character limit reached” at the limit; users can still delete, edit, or send. The server's existing 2,000-code-point ceiling is unchanged by this client update.

@@ -72,6 +72,31 @@ import Testing
     #expect(service.sendCalls.first?.1 == String(repeating: "x", count: 500))
 }
 
+@Test @MainActor func failedOlderPagePreservesCurrentHistoryCursorAndDraft() async {
+    let service = MessagingTestService()
+    let message = ChatMessage(
+        id: UUID(), conversationID: messagingThread.id, senderID: messagingPeer.id,
+        clientMessageID: UUID(), body: "Already loaded", createdAt: messagingTime)
+    let cursor = MessageCursor(time: messagingTime, id: message.id)
+    service.historyPages = [
+        MessagePage(conversation: messagingThread, messages: [message], nextCursor: cursor)
+    ]
+    let model = ChatModel(
+        accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
+    await model.load()
+    #expect(service.historyCursors.count == 1 && service.historyCursors[0] == nil)
+    model.draft = "My draft"
+    service.onHistory = { throw MessagingError.connection }
+    await model.load(older: true)
+    #expect(model.olderPageFailed && model.errorMessage != nil)
+    #expect(model.messages == [message] && model.nextCursor == cursor)
+    #expect(model.conversation != nil && model.draft == "My draft" && model.canSend)
+    service.onHistory = nil
+    await model.load(older: true)
+    #expect(service.historyCursors[1] == cursor && service.historyCursors[2] == cursor)
+    #expect(!model.olderPageFailed && model.messages == [message] && model.nextCursor == nil)
+}
+
 @Test @MainActor func draftLimitNeverSplitsComposedCharacters() {
     let model = ChatModel(
         accountID: messagingOwner, target: .peer(messagingPeer.id), messagingService: MessagingTestService())

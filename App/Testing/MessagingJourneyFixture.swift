@@ -125,6 +125,21 @@
         }
         func history(in conversationID: UUID, before cursor: MessageCursor?) throws -> MessagePage {
             guard !blocked else { throw MessagingError.unavailable }
+            if ProcessInfo.processInfo.arguments.contains("--ui-test-long-history") {
+                let range = cursor == nil ? 21...70 : 1...20
+                let messages = range.map { index in
+                    ChatMessage(
+                        id: UUID(uuidString: String(format: "00000000-0000-0000-0000-%012d", index + 1000))!,
+                        conversationID: thread.id, senderID: JourneyIDs.peer,
+                        clientMessageID: UUID(), body: "History message \(index)",
+                        createdAt: ISO8601DateFormatter().string(
+                            from: Date(timeIntervalSince1970: Double(index))))
+                }
+                let oldest = messages[0]
+                return MessagePage(
+                    conversation: thread, messages: messages,
+                    nextCursor: cursor == nil ? MessageCursor(time: oldest.createdAt, id: oldest.id) : nil)
+            }
             return MessagePage(
                 conversation: thread, messages: (startsEmpty ? [] : [greeting]) + sent, nextCursor: nil)
         }
