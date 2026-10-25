@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ProfileSettingsView: View {
     let personalInfoService: (any PersonalInfoService)?
+    let contactsService: (any ContactDetailsService)?
     let isSelected: Bool
     let isAccountBusy: Bool
     let accountError: String?
@@ -18,9 +19,10 @@ struct ProfileSettingsView: View {
         isAccountBusy: Bool,
         accountError: String?,
         signOut: @escaping @MainActor () async -> Void,
-        deleteAccount: @escaping () -> Void
+        deleteAccount: @escaping () -> Void, contactsService: (any ContactDetailsService)? = nil
     ) {
         self.personalInfoService = personalInfoService
+        self.contactsService = contactsService
         self.isSelected = isSelected
         self.isAccountBusy = isAccountBusy
         self.accountError = accountError
@@ -40,7 +42,7 @@ struct ProfileSettingsView: View {
                 Text("Account").font(.headline)
                 if let personalInfoService {
                     NavigationLink {
-                        PersonalInfoView(service: personalInfoService)
+                        PersonalInfoView(service: personalInfoService, contactsService: contactsService)
                     } label: {
                         HStack {
                             Label("Personal info", systemImage: "person.text.rectangle")

@@ -6,7 +6,10 @@ struct BrandTextFieldStyle: TextFieldStyle {
         configuration
             .textFieldStyle(.plain)
             .padding(12)
-            .background(.white.opacity(0.65), in: RoundedRectangle(cornerRadius: BrandTheme.textCornerRadius))
+            .background(
+                BrandTheme.inputSurface.opacity(0.65),
+                in: RoundedRectangle(cornerRadius: BrandTheme.textCornerRadius)
+            )
             .overlay {
                 RoundedRectangle(cornerRadius: BrandTheme.textCornerRadius)
                     .strokeBorder(BrandTheme.sage.opacity(0.7), lineWidth: 1)

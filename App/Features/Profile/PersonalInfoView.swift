@@ -2,9 +2,11 @@ import NewToTownCore
 import SwiftUI
 
 struct PersonalInfoView: View {
+    let contactsService: (any ContactDetailsService)?
     @State private var model: PersonalInfoModel
 
-    init(service: any PersonalInfoService) {
+    init(service: any PersonalInfoService, contactsService: (any ContactDetailsService)? = nil) {
+        self.contactsService = contactsService
         _model = State(initialValue: PersonalInfoModel(service: service))
     }
 
@@ -16,8 +18,10 @@ struct PersonalInfoView: View {
                     .foregroundStyle(BrandTheme.secondaryInk)
                 if let info = model.info {
                     detail("Email", symbol: "envelope", value: info.email, identifier: "account.email")
+                    if info.email == nil { addContact(.email) }
                     Divider()
                     detail("Phone number", symbol: "phone", value: info.phone, identifier: "account.phone")
+                    if info.phone == nil { addContact(.phone) }
                 }
                 if model.isBusy { ProgressView() }
                 if let error = model.errorMessage {
@@ -35,6 +39,21 @@ struct PersonalInfoView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { BrandNavigationLogo() }
         .task { await model.load() }
+    }
+
+    @ViewBuilder private func addContact(_ kind: ContactDetailKind) -> some View {
+        if let contactsService {
+            NavigationLink {
+                ContactDetailsView(kind: kind, service: contactsService) {
+                    Task { await model.load() }
+                }
+            } label: {
+                Label(kind == .email ? "Add email" : "Add phone number", systemImage: "plus.circle")
+                    .frame(minHeight: 44)
+            }
+            .disabled(model.isBusy)
+            .accessibilityIdentifier("account.add.\(kind.rawValue)")
+        }
     }
 
     private func detail(_ title: String, symbol: String, value: String?, identifier: String) -> some View {

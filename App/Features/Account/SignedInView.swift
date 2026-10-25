@@ -12,6 +12,7 @@ struct SignedInView: View {
     let preferencesService: (any DiscoveryPreferencesService)?
     let reportingService: (any ProfileReportingService)?
     var interestsService: (any InterestsService)? = nil
+    var contactsService: (any ContactDetailsService)? = nil
     @State private var discoveryRevision = 0
     @State private var reportedProfileIDs: Set<UUID> = []
     @State private var profileImages = ProfileImageStore()
@@ -88,7 +89,7 @@ struct SignedInView: View {
                                 discoveryService: discoveryService, personalInfoService: personalInfoService,
                                 isSelected: true, isAccountBusy: account.isBusy,
                                 accountError: account.errorMessage, signOut: { await account.signOut() },
-                                deleteAccount: { confirmsDeletion = true }
+                                deleteAccount: { confirmsDeletion = true }, contactsService: contactsService
                             )
                             .navigationBarTitleDisplayMode(.inline)
                             .toolbar { BrandNavigationLogo() }
