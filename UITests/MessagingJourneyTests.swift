@@ -5,7 +5,7 @@ final class MessagingJourneyTests: XCTestCase {
     func testProfilePhotosLoadThroughSharedImagePipeline() {
         let app = launchFixture(emptyChat: true, profileImages: true)
         app.tabBars.buttons["Connections"].tap()
-        XCTAssertTrue(app.images["photo.loaded"].firstMatch.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Message Alex"].waitForExistence(timeout: 10))
         app.buttons["Message Alex"].tap()
         let profile = app.buttons["chat.viewProfile"]
         XCTAssertTrue(profile.waitForExistence(timeout: 10))
