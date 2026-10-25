@@ -28,6 +28,11 @@ who can respond to messages. No email/SMS invitations are sent.
 Sources: https://generated.photos/faq and https://www.uifaces.co/licenses. Photo
 rights are not granted by this script.
 
+The owner confirmed that the current portraits are from UI Faces’ free mockup
+collection and are for internal testing only. This scope is recorded on each
+fixture; reassess image licensing before using these portraits in a public
+product or marketing.
+
 ## Dry run
 
 Install Deno 2, PostgreSQL's `psql`, and Xcode command-line tools. From the
