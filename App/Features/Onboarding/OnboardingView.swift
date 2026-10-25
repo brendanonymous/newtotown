@@ -36,7 +36,9 @@ private struct OnboardingContent: View {
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                BrandNavigationLogo()
+                if model.isSignedIn {
+                    BrandNavigationLogo()
+                }
                 if model.step == .signIn || model.step == .code {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Close", action: close).disabled(model.isBusy)
