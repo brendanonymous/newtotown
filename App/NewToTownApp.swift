@@ -4,6 +4,7 @@ import SwiftUI
 
 @main
 struct NewToTownApp: App {
+    @State private var emailVerification = EmailVerificationRouter()
     @State private var onboardingModel: OnboardingModel?
     private let personalInfoService: (any PersonalInfoService)?
     private let photoService: (any PhotoService)?
@@ -32,7 +33,10 @@ struct NewToTownApp: App {
         discoveryService = services?.discovery
         if let shared = services {
             makeContactsService = { @Sendable (accountID: UUID) -> any ContactDetailsService in
-                shared.contacts(for: accountID)
+                shared.contacts(
+                    for: accountID,
+                    emailRedirectURL: EmailVerificationCallback.redirectURL(
+                        scheme: Bundle.main.bundleIdentifier ?? "com.newtotown.ios"))
             }
             makeInterestsService = { @Sendable (accountID: UUID) -> any InterestsService in
                 shared.interests(for: accountID)
@@ -70,6 +74,19 @@ struct NewToTownApp: App {
                 #endif
             }
             .tint(BrandTheme.ink)
+            .environment(emailVerification)
+            .onOpenURL { url in
+                emailVerification.receive(url, scheme: Bundle.main.bundleIdentifier ?? "com.newtotown.ios")
+            }
+            .sheet(item: $emailVerification.callback) { callback in
+                EmailVerificationResultView(
+                    callback: callback, accountID: onboardingModel?.accountID,
+                    isRestoring: onboardingModel?.step == .loading,
+                    makeService: makeContactsService,
+                    onVerified: { emailVerification.completedCount += 1 }
+                )
+                .id(callback.id)
+            }
         }
     }
 

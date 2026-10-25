@@ -20,8 +20,10 @@ public struct SupabaseServices: Sendable {
             client: client, accountID: accountID, configuration: configuration)
     }
 
-    public func contacts(for accountID: UUID) -> SupabaseContactDetailsService {
-        SupabaseContactDetailsService(client: client, accountID: accountID, configuration: configuration)
+    public func contacts(for accountID: UUID, emailRedirectURL: URL? = nil) -> SupabaseContactDetailsService {
+        SupabaseContactDetailsService(
+            client: client, accountID: accountID, configuration: configuration,
+            emailRedirectURL: emailRedirectURL)
     }
 
     public func interests(for accountID: UUID) -> SupabaseInterestsService {
