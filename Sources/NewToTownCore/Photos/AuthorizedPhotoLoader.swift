@@ -136,7 +136,8 @@ public actor AuthorizedPhotoLoader {
     }
 
     private static func owner(of url: URL) throws -> UUID {
-        guard url.scheme == "https", url.lastPathComponent == "profile.jpg",
+        guard url.scheme == "https",
+            ["profile.jpg", "profile-2.jpg", "profile-3.jpg"].contains(url.lastPathComponent),
             let owner = UUID(uuidString: url.deletingLastPathComponent().lastPathComponent)
         else { throw AuthorizedPhotoError.invalidURL }
         return owner

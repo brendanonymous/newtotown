@@ -10,7 +10,10 @@ struct DiscoveryProfileCard: View {
             firstName: profile.firstName, jobTitle: profile.jobTitle,
             goal: profile.goal, city: profile.city, interests: profile.interests
         ) {
-            RemoteProfilePhoto(url: profile.photoURL)
+            ProfilePhotoGallery(count: profile.photoURLs.count) { index in
+                RemoteProfilePhoto(url: profile.photoURLs[index])
+            }
+            .id(profile.id)
         } actions: {
             if let onDecision {
                 DiscoveryDecisionButtons(name: profile.firstName, onDecision: onDecision)

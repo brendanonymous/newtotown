@@ -29,7 +29,7 @@ public final class PhotoSubmissionModel {
             let requirements = try await service.requirements()
             photos = try await service.load()
             self.requirements = requirements
-            hasStoredPhotos = photos.profile != nil || photos.selfie != nil
+            hasStoredPhotos = !photos.profilePhotos.isEmpty || photos.selfie != nil
             isLoaded = true
             isSaved = photos.meets(requirements)
         } catch {
@@ -40,6 +40,33 @@ public final class PhotoSubmissionModel {
     public func selectProfile(_ data: Data) {
         guard !isBusy else { return }
         photos.profile = data
+        changedSelection()
+    }
+
+    public func addProfile(_ data: Data) {
+        guard !isBusy else { return }
+        guard photos.profilePhotos.count < PrivatePhotos.maximumProfilePhotos else {
+            errorMessage = PhotoValidationError.tooManyPhotos.localizedDescription
+            return
+        }
+        if photos.profile == nil { photos.profile = data } else { photos.additionalProfiles.append(data) }
+        changedSelection()
+    }
+
+    public func replaceProfile(at index: Int, with data: Data) {
+        guard !isBusy, photos.profilePhotos.indices.contains(index) else { return }
+        if index == 0 { photos.profile = data } else { photos.additionalProfiles[index - 1] = data }
+        changedSelection()
+    }
+
+    /// Removing the main photo promotes the next photo. Remove-all remains a
+    /// separate, confirmed server action so an empty draft cannot look saved.
+    public func removeProfile(at index: Int) {
+        var remaining = photos.profilePhotos
+        guard !isBusy, remaining.count > 1, remaining.indices.contains(index) else { return }
+        remaining.remove(at: index)
+        photos.profile = remaining.first
+        photos.additionalProfiles = Array(remaining.dropFirst())
         changedSelection()
     }
 
@@ -69,7 +96,8 @@ public final class PhotoSubmissionModel {
             try photos.validate(requirements: requirements)
             let submission = PrivatePhotos(
                 profile: photos.profile,
-                selfie: requirements.reviewRequired ? photos.selfie : nil
+                selfie: requirements.reviewRequired ? photos.selfie : nil,
+                additionalProfiles: photos.additionalProfiles
             )
             try await service.save(submission)
             hasStoredPhotos = true

@@ -24,6 +24,10 @@ Swift tests cover shared requests, cancelled consumers, expiry, full-URL replace
 
 ## Possible second phase
 
-Separate small avatar files would reduce first-load bytes. They require coordinated upload/replacement/deletion, revision metadata, storage access review, and an existing-photo backfill or fallback. Bounded prefetching could improve perceived Discovery speed but downloads some unused images. Neither is implemented.
+Separate small avatar files would reduce first-load bytes. They require coordinated upload/replacement/deletion, revision metadata, storage access review, and an existing-photo backfill or fallback. Bounded prefetching could improve perceived Discovery speed but downloads some unused images. Separate thumbnails and cross-profile prefetching are not implemented.
 
 Supabase's [managed image transformations](https://supabase.com/docs/guides/storage/serving/image-transformations) are an alternative, currently documented for Pro or above. Keeping the existing files and decoding locally avoids that plan requirement. Docs and relevant changelog checked October 24, 2026.
+
+## Three-photo galleries
+
+The current card creates at most three image views together, so tapping does not wait for a newly started request or an expired unused URL. Each view uses the same bounded account-scoped store and display-sized decoding. This downloads additional gallery photos upfront even if the viewer never taps, trading some bandwidth and visible-view memory for immediate cycling. It does not prefetch the next Discovery candidate or change signed-link/cache lifetimes. Owner cards load all three files concurrently and decode away from the main actor. Selfies remain excluded from both card paths.

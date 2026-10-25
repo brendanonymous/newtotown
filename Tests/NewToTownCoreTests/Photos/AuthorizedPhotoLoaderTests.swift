@@ -147,3 +147,19 @@ private func photoURL(expiry: Int = 1060, version: String = "one", owner: UUID =
         now: { clock.now() }, download: { _ in Data(count: PrivatePhotos.maximumFileSize + 1) })
     await #expect(throws: AuthorizedPhotoError.invalidData) { try await oversized.load(photoURL()) }
 }
+
+@Test func allThreeGallerySlotsAreAllowedButSelfiesAndFourthPhotosAreRejected() async throws {
+    let clock = PhotoClock()
+    let stub = PhotoDownloadStub()
+    let loader = AuthorizedPhotoLoader(now: { clock.now() }, download: { try await stub.download($0) })
+    let original = photoURL()
+    for name in ["profile.jpg", "profile-2.jpg", "profile-3.jpg"] {
+        let url = URL(string: original.absoluteString.replacingOccurrences(of: "profile.jpg", with: name))!
+        #expect(try await loader.load(url).data == Data([1, 2]))
+    }
+    for name in ["selfie.jpg", "profile-4.jpg"] {
+        let url = URL(string: original.absoluteString.replacingOccurrences(of: "profile.jpg", with: name))!
+        await #expect(throws: AuthorizedPhotoError.invalidURL) { try await loader.load(url) }
+    }
+    #expect(await stub.calls == 3)
+}
