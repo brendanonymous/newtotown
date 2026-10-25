@@ -22,3 +22,9 @@ Configuration/Test.Local.xcconfig
 
 # Python test helper caches
 __pycache__/
+
+# Locally sourced demo portraits and license receipts
+scripts/seed-demo/photos/
+
+# User-supplied portrait source files (used locally by demo seeding)
+/avatars/
