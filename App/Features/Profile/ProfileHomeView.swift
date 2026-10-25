@@ -7,12 +7,25 @@ struct ProfileHomeView: View {
     @Bindable var model: OnboardingModel
     let photoService: (any PhotoService)?
     let isSelected: Bool
+    private let interestsService: (any InterestsService)?
+    @State private var interests: InterestsModel?
     @State private var showsPhotos = false
     @State private var profilePhoto: UIImage?
     @State private var photoIsMissing = false
     @State private var photoFailed = false
     @State private var photoNeedsReload = true
     @State private var photoLoadGeneration = 0
+
+    init(
+        model: OnboardingModel, photoService: (any PhotoService)?, isSelected: Bool,
+        interestsService: (any InterestsService)? = nil
+    ) {
+        self.model = model
+        self.photoService = photoService
+        self.isSelected = isSelected
+        self.interestsService = interestsService
+        _interests = State(initialValue: interestsService.map { InterestsModel(service: $0, kind: .profile) })
+    }
 
     var body: some View {
         profile
@@ -23,7 +36,11 @@ struct ProfileHomeView: View {
                 guard isSelected, !showsPhotos, photoNeedsReload else { return }
                 await loadPhoto()
             }
-            .refreshable { await loadPhoto() }
+            .task(id: isSelected) { if isSelected { await interests?.load() } }
+            .refreshable {
+                await loadPhoto()
+                await interests?.load()
+            }
     }
 
     @MainActor private func loadPhoto() async {
@@ -57,7 +74,8 @@ struct ProfileHomeView: View {
             VStack(alignment: .leading, spacing: 24) {
                 ProfileCard(
                     firstName: model.draft.firstName, jobTitle: model.draft.jobTitle,
-                    goal: model.draft.goal, city: "Scottsdale"
+                    goal: model.draft.goal, city: "Scottsdale",
+                    interests: interests?.snapshot?.profileInterests ?? []
                 ) {
                     if let profilePhoto {
                         Image(uiImage: profilePhoto).resizable().scaledToFill()
@@ -82,6 +100,14 @@ struct ProfileHomeView: View {
                         photoNeedsReload = true
                         showsPhotos = true
                     }
+                }
+                if let interestsService {
+                    NavigationLink {
+                        InterestEditorView(service: interestsService, kind: .profile) {}
+                    } label: {
+                        Label("Edit interests", systemImage: "sparkles")
+                    }
+                    .accessibilityIdentifier("profile.interests")
                 }
                 Button("Edit profile") { model.editProfile() }
             }

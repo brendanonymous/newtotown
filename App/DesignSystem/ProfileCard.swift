@@ -1,3 +1,4 @@
+import NewToTownCore
 import SwiftUI
 
 /// Identical public profile layout for the owner, discovery, and connections.
@@ -7,6 +8,7 @@ struct ProfileCard<Photo: View, Actions: View>: View {
     let jobTitle: String
     let goal: String
     let city: String
+    var interests: [ProfileInterest] = []
     @ViewBuilder var photo: () -> Photo
     @ViewBuilder var actions: () -> Actions
 
@@ -41,6 +43,7 @@ struct ProfileCard<Photo: View, Actions: View>: View {
                     .accessibilityLabel("About me: \(goal)")
                     Label(city, systemImage: "mappin").font(.footnote)
                         .foregroundStyle(BrandTheme.secondaryInk)
+                    if !interests.isEmpty { InterestTags(interests: interests) }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .layoutPriority(1)
@@ -53,11 +56,11 @@ struct ProfileCard<Photo: View, Actions: View>: View {
 
 extension ProfileCard where Actions == EmptyView {
     init(
-        firstName: String, jobTitle: String, goal: String, city: String,
+        firstName: String, jobTitle: String, goal: String, city: String, interests: [ProfileInterest] = [],
         @ViewBuilder photo: @escaping () -> Photo
     ) {
         self.init(
-            firstName: firstName, jobTitle: jobTitle, goal: goal, city: city,
+            firstName: firstName, jobTitle: jobTitle, goal: goal, city: city, interests: interests,
             photo: photo, actions: { EmptyView() })
     }
 }

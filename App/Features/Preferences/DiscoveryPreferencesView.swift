@@ -3,11 +3,16 @@ import SwiftUI
 
 struct DiscoveryPreferencesView: View {
     @State private var model: DiscoveryPreferencesModel
+    let interestsService: (any InterestsService)?
     let onSaved: () -> Void
     @Environment(\.dismiss) private var dismiss
 
-    init(service: any DiscoveryPreferencesService, onSaved: @escaping () -> Void) {
+    init(
+        service: any DiscoveryPreferencesService, interestsService: (any InterestsService)? = nil,
+        onSaved: @escaping () -> Void
+    ) {
         _model = State(initialValue: DiscoveryPreferencesModel(service: service))
+        self.interestsService = interestsService
         self.onSaved = onSaved
     }
 
@@ -15,6 +20,19 @@ struct DiscoveryPreferencesView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 Text("Preferences").font(.system(.largeTitle, design: .serif))
+                if let interestsService {
+                    NavigationLink {
+                        InterestEditorView(service: interestsService, kind: .filters, onSaved: onSaved)
+                    } label: {
+                        HStack {
+                            Label("Interests", systemImage: "line.3.horizontal.decrease")
+                            Spacer()
+                            Image(systemName: "chevron.right").font(.caption)
+                        }.frame(minHeight: 44)
+                    }
+                    .accessibilityIdentifier("preferences.interests")
+                    Divider()
+                }
                 Text("Age range").font(.headline)
                 Text(
                     "Choose who appears in Discovery. Your existing connections and conversations stay available."
