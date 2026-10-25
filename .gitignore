@@ -19,3 +19,6 @@ SKILL.md
 .github/copilot-instructions.md
 
 Configuration/Test.Local.xcconfig
+
+# Python test helper caches
+__pycache__/
