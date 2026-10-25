@@ -8,12 +8,16 @@ struct ProfileForm: View {
         VStack(alignment: .leading, spacing: 22) {
             field("First name", placeholder: "What should we call you?", text: $draft.firstName)
                 .textContentType(.givenName)
+                .accessibilityIdentifier("profile.firstName")
             field("Job title", placeholder: "e.g. Designer, teacher, retired", text: $draft.jobTitle)
             VStack(alignment: .leading, spacing: 8) {
                 Text("What are you up for?").font(.headline)
-                TextField("e.g. Looking for someone to grab a beer with in Old Town.", text: $draft.goal, axis: .vertical)
-                    .lineLimit(3...6)
-                    .textFieldStyle(BrandTextFieldStyle())
+                TextField(
+                    "e.g. Looking for someone to grab a beer with in Old Town.", text: $draft.goal,
+                    axis: .vertical
+                )
+                .lineLimit(3...6)
+                .textFieldStyle(BrandTextFieldStyle())
                 Text("10–280 characters").font(.caption).foregroundStyle(BrandTheme.secondaryInk)
             }
             DatePicker("Birthday", selection: birthday, in: ...Date.now, displayedComponents: .date)

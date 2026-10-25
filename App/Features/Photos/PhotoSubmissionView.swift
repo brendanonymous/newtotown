@@ -21,9 +21,9 @@ struct PhotoSubmissionView: View {
     private var reviewRequired: Bool { model.requirements?.reviewRequired ?? true }
 
     var body: some View {
-        NavigationStack {
+        EditorSheet(isBusy: isBusy) {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .center, spacing: 24) {
                     Text("Show up as yourself.").font(.system(.largeTitle, design: .serif))
                     if model.requirements?.reviewRequired == true {
                         Text(
@@ -92,9 +92,7 @@ struct PhotoSubmissionView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 BrandNavigationLogo()
-                ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() }.disabled(isBusy) }
             }
-            .interactiveDismissDisabled(isBusy)
             .task { await model.load() }
             .onChange(of: selection) { _, item in
                 Task { await prepareProfile(item) }

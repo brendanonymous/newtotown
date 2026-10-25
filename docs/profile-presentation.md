@@ -7,3 +7,13 @@ On initial account restoration, the loading screen owns its one progress indicat
 An empty photo sheet shows a single **Choose your photo** picker label with an image icon. No empty photo heading, placeholder or empty review description is rendered. A valid, complete unsaved selection enables Save; saving still closes the sheet on success. Remove appears only for remotely stored files, including a previously stored selfie, and stays available after an uncertain removal failure. Selecting a new local image alone does not imply files exist remotely. Review-required selfie capture retains its separate explanation and readiness requirement.
 
 The photo model owns `canSave` and `hasStoredPhotos`, with lifecycle tests covering new selection, failed save, saved replacement, failed removal and successful removal. Offline iPhone journeys cover empty/saved photo sheets, startup loading and decision-column geometry. Camera/photo-library acceptance still needs an actual iPhone.
+
+## Profile editor sheets
+
+My photos, Edit interests, and Edit profile are plain text actions in Profile. All three open modal sheets with a shared `EditorSheet` navigation container and a Close button. The container disables Close and swipe dismissal while saving or preparing a photo. Saving successfully closes the editor; closing an unsaved profile or interest editor discards its local draft.
+
+`ProfileHomeView` owns a single optional editor destination, so it cannot present competing sheets. Returning reloads public interests and refreshes photos when needed. Discovery filter editing still uses Preferences navigation; the interest form supports both presentations without duplicating selection rules.
+
+`ProfileEditorView` reuses the `ProfileForm` in `App/Features/Profile` with a separate draft. `OnboardingModel.updateProfile` validates and saves the current account’s existing profile, then publishes the normalized draft while remaining in the saved-account state. Signup retains its own first-profile save path. Failed, invalid, and cancelled edits never publish a draft as a successful save. The obsolete transition from the signed-in profile back to onboarding editing is removed.
+
+Core tests cover validation, failed-save retry, normalization, cancellation, and retaining the signed-in state. Simulator journeys check all three Close actions, discarded unsaved fields/interests, saving back to the updated profile, and the separate Discovery interest filters. The Discovery layout journey also verifies that the block action is absent.

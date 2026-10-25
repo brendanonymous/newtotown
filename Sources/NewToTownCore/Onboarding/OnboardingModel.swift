@@ -148,10 +148,20 @@ public final class OnboardingModel {
         }
     }
 
-    public func editProfile() {
-        guard !isBusy, hasAcceptedAgreement else { return }
-        errorMessage = nil
-        step = .profile
+    /// Update an existing profile without routing the signed-in shell back to signup.
+    /// The editor supplies a separate draft; publish it only after a successful save.
+    public func updateProfile(_ candidate: ProfileDraft) async throws {
+        guard !isBusy, step == .saved, hasAcceptedAgreement, let userID else {
+            throw ProfileUpdateError.unavailable
+        }
+        try Task.checkCancellation()
+        let profile = try Profile(id: userID, draft: candidate)
+        isBusy = true
+        defer { isBusy = false }
+        try await service.save(profile)
+        try Task.checkCancellation()
+        guard self.userID == userID, step == .saved else { throw ProfileUpdateError.unavailable }
+        draft = ProfileDraft(profile: profile)
     }
 
     public func signOut() async {
@@ -206,3 +216,5 @@ public final class OnboardingModel {
         }
     }
 }
+
+public enum ProfileUpdateError: Error, Equatable, Sendable { case unavailable }

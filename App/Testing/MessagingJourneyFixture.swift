@@ -106,6 +106,7 @@
 
     private actor JourneyAccountService: OnboardingService {
         private var owner: UUID? = JourneyIDs.first
+        private var savedProfiles: [UUID: Profile] = [:]
         func currentUserID() async throws -> UUID? {
             if ProcessInfo.processInfo.arguments.contains("--ui-test-loading") {
                 try await Task.sleep(for: .seconds(30))
@@ -119,8 +120,9 @@
         }
         func hasAcceptedAgreement(for userID: UUID) -> Bool { true }
         func acceptAgreement(for userID: UUID) {}
-        func save(_ profile: Profile) {}
+        func save(_ profile: Profile) { savedProfiles[profile.id] = profile }
         func profile(for userID: UUID) throws -> Profile? {
+            if let profile = savedProfiles[userID] { return profile }
             var draft = ProfileDraft()
             draft.firstName = "Fixture member"
             draft.jobTitle = "Designer"

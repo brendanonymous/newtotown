@@ -41,6 +41,7 @@ final class ProfileLayoutTests: XCTestCase {
         app.tabBars.buttons["Discovery"].tap()
         let connect = app.buttons["discovery.connect"]
         XCTAssertTrue(connect.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["Block this profile"].exists)
         let pass = app.buttons["discovery.pass"]
         let details = app.staticTexts.matching(identifier: "profile.details").allElementsBoundByIndex
         XCTAssertFalse(details.isEmpty)

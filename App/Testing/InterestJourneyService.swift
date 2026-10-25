@@ -27,7 +27,10 @@
             InterestCategory(
                 id: id, title: title,
                 options: options.map {
-                    InterestOption(id: $0.lowercased().replacingOccurrences(of: " ", with: "_"), title: $0)
+                    InterestOption(
+                        id: $0.lowercased().replacingOccurrences(of: " ", with: "_")
+                            .replacingOccurrences(of: "[^a-z0-9_]", with: "", options: .regularExpression),
+                        title: $0)
                 })
         }
         func load() -> InterestsSnapshot {

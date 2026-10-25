@@ -3,15 +3,28 @@ import SwiftUI
 
 struct InterestEditorView: View {
     @State private var model: InterestsModel
+    enum Presentation { case navigation, sheet }
+    let presentation: Presentation
     let onSaved: () -> Void
     @Environment(\.dismiss) private var dismiss
 
-    init(service: any InterestsService, kind: InterestSelectionKind, onSaved: @escaping () -> Void) {
+    init(
+        service: any InterestsService, kind: InterestSelectionKind,
+        presentation: Presentation = .navigation, onSaved: @escaping () -> Void
+    ) {
+        self.presentation = presentation
         _model = State(initialValue: InterestsModel(service: service, kind: kind))
         self.onSaved = onSaved
     }
 
-    var body: some View {
+    @ViewBuilder var body: some View {
+        switch presentation {
+        case .navigation: editor
+        case .sheet: EditorSheet(isBusy: model.isBusy) { editor }
+        }
+    }
+
+    private var editor: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 Text(model.kind == .profile ? "Your interests" : "Discovery interests")

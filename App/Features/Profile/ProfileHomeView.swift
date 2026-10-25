@@ -9,7 +9,11 @@ struct ProfileHomeView: View {
     let isSelected: Bool
     private let interestsService: (any InterestsService)?
     @State private var interests: InterestsModel?
-    @State private var showsPhotos = false
+    private enum Editor: String, Identifiable {
+        case photos, interests, profile
+        var id: String { rawValue }
+    }
+    @State private var editor: Editor?
     @State private var profilePhoto: UIImage?
     @State private var photoIsMissing = false
     @State private var photoFailed = false
@@ -29,14 +33,25 @@ struct ProfileHomeView: View {
 
     var body: some View {
         profile
-            .sheet(isPresented: $showsPhotos) {
-                if let photoService { PhotoSubmissionView(service: photoService) }
+            .sheet(item: $editor) { destination in
+                switch destination {
+                case .photos:
+                    if let photoService { PhotoSubmissionView(service: photoService) }
+                case .interests:
+                    if let interestsService {
+                        InterestEditorView(service: interestsService, kind: .profile, presentation: .sheet) {}
+                    }
+                case .profile:
+                    ProfileEditorView(account: model)
+                }
             }
-            .task(id: isSelected && !showsPhotos) {
-                guard isSelected, !showsPhotos, photoNeedsReload else { return }
+            .task(id: isSelected && editor == nil) {
+                guard isSelected, editor == nil, photoNeedsReload else { return }
                 await loadPhoto()
             }
-            .task(id: isSelected) { if isSelected { await interests?.load() } }
+            .task(id: isSelected && editor == nil) {
+                if isSelected, editor == nil { await interests?.load() }
+            }
             .refreshable {
                 await loadPhoto()
                 await interests?.load()
@@ -80,8 +95,10 @@ struct ProfileHomeView: View {
                     if let profilePhoto {
                         Image(uiImage: profilePhoto).resizable().scaledToFill()
                     } else if photoIsMissing {
-                        Label("Add a profile photo", systemImage: "person.crop.rectangle")
-                            .foregroundStyle(BrandTheme.secondaryInk)
+                        Button("Add a profile photo", systemImage: "person.crop.rectangle") {
+                            photoNeedsReload = true
+                            editor = .photos
+                        }.foregroundStyle(BrandTheme.secondaryInk)
                     } else if photoFailed {
                         Label("Photo unavailable. Open My photos to try again.", systemImage: "photo")
                             .font(.callout).padding()
@@ -89,27 +106,20 @@ struct ProfileHomeView: View {
                         ProgressView()
                     }
                 }
-                if photoIsMissing {
-                    Text(
-                        "Add your profile photo to get ready. You choose when your profile becomes visible in Scottsdale."
-                    )
-                    .font(.callout).foregroundStyle(BrandTheme.secondaryInk)
-                }
+
                 if photoService != nil {
                     Button("My photos") {
                         photoNeedsReload = true
-                        showsPhotos = true
+                        editor = .photos
                     }
                 }
-                if let interestsService {
-                    NavigationLink {
-                        InterestEditorView(service: interestsService, kind: .profile) {}
-                    } label: {
-                        Label("Edit interests", systemImage: "sparkles")
-                    }
-                    .accessibilityIdentifier("profile.interests")
+
+                if interestsService != nil {
+                    Button("Edit interests") { editor = .interests }
+                        .accessibilityIdentifier("profile.interests")
                 }
-                Button("Edit profile") { model.editProfile() }
+                Button("Edit profile") { editor = .profile }
+                    .accessibilityIdentifier("profile.edit")
             }
             .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)
             .disabled(model.isBusy)
