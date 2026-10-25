@@ -8,12 +8,15 @@
         private let categories: [InterestCategory] = [
             (
                 "sports_fitness", "Sports & fitness",
-                ["Golf", "Pickleball", "Gym", "Running", "Basketball", "Tennis"]
+                [
+                    "Golf", "Pickleball", "Gun Range", "Gym", "Running", "Combat Sports", "Basketball",
+                    "Tennis",
+                ]
             ),
             ("outdoors", "Outdoors", ["Hiking", "Camping", "Cycling", "Fishing", "Kayaking", "Dog walks"]),
             (
                 "food_drinks", "Food & drinks",
-                ["Coffee", "Craft beer", "Dining out", "Cooking", "Barbecue", "Wine"]
+                ["Coffee", "Craft beer", "Dining out", "TSL's", "Cooking", "Barbecue", "Dive Bars", "Wine"]
             ),
             (
                 "arts_entertainment", "Arts & entertainment",
@@ -21,7 +24,10 @@
             ),
             (
                 "social_hobbies", "Social & hobbies",
-                ["Board games", "Video games", "Volunteering", "Professional networking", "Reading", "Cars"]
+                [
+                    "Board games", "Video games", "Volunteering", "Professional networking", "Reading",
+                    "Cars", "DIY", "Mogging", "Poker",
+                ]
             ),
         ].map { id, title, options in
             InterestCategory(
@@ -33,9 +39,11 @@
                         title: $0)
                 })
         }
+
         func load() -> InterestsSnapshot {
             InterestsSnapshot(categories: categories, profileOptionIDs: profile, filterOptionIDs: filters)
         }
+
         func save(_ optionIDs: [String], for kind: InterestSelectionKind) -> InterestsSnapshot {
             if kind == .profile { profile = optionIDs } else { filters = optionIDs }
             return load()
