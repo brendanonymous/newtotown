@@ -136,7 +136,13 @@ Deno.test("cleanup deletes Storage bytes before Auth and stops if file removal f
       assert(init?.method === "DELETE");
       if (paths.length === 1) {
         assert(
-          JSON.parse(String(init.body)).prefixes[0] === `${id}/profile.jpg`,
+          JSON.stringify(JSON.parse(String(init.body)).prefixes) ===
+            JSON.stringify([
+              `${id}/profile.jpg`,
+              `${id}/profile-2.jpg`,
+              `${id}/profile-3.jpg`,
+              `${id}/selfie.jpg`,
+            ]),
         );
       }
       return Promise.resolve(Response.json({}));

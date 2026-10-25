@@ -1,4 +1,4 @@
-/** These are the only two keys permitted by the private-photos bucket policies. */
+/** These are the only four keys permitted by the private-photos bucket policies. */
 export async function removePrivatePhotos(
   projectURL: string,
   adminKey: string,
@@ -16,7 +16,12 @@ export async function removePrivatePhotos(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        prefixes: [`${userID}/profile.jpg`, `${userID}/selfie.jpg`],
+        prefixes: [
+          `${userID}/profile.jpg`,
+          `${userID}/profile-2.jpg`,
+          `${userID}/profile-3.jpg`,
+          `${userID}/selfie.jpg`,
+        ],
       }),
     },
   );

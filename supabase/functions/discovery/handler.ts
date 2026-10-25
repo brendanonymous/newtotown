@@ -2,6 +2,7 @@ import { type AgePreferences, agePreferences } from "./preferences.ts";
 import { authenticate } from "../_shared/auth.ts";
 import {
   type Card,
+  profilePhotoURLs,
   readCards,
   signProfilePhotos,
 } from "../_shared/profile-photos.ts";
@@ -118,6 +119,7 @@ export function createDiscoveryHandler(
       const present = (card: Card) => ({
         ...card,
         photo_url: urls.get(`${card.id}/profile.jpg`),
+        photo_urls: profilePhotoURLs(card.id, urls),
       });
       return reply(200, {
         state: feed.state,

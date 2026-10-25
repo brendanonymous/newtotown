@@ -165,7 +165,14 @@ export class SeedBackend {
     const response = await this.api(
       "/storage/v1/object/private-photos",
       "DELETE",
-      JSON.stringify({ prefixes: [`${id}/profile.jpg`, `${id}/selfie.jpg`] }),
+      JSON.stringify({
+        prefixes: [
+          `${id}/profile.jpg`,
+          `${id}/profile-2.jpg`,
+          `${id}/profile-3.jpg`,
+          `${id}/selfie.jpg`,
+        ],
+      }),
     );
     await response.body?.cancel();
     const deleted = await this.api(`/auth/v1/admin/users/${id}`, "DELETE");
