@@ -105,7 +105,8 @@ public final class ChatModel {
 
     public func send() async {
         guard canSend else { return }
-        pending = PendingMessage(id: UUID(), body: draft)
+        let body = draft.replacingOccurrences(of: "\n+", with: "\n", options: .regularExpression)
+        pending = PendingMessage(id: UUID(), body: body)
         await retrySend()
     }
 
@@ -119,7 +120,9 @@ public final class ChatModel {
         defer { if current == generation { isSending = false } }
         do {
             let sent = try await messagingService.send(
-                in: conversation.id, retryID: pending.id, body: pending.body)
+                in: conversation.id,
+                retryID: pending.id,
+                body: pending.body)
             guard current == generation else { return }
             guard !Task.isCancelled else {
                 sendError = "Send was interrupted. Retry the same message safely."

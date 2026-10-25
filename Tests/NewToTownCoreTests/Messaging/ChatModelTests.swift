@@ -77,7 +77,7 @@ import Testing
     let model = ChatModel(
         accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
     await model.load()
-    model.draft = "Coffee on Saturday?"
+    model.draft = "Coffee\n\n\non Saturday?"
     var committed: ChatMessage?
     service.onSend = { retry, body in
         if let committed { return committed }
@@ -89,7 +89,7 @@ import Testing
     await model.send()
     let pending = model.pending
     #expect(pending != nil && !model.canSend)
-    #expect(model.draft == "Coffee on Saturday?")
+    #expect(model.draft == "Coffee\n\n\non Saturday?")
     service.historyPages = [
         MessagePage(conversation: messagingThread, messages: [try #require(committed)], nextCursor: nil)
     ]
@@ -98,6 +98,7 @@ import Testing
     #expect(service.sendCalls.count == 2)
     #expect(service.sendCalls[0].0 == service.sendCalls[1].0)
     #expect(service.sendCalls[0].1 == service.sendCalls[1].1)
+    #expect(service.sendCalls[0].1 == "Coffee\non Saturday?")
     #expect(model.messages.count == 1)
     #expect(model.pending == nil && model.draft.isEmpty && model.sendError == nil)
 }
