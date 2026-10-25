@@ -12,6 +12,7 @@ struct NewToTownApp: App {
     private let makeDiscoveryPreferencesService: (@Sendable (UUID) -> any DiscoveryPreferencesService)?
     private let makeMessagingService: (@Sendable (UUID) -> any MessagingService)?
 
+    private let makeInterestsService: (@Sendable (UUID) -> any InterestsService)?
     private let makeReportingService: (@Sendable (UUID) -> any ProfileReportingService)?
 
     init() {
@@ -29,6 +30,9 @@ struct NewToTownApp: App {
         photoService = services?.photos
         discoveryService = services?.discovery
         if let shared = services {
+            makeInterestsService = { @Sendable (accountID: UUID) -> any InterestsService in
+                shared.interests(for: accountID)
+            }
             makeReportingService = { @Sendable (accountID: UUID) -> any ProfileReportingService in
                 shared.reporting(for: accountID)
             }
@@ -40,6 +44,7 @@ struct NewToTownApp: App {
                 shared.messaging(for: accountID)
             }
         } else {
+            makeInterestsService = nil
             makeReportingService = nil
             makeMessagingService = nil
             makeDiscoveryPreferencesService = nil
@@ -70,7 +75,7 @@ struct NewToTownApp: App {
                 photoService: photoService, discoveryService: discoveryService,
                 makeMessagingService: makeMessagingService,
                 makeDiscoveryPreferencesService: makeDiscoveryPreferencesService,
-                makeReportingService: makeReportingService)
+                makeReportingService: makeReportingService, makeInterestsService: makeInterestsService)
         } else {
             NavigationStack { WelcomeView(onJoin: nil) }
         }

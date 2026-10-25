@@ -13,6 +13,8 @@
         private let second = JourneyMessagingService(
             owner: JourneyIDs.second, name: "Taylor", marker: "Account B conversation")
 
+        private let firstInterests = InterestJourneyService()
+        private let secondInterests = InterestJourneyService()
         private let firstPreferences = JourneyPreferencesService()
         private let secondPreferences = JourneyPreferencesService()
         @State private var layoutPhotos = LayoutJourneyServices.photos(
@@ -32,7 +34,8 @@
                 },
                 makeReportingService: { id in
                     JourneyReportingService(messages: id == JourneyIDs.second ? second : first)
-                }
+                },
+                makeInterestsService: { id in id == JourneyIDs.second ? secondInterests : firstInterests }
             )
             .environment(
                 \.profileImages,

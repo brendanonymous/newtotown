@@ -10,6 +10,7 @@ struct AppEntryView: View {
     let makeMessagingService: (@Sendable (UUID) -> any MessagingService)?
     var makeDiscoveryPreferencesService: (@Sendable (UUID) -> any DiscoveryPreferencesService)? = nil
     var makeReportingService: (@Sendable (UUID) -> any ProfileReportingService)? = nil
+    var makeInterestsService: (@Sendable (UUID) -> any InterestsService)? = nil
     @State private var showsSignup = false
 
     var body: some View {
@@ -20,7 +21,8 @@ struct AppEntryView: View {
                     photoService: photoService, discoveryService: discoveryService,
                     messagingService: makeMessagingService?(accountID),
                     preferencesService: makeDiscoveryPreferencesService?(accountID),
-                    reportingService: makeReportingService?(accountID)
+                    reportingService: makeReportingService?(accountID),
+                    interestsService: makeInterestsService?(accountID)
                 )
                 .id(accountID)
             } else if showsSignup || model.isSignedIn || model.step == .loading

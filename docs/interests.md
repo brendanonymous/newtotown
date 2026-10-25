@@ -1,6 +1,6 @@
 # Profile interests and Discovery filters
 
-Schema and any-selected-interest matching approved October 24, 2026. The backend PR adds the catalog, atomic selection saves, filtering, and public-card projection. The iPhone editor and filter controls follow separately; older app builds ignore the additive `interests` card field.
+Schema and any-selected-interest matching approved October 24, 2026. The backend PR adds the catalog, atomic selection saves, filtering, and public-card projection. The iPhone editor and Discovery filters use the same catalog; older app builds ignore the additive `interests` card field.
 
 ## Ownership and API
 
@@ -36,3 +36,11 @@ The new schema and five functions are deployed only to `newtotown-test` (`acmrno
 Security advisors report only informational “RLS enabled, no policy” findings on service-only private tables. This is intentional: client grants are revoked, RLS denies members by default, and authenticated handlers use narrowly scoped RPCs. Do not add permissive member policies to silence these findings.
 
 Performance review added `20261025044701_interest_selection_indexes.sql` to cover both columns of each selection foreign key while retaining option-first matching lookups. Apply this follow-up migration after the interests schema. Unused-index notices are expected in an empty testing project; keep the matching/history indexes until real query usage can be assessed.
+
+## iPhone controls
+
+Profile → Edit interests edits public profile choices. Profile → Preferences → Interests edits private Discovery filters. Both show the five catalog categories and allow zero to three choices per category. At three selections, other choices in that category are disabled; selected choices can still be removed. Save replaces only the edited set, and clearing all choices is supported. Saving filters refreshes Discovery without changing existing connections or conversations.
+
+Core owns catalog validation and selection state; the Supabase adapter owns authenticated transport. The SwiftUI editor renders the catalog without duplicating its options. Shared profile cards show the public interest tags in Profile, Discovery, and conversation profiles. Responses after an account reset are discarded.
+
+Validation: 106 Swift package tests pass, including selection limits, clearing, failed-save retry, account isolation, wire requests, and legacy card decoding. The simulator journey verifies profile persistence, separate filters, the three-choice limit, and clearing filters. Fifty internal demo accounts are now seeded in the isolated project; hosted authenticated catalog/filter/photo acceptance also passed.

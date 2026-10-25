@@ -11,6 +11,7 @@ struct SignedInView: View {
     let messagingService: (any MessagingService)?
     let preferencesService: (any DiscoveryPreferencesService)?
     let reportingService: (any ProfileReportingService)?
+    var interestsService: (any InterestsService)? = nil
     @State private var discoveryRevision = 0
     @State private var reportedProfileIDs: Set<UUID> = []
     @State private var profileImages = ProfileImageStore()
@@ -62,7 +63,8 @@ struct SignedInView: View {
             }
             NavigationStack {
                 ProfileHomeView(
-                    model: account, photoService: photoService, isSelected: selectedTab == .profile
+                    model: account, photoService: photoService, isSelected: selectedTab == .profile,
+                    interestsService: interestsService
                 )
                 .navigationTitle("").navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -70,7 +72,9 @@ struct SignedInView: View {
                     ToolbarItemGroup(placement: .topBarTrailing) {
                         if let preferencesService {
                             NavigationLink {
-                                DiscoveryPreferencesView(service: preferencesService) {
+                                DiscoveryPreferencesView(
+                                    service: preferencesService, interestsService: interestsService
+                                ) {
                                     discoveryRevision += 1
                                 }
                             } label: {
