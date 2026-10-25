@@ -7,16 +7,7 @@ struct DiscoveryProfileCard: View {
     var body: some View {
         ProfileCard(firstName: profile.firstName, jobTitle: profile.jobTitle,
                     goal: profile.goal, city: profile.city) {
-            AsyncImage(url: profile.photoURL) { phase in
-                if let image = phase.image {
-                    image.resizable().scaledToFill()
-                } else if phase.error != nil {
-                    Label("Photo unavailable. Pull down to try again.", systemImage: "photo")
-                        .font(.callout).padding()
-                } else {
-                    ProgressView()
-                }
-            }
+            RemoteProfilePhoto(url: profile.photoURL)
         }
     }
 }

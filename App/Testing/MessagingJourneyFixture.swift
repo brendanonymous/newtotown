@@ -2,6 +2,7 @@
     import Foundation
     import NewToTownCore
     import SwiftUI
+    import UIKit
 
     /// Offline dependencies for simulator UI tests only. Compiled out of release builds.
     struct MessagingJourneyFixture: View {
@@ -14,6 +15,8 @@
 
         private let firstPreferences = JourneyPreferencesService()
         private let secondPreferences = JourneyPreferencesService()
+        @State private var firstImages = JourneyPhoto.store()
+        @State private var secondImages = JourneyPhoto.store()
 
         var body: some View {
             AppEntryView(
@@ -26,7 +29,34 @@
                 },
                 makeReportingService: { id in
                     JourneyReportingService(messages: id == JourneyIDs.second ? second : first)
-                })
+                }
+            )
+            .environment(
+                \.profileImages,
+                ProcessInfo.processInfo.arguments.contains("--ui-test-profile-images")
+                    ? (account.accountID == JourneyIDs.second ? secondImages : firstImages) : nil)
+        }
+    }
+
+    @MainActor private enum JourneyPhoto {
+        static func store() -> ProfileImageStore {
+            let image = UIGraphicsImageRenderer(size: CGSize(width: 32, height: 32)).image { context in
+                UIColor(red: 0.75, green: 0.78, blue: 0.68, alpha: 1).setFill()
+                context.fill(CGRect(x: 0, y: 0, width: 32, height: 32))
+            }
+            let data = image.jpegData(compressionQuality: 0.8)!
+            return ProfileImageStore(loader: AuthorizedPhotoLoader(download: { _ in data }))
+        }
+
+        static var url: URL {
+            let expiry = Int(Date().addingTimeInterval(60).timeIntervalSince1970)
+            let claims = Data("{\"exp\":\(expiry)}".utf8).base64EncodedString()
+                .replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_")
+                .replacingOccurrences(of: "=", with: "")
+            return URL(
+                string:
+                    "https://fixture.example.test/\(JourneyIDs.peer)/profile.jpg?token=header.\(claims).signature"
+            )!
         }
     }
 
@@ -103,7 +133,8 @@
             let peer = DiscoveryProfile(
                 id: JourneyIDs.peer, firstName: name, jobTitle: "Designer",
                 goal: "Find a hiking buddy.", city: "Scottsdale",
-                photoURL: URL(fileURLWithPath: "/uitest-photo-placeholder"))
+                photoURL: ProcessInfo.processInfo.arguments.contains("--ui-test-profile-images")
+                    ? JourneyPhoto.url : URL(fileURLWithPath: "/uitest-photo-placeholder"))
             thread = Conversation(
                 id: JourneyIDs.thread, participant: peer, createdAt: JourneyIDs.time,
                 lastActivityAt: JourneyIDs.time, lastMessage: nil)

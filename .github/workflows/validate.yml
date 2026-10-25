@@ -17,6 +17,10 @@ jobs:
         run: xcodebuild -version
       - name: Test core logic
         run: swift test
+      - name: Test profile photo downsampling
+        run: |
+          swiftc App/Images/ProfileImageDecoder.swift scripts/PhotoImageDecoderChecks.swift -o "$RUNNER_TEMP/photo-decoder-checks"
+          "$RUNNER_TEMP/photo-decoder-checks"
       - name: Build iPhone app
         run: >-
           xcodebuild -project NewToTown.xcodeproj -scheme NewToTown

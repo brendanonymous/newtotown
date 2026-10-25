@@ -11,6 +11,8 @@ struct ProfileHomeView: View {
     @State private var profilePhoto: UIImage?
     @State private var photoIsMissing = false
     @State private var photoFailed = false
+    @State private var photoNeedsReload = true
+    @State private var photoLoadGeneration = 0
 
     var body: some View {
         profile
@@ -18,25 +20,36 @@ struct ProfileHomeView: View {
                 if let photoService { PhotoSubmissionView(service: photoService) }
             }
             .task(id: isSelected && !showsPhotos) {
-                profilePhoto = nil
-                photoIsMissing = false
-                photoFailed = false
-                guard isSelected, !showsPhotos, let photoService else { return }
-                do {
-                    let data = try await photoService.loadProfilePhoto()
-                    guard !Task.isCancelled else { return }
-                    if let data {
-                        profilePhoto = UIImage(data: data)
-                        photoFailed = profilePhoto == nil
-                    } else {
-                        photoIsMissing = true
-                    }
-                } catch {
-                    // Unknown photo status must not prompt an existing member to add one.
-                    guard !Task.isCancelled else { return }
-                    photoFailed = true
-                }
+                guard isSelected, !showsPhotos, photoNeedsReload else { return }
+                await loadPhoto()
             }
+            .refreshable { await loadPhoto() }
+    }
+
+    @MainActor private func loadPhoto() async {
+        guard let photoService else { return }
+        photoLoadGeneration += 1
+        let generation = photoLoadGeneration
+        photoFailed = false
+        do {
+            let data = try await photoService.loadProfilePhoto()
+            let decoded: ProfileImagePixels?
+            if let data {
+                decoded = try await Task.detached(priority: .utility) {
+                    try ProfileImageDecoder.decode(data, pixels: 1200)
+                }.value
+            } else {
+                decoded = nil
+            }
+            guard !Task.isCancelled, generation == photoLoadGeneration else { return }
+            profilePhoto = decoded.map { UIImage(cgImage: $0.cgImage) }
+            photoIsMissing = decoded == nil
+            photoNeedsReload = false
+        } catch {
+            // Unknown photo status must not prompt an existing member to add one.
+            guard !Task.isCancelled, generation == photoLoadGeneration else { return }
+            photoFailed = true
+        }
     }
 
     private var profile: some View {
@@ -65,7 +78,10 @@ struct ProfileHomeView: View {
                     .font(.callout).foregroundStyle(BrandTheme.secondaryInk)
                 }
                 if photoService != nil {
-                    Button("My photos") { showsPhotos = true }
+                    Button("My photos") {
+                        photoNeedsReload = true
+                        showsPhotos = true
+                    }
                 }
                 Button("Edit profile") { model.editProfile() }
             }
