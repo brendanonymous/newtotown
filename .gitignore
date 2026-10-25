@@ -17,3 +17,5 @@ CLAUDE.local.md
 GEMINI.md
 SKILL.md
 .github/copilot-instructions.md
+
+Configuration/Test.Local.xcconfig
