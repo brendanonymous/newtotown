@@ -3,19 +3,17 @@ import SwiftUI
 
 struct DiscoveryProfileCard: View {
     let profile: DiscoveryProfile
+    var onDecision: ((ConnectionChoice) -> Void)? = nil
 
     var body: some View {
-        ProfileCard(firstName: profile.firstName, jobTitle: profile.jobTitle,
-                    goal: profile.goal, city: profile.city) {
-            AsyncImage(url: profile.photoURL) { phase in
-                if let image = phase.image {
-                    image.resizable().scaledToFill()
-                } else if phase.error != nil {
-                    Label("Photo unavailable. Pull down to try again.", systemImage: "photo")
-                        .font(.callout).padding()
-                } else {
-                    ProgressView()
-                }
+        ProfileCard(
+            firstName: profile.firstName, jobTitle: profile.jobTitle,
+            goal: profile.goal, city: profile.city
+        ) {
+            RemoteProfilePhoto(url: profile.photoURL)
+        } actions: {
+            if let onDecision {
+                DiscoveryDecisionButtons(name: profile.firstName, onDecision: onDecision)
             }
         }
     }

@@ -17,6 +17,14 @@ jobs:
         run: xcodebuild -version
       - name: Test core logic
         run: swift test
+      - name: Test profile photo downsampling
+        run: |
+          swiftc App/Images/ProfileImageDecoder.swift scripts/PhotoImageDecoderChecks.swift -o "$RUNNER_TEMP/photo-decoder-checks"
+          "$RUNNER_TEMP/photo-decoder-checks"
+      - name: Test demo portrait normalization
+        run: |
+          swiftc scripts/seed-demo/NormalizePhoto.swift -o "$RUNNER_TEMP/normalize-demo-photo"
+          swift scripts/seed-demo/PhotoNormalizationChecks.swift "$RUNNER_TEMP/normalize-demo-photo"
       - name: Build iPhone app
         run: >-
           xcodebuild -project NewToTown.xcodeproj -scheme NewToTown
@@ -63,7 +71,7 @@ jobs:
           for migration in supabase/migrations/*.sql; do
             psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f "$migration"
           done
-          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles.sql -f supabase/tests/photos.sql -f supabase/tests/photo_review_flag.sql -f supabase/tests/discovery.sql -f supabase/tests/account_agreements.sql -f supabase/tests/messaging.sql
+          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles.sql -f supabase/tests/photos.sql -f supabase/tests/photo_review_flag.sql -f supabase/tests/discovery.sql -f supabase/tests/account_agreements.sql -f supabase/tests/messaging.sql -f supabase/tests/preferences.sql -f supabase/tests/reports.sql -f supabase/tests/interests.sql
 
       - name: Test concurrent messaging transactions
         env:
@@ -73,7 +81,9 @@ jobs:
           PGDATABASE: newtotown_test
           PGPASSWORD: local-test-only
           NEWTOTOWN_TEST_DATABASE: '1'
-        run: python3 supabase/tests/messaging_concurrency.py
+        run: |
+          python3 supabase/tests/messaging_concurrency.py
+          python3 supabase/tests/interests_concurrency.py
 
   account-deletion:
     runs-on: ubuntu-latest
@@ -85,6 +95,11 @@ jobs:
       - name: Check, format, and test server handlers
         run: |
           deno fmt --check supabase/functions
-          deno lint supabase/functions/_shared supabase/functions/messaging
-          deno check supabase/functions/delete-account/index.ts supabase/functions/discovery/index.ts supabase/functions/messaging/index.ts
+          deno lint supabase/functions/_shared supabase/functions/messaging supabase/functions/reports supabase/functions/interests
+          deno check supabase/functions/delete-account/index.ts supabase/functions/discovery/index.ts supabase/functions/messaging/index.ts supabase/functions/reports/index.ts supabase/functions/interests/index.ts
           deno test supabase/functions
+          deno fmt --check scripts/seed-demo
+          deno lint scripts/seed-demo
+          deno check scripts/seed-demo/seed.ts
+          deno test --allow-read=scripts/seed-demo,avatars scripts/seed-demo
+          deno run --allow-read=scripts/seed-demo,avatars scripts/seed-demo/seed.ts --dry-run

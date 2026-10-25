@@ -1,54 +1,61 @@
 #!/usr/bin/env swift
-import AppKit
 import CoreGraphics
 import Foundation
+import ImageIO
+import UniformTypeIdentifiers
 
-// Vector reconstruction of the supplied sage/ivory monogram. Keep source paths
-// here so the toolbar logo and opaque, unmasked iOS icon use the same artwork.
-let monogram = CGMutablePath()
-let points: [CGPoint] = [
-    .init(x: 174, y: 182), .init(x: 326, y: 182),
-    .init(x: 678, y: 642), .init(x: 678, y: 238),
-    .init(x: 620, y: 238), .init(x: 620, y: 182),
-    .init(x: 820, y: 182), .init(x: 820, y: 238),
-    .init(x: 762, y: 238), .init(x: 762, y: 836),
-    .init(x: 678, y: 836), .init(x: 292, y: 330),
-    .init(x: 292, y: 780), .init(x: 350, y: 780),
-    .init(x: 350, y: 836), .init(x: 174, y: 836),
-    .init(x: 174, y: 780), .init(x: 230, y: 780),
-    .init(x: 230, y: 238), .init(x: 174, y: 238)
-]
-monogram.addLines(between: points)
-monogram.closeSubpath()
-let colorSpace = CGColorSpaceCreateDeviceRGB()
-let sage = CGColor(colorSpace: colorSpace, components: [0.75, 0.78, 0.68, 1])!
-let ivory = CGColor(colorSpace: colorSpace, components: [0.98, 0.97, 0.95, 1])!
+// Reuse the supplied production master and transparent lettermark; never redraw the glyph.
+let root = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+let source = root.appendingPathComponent("Design/Brand")
+let assets = root.appendingPathComponent("App/Assets.xcassets")
 
-func draw(in context: CGContext, size: CGFloat) {
-    context.saveGState()
-    context.scaleBy(x: size / 1024, y: size / 1024)
-    context.setFillColor(sage)
-    context.fill(CGRect(x: 0, y: 0, width: 1024, height: 1024))
-    context.translateBy(x: 0, y: 1024)
-    context.scaleBy(x: 1, y: -1)
-    context.setFillColor(ivory)
-    context.addPath(monogram)
-    context.fillPath()
-    context.restoreGState()
+func image(_ filename: String) -> CGImage {
+    guard let source = CGImageSourceCreateWithURL(source.appendingPathComponent(filename) as CFURL, nil),
+        let image = CGImageSourceCreateImageAtIndex(source, 0, nil)
+    else { fatalError("Could not load approved asset: \(filename)") }
+    return image
 }
 
-let root = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-let assets = root.appendingPathComponent("App/Assets.xcassets")
-let bitmap = CGContext(data: nil, width: 1024, height: 1024, bitsPerComponent: 8,
-    bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
-draw(in: bitmap, size: 1024)
-let png = NSBitmapImageRep(cgImage: bitmap.makeImage()!).representation(using: .png, properties: [:])!
-try png.write(to: assets.appendingPathComponent("AppIcon.appiconset/AppIcon.png"))
+func export(_ image: CGImage, background: CGColor, grayscale: Bool = false, to path: String) {
+    let space = grayscale ? CGColorSpaceCreateDeviceGray() : CGColorSpace(name: CGColorSpace.sRGB)!
+    let alpha: CGImageAlphaInfo = grayscale ? .none : .noneSkipLast
+    guard
+        let bitmap = CGContext(
+            data: nil, width: 1024, height: 1024, bitsPerComponent: 8, bytesPerRow: 0,
+            space: space, bitmapInfo: alpha.rawValue)
+    else { fatalError("Could not prepare icon bitmap") }
+    bitmap.setFillColor(background)
+    bitmap.fill(CGRect(x: 0, y: 0, width: 1024, height: 1024))
+    bitmap.interpolationQuality = .high
+    bitmap.draw(image, in: CGRect(x: 0, y: 0, width: 1024, height: 1024))
+    guard let result = bitmap.makeImage(),
+        let destination = CGImageDestinationCreateWithURL(
+            assets.appendingPathComponent(path) as CFURL, UTType.png.identifier as CFString, 1, nil)
+    else { fatalError("Could not create icon output") }
+    CGImageDestinationAddImage(destination, result, nil)
+    guard CGImageDestinationFinalize(destination) else { fatalError("Could not save icon") }
+}
 
-var mediaBox = CGRect(x: 0, y: 0, width: 128, height: 128)
-let pdfURL = assets.appendingPathComponent("BrandLogo.imageset/BrandLogo.pdf")
-let pdf = CGContext(pdfURL as CFURL, mediaBox: &mediaBox, nil)!
-pdf.beginPDFPage(nil)
-draw(in: pdf, size: 128)
-pdf.endPDFPage()
-pdf.closePDF()
+let master = image("NewToTown_AppIcon_4096.png")
+let letter = image("NewToTown_N_Transparent_4096.png")
+let sage = CGColor(red: 168 / 255, green: 173 / 255, blue: 143 / 255, alpha: 1)
+let ink = CGColor(red: 41 / 255, green: 59 / 255, blue: 48 / 255, alpha: 1)
+export(master, background: sage, to: "AppIcon.appiconset/AppIcon.png")
+export(letter, background: ink, to: "AppIcon.appiconset/AppIcon-dark.png")
+export(
+    letter, background: CGColor(gray: 0, alpha: 1), grayscale: true,
+    to: "AppIcon.appiconset/AppIcon-tinted.png")
+try FileManager.default.copyItemReplacing(
+    at: assets.appendingPathComponent("AppIcon.appiconset/AppIcon.png"),
+    to: assets.appendingPathComponent("BrandLogo.imageset/BrandLogo.png"))
+try FileManager.default.copyItemReplacing(
+    at: assets.appendingPathComponent("AppIcon.appiconset/AppIcon-dark.png"),
+    to: assets.appendingPathComponent("BrandLogo.imageset/BrandLogo-dark.png"))
+print("Exported default, dark and tinted icons from the supplied 4096-pixel assets.")
+
+extension FileManager {
+    func copyItemReplacing(at source: URL, to destination: URL) throws {
+        if fileExists(atPath: destination.path) { try removeItem(at: destination) }
+        try copyItem(at: source, to: destination)
+    }
+}

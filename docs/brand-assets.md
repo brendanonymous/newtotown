@@ -1,10 +1,9 @@
-# Brand assets
+# Brand assets and appearance
 
-The supplied logo reference is recreated as a sage/ivory vector monogram. `scripts/render-brand-assets.swift` is the editable source for both outputs in `App/Assets.xcassets`:
+`Design/Brand` retains the owner's supplied developer pack: the full-bleed 4096-pixel PNG and editable SVG masters, transparent lettermark, and rounded presentation versions. The pack's README describes its provenance as a vector recreation of the selected design. These supplied assets supersede the earlier low-resolution screenshot; no glyph is redrawn by our export script.
 
-- `BrandLogo.imageset/BrandLogo.pdf`: vector artwork used by `BrandMark` on the welcome screen and navigation headers.
-- `AppIcon.appiconset/AppIcon.png`: opaque 1024 × 1024 image. iOS supplies the icon mask; the asset does not include screenshot labels, baked-in rounded corners, or exterior shadows.
+Run `swift scripts/render-brand-assets.swift` from the repository root on macOS. It exports opaque 1024 × 1024 default, dark and tinted app icons. The default uses the full-bleed master; dark uses the supplied transparent lettermark over brand ink; tinted uses that same mark on a grayscale background. Rounded presentation files are retained as design sources, not baked into the iOS icon. iOS supplies the icon mask.
 
-From the repository root on macOS, run `swift scripts/render-brand-assets.swift` to regenerate both files. Commit the script and generated assets together. `Configuration/Base.xcconfig` selects `AppIcon`; no personal signing settings or Xcode project formatting changes are needed.
+The same default/dark exports supply `BrandLogo`, used throughout welcome, signup and signed-in navigation. `BrandTheme` follows the pack's ivory `#FAF5EF` and sage `#A8AD8F`, with semantic foreground/background colors for dark appearance. The app follows the device appearance; iOS versions without alternate icon appearances use the default icon. No extra image dependency is introduced.
 
-Build/install the app to update the home-screen icon. Validate the logo in welcome, signup, signed-in tabs, and the photo screen. The shared monogram has a spoken app-name label for VoiceOver.
+Commit source assets, export script and generated assets together. Keep only render-ready images in the asset catalog; editable source artwork stays in `Design/Brand`. The normal app's display name is **NewToTown** and the separate test app is **NewToTown Test**. Install a new build to see updated icon/name artwork. App Store Connect's listing name is separate.

@@ -10,6 +10,7 @@ public final class ChatModel {
     public var draft = ""
     public private(set) var pending: PendingMessage?
     public private(set) var isLoading = false
+    public private(set) var olderPageFailed = false
     public private(set) var isSending = false
     public private(set) var isUnavailable = false
     public private(set) var isBlocking = false
@@ -22,19 +23,44 @@ public final class ChatModel {
         public let body: String
     }
     private let target: ConversationTarget
-    private let service: any MessagingService
+    private let messagingService: any MessagingService
     private var generation = 0
+    private var excludedProfileIDs: Set<UUID> = []
     private var blockedPeer: UUID?
 
-    public init(accountID: UUID, target: ConversationTarget, service: any MessagingService) {
+    public init(accountID: UUID, target: ConversationTarget, messagingService: any MessagingService) {
         self.accountID = accountID
         self.target = target
-        self.service = service
+        self.messagingService = messagingService
+    }
+
+    public func excludeProfiles(_ ids: Set<UUID>) {
+        excludedProfileIDs.formUnion(ids)
+        let peer: UUID?
+        if let conversation {
+            peer = conversation.participant.id
+        } else if case .peer(let id) = target {
+            peer = id
+        } else {
+            peer = nil
+        }
+        guard let peer, excludedProfileIDs.contains(peer) else { return }
+        generation += 1
+        clearContent()
+        isUnavailable = true
+        errorMessage = "This connection has been removed."
     }
 
     public var canSend: Bool {
         conversation != nil && !isLoading && !isSending && !isUnavailable && pending == nil
             && MessageText.isValid(draft)
+    }
+
+    /// Apply after a field edit so SwiftUI observes both the edit and its correction.
+    public func limitDraft() {
+        if draft.unicodeScalars.count > MessageText.maximumLength {
+            draft = MessageText.limitedDraft(draft)
+        }
     }
 
     public func load(older: Bool = false) async {
@@ -43,6 +69,7 @@ public final class ChatModel {
         }
         let current = generation
         isLoading = true
+        olderPageFailed = false
         errorMessage = nil
         defer { if current == generation { isLoading = false } }
         do {
@@ -52,7 +79,7 @@ public final class ChatModel {
             } else {
                 switch target {
                 case .conversation(let id): threadID = id
-                case .peer(let id): threadID = try await service.open(with: id).id
+                case .peer(let id): threadID = try await messagingService.open(with: id).id
                 }
             }
             guard current == generation else { return }
@@ -60,24 +87,37 @@ public final class ChatModel {
                 interruptedLoad()
                 return
             }
-            let page = try await service.history(in: threadID, before: older ? nextCursor : nil)
+            let page = try await messagingService.history(in: threadID, before: older ? nextCursor : nil)
             guard current == generation else { return }
             guard !Task.isCancelled else {
                 interruptedLoad()
                 return
+            }
+            guard !excludedProfileIDs.contains(page.conversation.participant.id) else {
+                throw MessagingError.unavailable
             }
             conversation = page.conversation
             messages = merge(older ? messages : [], with: page.messages)
             nextCursor = page.nextCursor
         } catch {
             guard current == generation else { return }
-            if Task.isCancelled { interruptedLoad() } else { handleLoadFailure(error) }
+            if Task.isCancelled {
+                interruptedLoad()
+            } else if older, conversation != nil,
+                error as? MessagingError != .unavailable, error as? MessagingError != .signedOut
+            {
+                olderPageFailed = true
+                errorMessage = "We couldn’t load earlier messages. Try again."
+            } else {
+                handleLoadFailure(error)
+            }
         }
     }
 
     public func send() async {
         guard canSend else { return }
-        pending = PendingMessage(id: UUID(), body: draft)
+        let body = MessageText.normalizedWhitespace(draft)
+        pending = PendingMessage(id: UUID(), body: body)
         await retrySend()
     }
 
@@ -90,7 +130,10 @@ public final class ChatModel {
         sendError = nil
         defer { if current == generation { isSending = false } }
         do {
-            let sent = try await service.send(in: conversation.id, retryID: pending.id, body: pending.body)
+            let sent = try await messagingService.send(
+                in: conversation.id,
+                retryID: pending.id,
+                body: pending.body)
             guard current == generation else { return }
             guard !Task.isCancelled else {
                 sendError = "Send was interrupted. Retry the same message safely."
@@ -126,7 +169,7 @@ public final class ChatModel {
         blockFailed = false
         defer { if current == generation { isBlocking = false } }
         do {
-            try await service.block(peer)
+            try await messagingService.block(peer)
             guard current == generation else { return }
             errorMessage = "You blocked this connection."
         } catch {
@@ -155,6 +198,7 @@ public final class ChatModel {
         sendError = nil
         isSending = false
         isLoading = false
+        olderPageFailed = false
     }
     private func interruptedLoad() {
         if conversation == nil { errorMessage = "Loading was interrupted. Pull down to try again." }

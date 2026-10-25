@@ -134,6 +134,32 @@ def main():
         assert denied.returncode != 0 and "P0001" in denied.stderr
         assert query("select count(*) from private.messages;") == "1"
         print("PASS earlier send can commit; subsequent block revokes future access")
+        clean()
+        seed()
+        report = f"select public.pilot_report_profile('{A}', '{B}', 'spam', null, '{RETRY}')"
+        first, second = race(report, report)
+        assert json.loads(first.splitlines()[0])["id"] == json.loads(second)["id"]
+        assert query("select count(*) from private.profile_reports;") == "1"
+        print("PASS simultaneous report retries return one report and disconnect")
+
+        clean()
+        seed()
+        thread = json.loads(query("set role service_role; " + open_a))["id"]
+        send = f"select public.pilot_messaging_send('{B}', '{thread}', '{RETRY}', 'After report')"
+        race(report, send, should_fail=True)
+        assert query("select count(*) from private.messages;") == "0"
+        print("PASS report serializes with send and rejects later contact")
+
+        clean()
+        seed()
+        thread = json.loads(query("set role service_role; " + open_a))["id"]
+        send = f"select public.pilot_messaging_send('{B}', '{thread}', '{RETRY}', 'Before report')"
+        race(send, report)
+        assert query("select count(*) from private.messages;") == "1"
+        assert query("select count(*) from private.profile_reports;") == "1"
+        assert query(f"set role service_role; select jsonb_array_length(public.pilot_messaging_list('{A}')->'conversations');") == "0"
+        print("PASS earlier send can commit while a later report removes access")
+
     finally:
         clean()
         query(f"update public.pilot_features set photo_review_required = {'true' if original_review == 't' else 'false'};")

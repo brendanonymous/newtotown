@@ -5,29 +5,42 @@ struct ConversationListView: View {
     let accountID: UUID
     let service: any MessagingService
     let isSelected: Bool
+    let reportingService: (any ProfileReportingService)?
+    let reportedProfileIDs: Set<UUID>
+    let onReportSubmitted: (UUID) -> Void
     @State private var model: ConversationListModel
     @Environment(\.scenePhase) private var scenePhase
 
-    init(accountID: UUID, service: any MessagingService, isSelected: Bool) {
+    init(
+        accountID: UUID, service: any MessagingService, isSelected: Bool,
+        reportingService: (any ProfileReportingService)?, reportedProfileIDs: Set<UUID>,
+        onReportSubmitted: @escaping (UUID) -> Void
+    ) {
         self.accountID = accountID
         self.service = service
         self.isSelected = isSelected
+        self.reportingService = reportingService
+        self.reportedProfileIDs = reportedProfileIDs
+        self.onReportSubmitted = onReportSubmitted
         _model = State(initialValue: ConversationListModel(service: service))
     }
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            LazyVStack(alignment: .leading, spacing: 24) {
                 Text("Messages").font(.system(.largeTitle, design: .serif))
+                    .accessibilityIdentifier("messages.title")
                 if model.hasLoaded && model.conversations.isEmpty {
                     Text("Start with hello.").font(.title2)
-                    Text("Open a mutual connection in Discovery to start a conversation.")
+                    Text("Open a mutual connection in Connections to start a conversation.")
                         .foregroundStyle(BrandTheme.secondaryInk)
                 }
                 ForEach(model.conversations) { conversation in
                     NavigationLink {
                         ChatView(
-                            accountID: accountID, target: .conversation(conversation.id), service: service)
+                            accountID: accountID, target: .conversation(conversation.id),
+                            messagingService: service, reportingService: reportingService,
+                            reportedProfileIDs: reportedProfileIDs, onReportSubmitted: onReportSubmitted)
                     } label: {
                         HStack(spacing: 16) {
                             MessagePhoto(url: conversation.participant.photoURL)
@@ -48,19 +61,25 @@ struct ConversationListView: View {
                     Button("Load more conversations") { Task { await model.load(older: true) } }
                         .disabled(model.isLoading)
                 }
-                if model.isLoading { ProgressView("Loading messages…") }
+                if model.isLoading { ProgressView() }
                 if let error = model.errorMessage {
                     Text(error).font(.callout).foregroundStyle(.red)
                     Button("Try again") { Task { await model.load() } }
                 }
             }
-            .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
+            .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)
         }
         .background(BrandTheme.background).foregroundStyle(BrandTheme.ink)
-        .navigationTitle("").navigationBarTitleDisplayMode(.inline)
         .scrollBounceBehavior(.always, axes: .vertical)
         .refreshable { await model.load() }
-        .task(id: isSelected) { if isSelected { await model.load() } }
+        .task(id: isSelected) {
+            model.excludeProfiles(reportedProfileIDs)
+            if isSelected { await model.load() }
+        }
+        .onChange(of: reportedProfileIDs) { _, ids in
+            model.excludeProfiles(ids)
+            Task { await model.load() }
+        }
         .onChange(of: scenePhase) { _, phase in
             if isSelected && phase == .active { Task { await model.load() } }
         }

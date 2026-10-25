@@ -77,7 +77,7 @@ No new bucket, paid service, extension, Realtime publication, or Swift dependenc
 
 `NewToTownCore/Messaging` contains values, cursor precision, text validation, inbox state, and chat state behind `MessagingService`. `NewToTownSupabase/Messaging` supplies an account-bound adapter. It uses the existing shared Auth/session and a lightweight official Functions client whose transport binds the request to that account, then rechecks the account before publishing a response. This avoids the shared SDK transport replacing a captured Authorization header with a newly signed-in account's token. No second Auth/session store is created.
 
-Chat accepts up to 2,000 Unicode code points. While a send is unconfirmed, its text is frozen and Retry send reuses the original UUID/body. Confirmed messages merge by server ID. A 401/404 clears private conversation state and disables composing; failed blocks immediately hide content and offer block retry. Cancelled refreshes preserve already loaded content. List/history pages deduplicate IDs. Pull-to-refresh, reopening, and returning from the background fetch replies; live subscriptions and push remain follow-up work.
+Chat accepts up to 500 Unicode code points. While a send is unconfirmed, its text is frozen and Retry send reuses the original UUID/body. Confirmed messages merge by server ID. A 401/404 clears private conversation state and disables composing; failed blocks immediately hide content and offer block retry. Cancelled refreshes preserve already loaded content. List/history pages deduplicate IDs. Pull-to-refresh, reopening, and returning from the background fetch replies; live subscriptions and push remain follow-up work.
 
 Swift tests cover history/inbox paging, cancellation, uncertain sends and recovery, blocking failures, late results after reset, actual SDK HTTP payloads, cursor microseconds, status mapping, and account changes during requests. Debug-only offline UI fixtures exercise the real shell, connection-to-chat navigation, retry controls, sign-out, and a second account. They are compiled out of release builds and never populate Supabase. CI saves the iPhone test result bundle, including a chat screenshot.
 
@@ -91,3 +91,23 @@ Hosted advisors show informational [RLS without policies](https://supabase.com/d
 4. Hide or block one participant and refresh the other. Confirm access pauses, composing stops, and private history is cleared. Rejoining after a hide restores the same thread; blocking has no client undo.
 5. Sign out, then sign in as a different account on the same phone. Confirm no previous inbox, chat, draft, or retry state appears.
 6. With disposable consenting test accounts, verify deletion confirmation mentions conversations, cancellation makes no change, and confirmed deletion removes the thread from the other participant after refresh.
+
+## First-message transition
+
+The `started_conversations` migration changes list queries only. Empty conversations stay in Connections; Messages lists only conversations with at least one committed message. The first saved message moves both participants on their next refresh. Opening a thread, an invalid send, or an uncommitted failure does not move it. A lost response after a committed send still moves it on refresh; the existing retry key prevents duplicate messages. Mutual decisions and blocking/visibility authorization remain unchanged. Apply the migration after review before distributing the updated iPhone app. No hosted deployment is included in this PR.
+
+## Profile from a conversation
+
+Tap the participant header in Chat to open their public profile, then use Back to return to the draft. The screen reuses `DiscoveryProfileCard` and reloads through the existing conversation-authorized history endpoint for a fresh signed photo. That endpoint returns up to 50 messages alongside the conversation; the profile model retains only the public profile. No contact details, exact birthday, selfie, or edit actions are shown. A failed authorization refresh clears the cached profile. Account-bound transport and model reset discard late responses.
+
+## Chat history scrolling
+
+Conversations open at the newest message. The backend already returns only the newest 50 messages; the client requests an older page only when the user scrolls to the first loaded message or chooses Load earlier messages. SwiftUI tracks the visible message ID to preserve the reading position while prepending history. A failed older-page request keeps the loaded conversation, cursor, and draft and offers a retry. Authorization failures still clear private content. A manual refresh returns to the latest page.
+
+## Message input
+
+The iPhone composer caps drafts at 500 Unicode code points, matching `MessageText` validation. Typing and pasting keep only the fitting prefix without splitting a composed character. A counter shows the current count through `500/500` and displays “Character limit reached” at the limit; users can still delete, edit, or send. The server's existing 2,000-code-point ceiling is unchanged by this client update.
+
+`MessageText.normalizedWhitespace` collapses runs of spaces/tabs to one space, removes whitespace around newlines and at message edges, and removes empty lines. CRLF and other newline separators become a single `\n`. Punctuation, emoji, and accented letters are preserved. Cleanup happens before creating the pending message; its body and retry ID then stay fixed across send retries. The editable draft is preserved until the send is confirmed.
+
+`BrandTextFieldStyle` gives all app text fields the same padding, border, and 16-point corner radius. Message bubbles use the same `BrandTheme.textCornerRadius` value so future appearance changes stay consistent.

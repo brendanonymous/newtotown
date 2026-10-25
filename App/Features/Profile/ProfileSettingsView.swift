@@ -56,7 +56,7 @@ struct ProfileSettingsView: View {
                 Button("Sign out") { Task { await signOut() } }
                 Button("Delete account", role: .destructive, action: deleteAccount)
                     .accessibilityIdentifier("account.delete")
-                if isAccountBusy { ProgressView("Please wait…") }
+                if isAccountBusy { ProgressView() }
                 if let accountError {
                     Text(accountError).font(.callout).foregroundStyle(.red)
                         .accessibilityIdentifier("signup.error")
@@ -82,18 +82,24 @@ struct ProfileSettingsView: View {
     @ViewBuilder private func visibility(_ model: DiscoveryModel) -> some View {
         Text("Privacy").font(.headline)
         if let feed = model.feed {
-            if feed.visible {
-                Text("Your profile is visible.")
-                    .foregroundStyle(BrandTheme.secondaryInk)
-                Button("Hide my profile") { Task { await model.setVisible(false) } }
-                    .accessibilityIdentifier("settings.hideProfile")
-            } else {
+            Toggle(
+                "Show my profile in Discovery",
+                isOn: Binding(
+                    get: { feed.visible },
+                    set: { visible in Task { await model.setVisible(visible) } }
+                )
+            )
+            .tint(BrandTheme.ink)
+            .disabled(model.isBusy)
+            .accessibilityIdentifier("settings.profileVisibility")
+            Text("Allow other members to see your profile and photo in Discovery.")
+                .font(.callout).foregroundStyle(BrandTheme.secondaryInk)
+            if !feed.visible {
                 Label("Your profile is hidden", systemImage: "eye.slash")
-                Text("Open the Discovery tab and join when you’re ready to be seen.")
                     .foregroundStyle(BrandTheme.secondaryInk)
             }
         }
-        if model.isBusy { ProgressView("Please wait…") }
+        if model.isBusy { ProgressView() }
         if let error = model.errorMessage {
             Text(error).font(.callout).foregroundStyle(.red)
             Button("Try again") { Task { await model.load() } }

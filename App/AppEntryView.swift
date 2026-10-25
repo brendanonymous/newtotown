@@ -8,6 +8,8 @@ struct AppEntryView: View {
     let photoService: (any PhotoService)?
     let discoveryService: (any DiscoveryService)?
     let makeMessagingService: (@Sendable (UUID) -> any MessagingService)?
+    var makeDiscoveryPreferencesService: (@Sendable (UUID) -> any DiscoveryPreferencesService)? = nil
+    var makeReportingService: (@Sendable (UUID) -> any ProfileReportingService)? = nil
     @State private var showsSignup = false
 
     var body: some View {
@@ -16,7 +18,9 @@ struct AppEntryView: View {
                 SignedInView(
                     account: model, accountID: accountID, personalInfoService: personalInfoService,
                     photoService: photoService, discoveryService: discoveryService,
-                    messagingService: makeMessagingService?(accountID)
+                    messagingService: makeMessagingService?(accountID),
+                    preferencesService: makeDiscoveryPreferencesService?(accountID),
+                    reportingService: makeReportingService?(accountID)
                 )
                 .id(accountID)
             } else if showsSignup || model.isSignedIn || model.step == .loading
@@ -25,20 +29,20 @@ struct AppEntryView: View {
                 OnboardingView(
                     model: model
                 ) {
-                    model.changeEmail()
+                    model.restartSignIn()
                     showsSignup = false
                 }
             } else {
                 NavigationStack {
                     WelcomeView {
-                        model.changeEmail()
+                        model.restartSignIn()
                         showsSignup = true
                     }
                 }
             }
         }
         .onChange(of: model.step) { old, new in
-            if new == .email && [.saved, .profile, .introduction, .restoreFailed].contains(old) {
+            if new == .signIn && [.saved, .profile, .introduction, .restoreFailed].contains(old) {
                 showsSignup = false
             }
         }

@@ -15,6 +15,15 @@ public struct SupabaseServices: Sendable {
         SupabaseMessagingService(client: client, accountID: accountID, configuration: configuration)
     }
 
+    public func discoveryPreferences(for accountID: UUID) -> SupabaseDiscoveryPreferencesService {
+        SupabaseDiscoveryPreferencesService(
+            client: client, accountID: accountID, configuration: configuration)
+    }
+
+    public func reporting(for accountID: UUID) -> SupabaseProfileReportingService {
+        SupabaseProfileReportingService(client: client, accountID: accountID, configuration: configuration)
+    }
+
     public init(configuration: SupabaseConfiguration) {
         self.configuration = configuration
         let client = SupabaseClient(

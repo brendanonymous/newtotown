@@ -1,0 +1,6 @@
+// Copy to Test.Local.xcconfig (ignored by Git).
+// Host only: do not include https:// or a trailing slash.
+SUPABASE_PROJECT_HOST = YOUR_TEST_PROJECT_REF.supabase.co
+SUPABASE_PUBLISHABLE_KEY = YOUR_TEST_PUBLISHABLE_KEY
+// Optional if the default test bundle ID is unavailable on your Apple team.
+// PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.newtotown.test

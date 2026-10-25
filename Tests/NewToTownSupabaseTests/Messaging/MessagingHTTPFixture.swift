@@ -14,6 +14,7 @@ final class MessagingHTTPFixture: @unchecked Sendable {
     private var status = 200
     private var payload = Data("{}".utf8)
     private var calls: [URLRequest] = []
+    private var responsePaths: Set<String> = []
     private var hold = false
     private var pending: (@Sendable () -> Void)?
     let started = AsyncStream<Void>.makeStream()
@@ -58,9 +59,10 @@ final class MessagingHTTPFixture: @unchecked Sendable {
         SupabaseMessagingService(
             client: client, accountID: owner, configuration: configuration, session: session)
     }
-    func respond(_ object: Any, status: Int = 200, hold: Bool = false) throws {
+    func respond(_ object: Any, status: Int = 200, hold: Bool = false, path: String? = nil) throws {
         let data = try JSONSerialization.data(withJSONObject: object)
         lock.withLock {
+            if let path { responsePaths.insert(path) }
             self.status = status
             payload = data
             self.hold = hold
@@ -73,6 +75,9 @@ final class MessagingHTTPFixture: @unchecked Sendable {
             return value
         }
         completion?()
+    }
+    func requests(to path: String) -> [URLRequest] {
+        lock.withLock { calls.filter { $0.url?.path == path } }
     }
     var functionRequests: [URLRequest] {
         lock.withLock { calls.filter { $0.url?.path.contains("/functions/") == true } }
@@ -93,7 +98,9 @@ final class MessagingHTTPFixture: @unchecked Sendable {
                 recorded.httpBody = data
             }
             calls.append(recorded)
-            if request.url?.path.contains("/functions/") == true {
+            if request.url?.path.contains("/functions/") == true
+                || responsePaths.contains(request.url?.path ?? "")
+            {
                 let status = status
                 let data = payload
                 if hold {

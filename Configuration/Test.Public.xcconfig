@@ -1,0 +1,3 @@
+// Public values for the isolated test project; never add administrative keys here.
+SUPABASE_PROJECT_HOST = acmrnolvakubxnaxwpzt.supabase.co
+SUPABASE_PUBLISHABLE_KEY = sb_publishable_3OsGKKo0G1Py_f2wWWxfKw_u8n7fFWl

@@ -1,0 +1,1052 @@
+[
+  {
+    "demo_id": "demo-01",
+    "first_name": "Alex",
+    "job_title": "Product designer",
+    "goal": "Demo profile. Coffee before work and an easy weekend hike.",
+    "date_of_birth": "1975-06-04",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "coffee",
+      "hiking",
+      "photography"
+    ],
+    "filter_option_ids": [
+      "coffee"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar.jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-02",
+    "first_name": "Marcus",
+    "job_title": "Physical therapist",
+    "goal": "Demo profile. Find a regular lifting partner and catch a basketball game.",
+    "date_of_birth": "1982-11-07",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "gym",
+      "basketball",
+      "barbecue"
+    ],
+    "filter_option_ids": [
+      "gym",
+      "basketball"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (1).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-03",
+    "first_name": "Ben",
+    "job_title": "Software engineer",
+    "goal": "Demo profile. Start a small board game night with people nearby.",
+    "date_of_birth": "1989-04-10",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "board_games",
+      "video_games",
+      "coffee"
+    ],
+    "filter_option_ids": [
+      "board_games"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (2).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-04",
+    "first_name": "Daniel",
+    "job_title": "Architect",
+    "goal": "Demo profile. Explore architecture, grab dinner, and meet new friends.",
+    "date_of_birth": "1996-09-13",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "museums",
+      "photography",
+      "dining_out"
+    ],
+    "filter_option_ids": [
+      "museums",
+      "photography"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (3).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-05",
+    "first_name": "Ethan",
+    "job_title": "Accountant",
+    "goal": "Demo profile. Play a relaxed round of golf and grab a beer afterward.",
+    "date_of_birth": "1968-02-16",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "golf",
+      "craft_beer",
+      "professional_networking"
+    ],
+    "filter_option_ids": [],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (4).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-06",
+    "first_name": "Javier",
+    "job_title": "Chef",
+    "goal": "Demo profile. Try local restaurants with a few new friends.",
+    "date_of_birth": "1975-07-19",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "cooking",
+      "dining_out",
+      "live_music"
+    ],
+    "filter_option_ids": [
+      "cooking",
+      "dining_out"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (5).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-07",
+    "first_name": "Noah",
+    "job_title": "Teacher",
+    "goal": "Demo profile. Meet friends for weekend trails and community volunteering.",
+    "date_of_birth": "1982-12-22",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "reading",
+      "hiking",
+      "volunteering"
+    ],
+    "filter_option_ids": [
+      "reading"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (6).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-08",
+    "first_name": "Owen",
+    "job_title": "Civil engineer",
+    "goal": "Demo profile. Find a morning cycling group and a good coffee stop.",
+    "date_of_birth": "1989-05-25",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "cycling",
+      "coffee",
+      "cars"
+    ],
+    "filter_option_ids": [
+      "cycling",
+      "coffee"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (7).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-09",
+    "first_name": "Chris",
+    "job_title": "Project manager",
+    "goal": "Demo profile. Find casual pickleball partners; beginners welcome.",
+    "date_of_birth": "1996-10-01",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "pickleball",
+      "barbecue",
+      "comedy"
+    ],
+    "filter_option_ids": [
+      "pickleball"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (8).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-10",
+    "first_name": "Sam",
+    "job_title": "Nurse",
+    "goal": "Demo profile. Coffee and dog walks on weekdays when I am off shift.",
+    "date_of_birth": "1968-03-04",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "dog_walks",
+      "coffee",
+      "movies"
+    ],
+    "filter_option_ids": [],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (9).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-11",
+    "first_name": "Andre",
+    "job_title": "Personal trainer",
+    "goal": "Demo profile. Train for a local 10K with someone who likes early starts.",
+    "date_of_birth": "1975-08-07",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "running",
+      "gym",
+      "cooking"
+    ],
+    "filter_option_ids": [
+      "running"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (10).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-12",
+    "first_name": "Luke",
+    "job_title": "Graphic designer",
+    "goal": "Demo profile. Catch small live shows and trade photography tips.",
+    "date_of_birth": "1982-01-10",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "photography",
+      "live_music",
+      "craft_beer"
+    ],
+    "filter_option_ids": [
+      "photography",
+      "live_music"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (11).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-13",
+    "first_name": "Ryan",
+    "job_title": "Electrician",
+    "goal": "Demo profile. Plan a fishing morning or a low-key camping weekend.",
+    "date_of_birth": "1989-06-13",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "fishing",
+      "camping",
+      "barbecue"
+    ],
+    "filter_option_ids": [
+      "fishing"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (12).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-14",
+    "first_name": "Isaac",
+    "job_title": "Research analyst",
+    "goal": "Demo profile. Find a tennis partner for an occasional evening match.",
+    "date_of_birth": "1996-11-16",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "tennis",
+      "reading",
+      "coffee"
+    ],
+    "filter_option_ids": [
+      "tennis",
+      "reading"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (13).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-15",
+    "first_name": "Henry",
+    "job_title": "Realtor",
+    "goal": "Demo profile. Meet other local professionals over lunch or golf.",
+    "date_of_birth": "1968-04-19",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "golf",
+      "professional_networking",
+      "dining_out"
+    ],
+    "filter_option_ids": [],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (14).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-16",
+    "first_name": "Mateo",
+    "job_title": "Mechanical engineer",
+    "goal": "Demo profile. Check out a car meetup and grab lunch afterward.",
+    "date_of_birth": "1975-09-22",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "cars",
+      "cooking",
+      "movies"
+    ],
+    "filter_option_ids": [
+      "cars",
+      "cooking"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (15).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-17",
+    "first_name": "Jack",
+    "job_title": "Sales manager",
+    "goal": "Demo profile. Comedy shows, casual games, and a reliable group of friends.",
+    "date_of_birth": "1982-02-25",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "pickleball",
+      "comedy",
+      "craft_beer"
+    ],
+    "filter_option_ids": [
+      "pickleball"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (16).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-18",
+    "first_name": "Dev",
+    "job_title": "Data analyst",
+    "goal": "Demo profile. Alternate weekend hikes with a strategy game night.",
+    "date_of_birth": "1989-07-01",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "hiking",
+      "board_games",
+      "coffee"
+    ],
+    "filter_option_ids": [
+      "hiking",
+      "board_games"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (17).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-19",
+    "first_name": "Leo",
+    "job_title": "Dentist",
+    "goal": "Demo profile. An evening tennis match or an occasional theater trip.",
+    "date_of_birth": "1996-12-04",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "tennis",
+      "wine",
+      "theater"
+    ],
+    "filter_option_ids": [
+      "tennis"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (18).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-20",
+    "first_name": "Aaron",
+    "job_title": "Firefighter",
+    "goal": "Demo profile. Meet friends who can hang out around a rotating schedule.",
+    "date_of_birth": "1968-05-07",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "gym",
+      "camping",
+      "barbecue"
+    ],
+    "filter_option_ids": [],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (19).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-21",
+    "first_name": "Jordan",
+    "job_title": "Marketing coordinator",
+    "goal": "Demo profile. Meet creative people and find a regular dinner crew.",
+    "date_of_birth": "1975-10-10",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "live_music",
+      "dining_out",
+      "professional_networking"
+    ],
+    "filter_option_ids": [
+      "live_music"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (20).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-22",
+    "first_name": "Caleb",
+    "job_title": "Financial planner",
+    "goal": "Demo profile. A running buddy who also enjoys an easy round of golf.",
+    "date_of_birth": "1982-03-13",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "golf",
+      "running",
+      "coffee"
+    ],
+    "filter_option_ids": [
+      "golf",
+      "running"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (21).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-23",
+    "first_name": "Diego",
+    "job_title": "Landscape designer",
+    "goal": "Demo profile. Explore desert trails and help with local cleanup days.",
+    "date_of_birth": "1989-08-16",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "hiking",
+      "photography",
+      "volunteering"
+    ],
+    "filter_option_ids": [
+      "hiking"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (22).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-24",
+    "first_name": "Miles",
+    "job_title": "Audio engineer",
+    "goal": "Demo profile. Catch a concert or play a few cooperative games.",
+    "date_of_birth": "1996-01-19",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "live_music",
+      "movies",
+      "video_games"
+    ],
+    "filter_option_ids": [
+      "live_music",
+      "movies"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (23).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-25",
+    "first_name": "Theo",
+    "job_title": "Veterinarian",
+    "goal": "Demo profile. Bring the dogs for a walk and find a patio coffee spot.",
+    "date_of_birth": "1968-06-22",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "dog_walks",
+      "kayaking",
+      "coffee"
+    ],
+    "filter_option_ids": [],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (24).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-26",
+    "first_name": "Eli",
+    "job_title": "Operations manager",
+    "goal": "Demo profile. Build a regular weekend cycling and barbecue group.",
+    "date_of_birth": "1975-11-25",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "cycling",
+      "barbecue",
+      "board_games"
+    ],
+    "filter_option_ids": [
+      "cycling",
+      "barbecue"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (25).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-27",
+    "first_name": "Mason",
+    "job_title": "Carpenter",
+    "goal": "Demo profile. Find someone up for a camping trip when the weather cools.",
+    "date_of_birth": "1982-04-01",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "camping",
+      "fishing",
+      "cars"
+    ],
+    "filter_option_ids": [
+      "camping"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (26).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-28",
+    "first_name": "Adrian",
+    "job_title": "UX researcher",
+    "goal": "Demo profile. Meet friends for museum visits and long coffee chats.",
+    "date_of_birth": "1989-09-04",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "museums",
+      "reading",
+      "coffee"
+    ],
+    "filter_option_ids": [
+      "museums",
+      "reading"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (27).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-29",
+    "first_name": "Sean",
+    "job_title": "Logistics planner",
+    "goal": "Demo profile. Watch basketball and check out a comedy night.",
+    "date_of_birth": "1996-02-07",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "basketball",
+      "comedy",
+      "craft_beer"
+    ],
+    "filter_option_ids": [
+      "basketball"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (28).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-30",
+    "first_name": "Victor",
+    "job_title": "Business analyst",
+    "goal": "Demo profile. Make local friends through tennis and informal networking.",
+    "date_of_birth": "1968-07-10",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "professional_networking",
+      "tennis",
+      "dining_out"
+    ],
+    "filter_option_ids": [],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (29).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-31",
+    "first_name": "Dylan",
+    "job_title": "Paramedic",
+    "goal": "Demo profile. Find flexible workout partners and a movie buddy.",
+    "date_of_birth": "1975-12-13",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "gym",
+      "dog_walks",
+      "movies"
+    ],
+    "filter_option_ids": [
+      "gym"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (30).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-32",
+    "first_name": "Luis",
+    "job_title": "Construction manager",
+    "goal": "Demo profile. Weekend golf with a group that keeps things relaxed.",
+    "date_of_birth": "1982-05-16",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "golf",
+      "barbecue",
+      "fishing"
+    ],
+    "filter_option_ids": [
+      "golf",
+      "barbecue"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (31).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-33",
+    "first_name": "Adam",
+    "job_title": "Librarian",
+    "goal": "Demo profile. Start a small book club with an occasional game night.",
+    "date_of_birth": "1989-10-19",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "reading",
+      "board_games",
+      "theater"
+    ],
+    "filter_option_ids": [
+      "reading"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (32).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-34",
+    "first_name": "Zach",
+    "job_title": "Web developer",
+    "goal": "Demo profile. Looking for casual pickleball and a co-op gaming friend.",
+    "date_of_birth": "1996-03-22",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "video_games",
+      "pickleball",
+      "coffee"
+    ],
+    "filter_option_ids": [
+      "video_games",
+      "pickleball"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (33).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-35",
+    "first_name": "Nathan",
+    "job_title": "Insurance specialist",
+    "goal": "Demo profile. Run a few miles, then find a good live music spot.",
+    "date_of_birth": "1968-08-25",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "running",
+      "craft_beer",
+      "live_music"
+    ],
+    "filter_option_ids": [],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (34).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-36",
+    "first_name": "Malik",
+    "job_title": "Industrial designer",
+    "goal": "Demo profile. Take photos around town and explore by bike.",
+    "date_of_birth": "1975-01-01",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "photography",
+      "cycling",
+      "museums"
+    ],
+    "filter_option_ids": [
+      "photography",
+      "cycling"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (35).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-37",
+    "first_name": "Peter",
+    "job_title": "IT administrator",
+    "goal": "Demo profile. Get outside on weekends and organize the odd game night.",
+    "date_of_birth": "1982-06-04",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "hiking",
+      "camping",
+      "board_games"
+    ],
+    "filter_option_ids": [
+      "hiking"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (36).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-38",
+    "first_name": "Rafael",
+    "job_title": "Restaurant manager",
+    "goal": "Demo profile. Trade cooking ideas and meet friends on quieter weekdays.",
+    "date_of_birth": "1989-11-07",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "cooking",
+      "wine",
+      "comedy"
+    ],
+    "filter_option_ids": [
+      "cooking",
+      "wine"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (37).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-39",
+    "first_name": "Cole",
+    "job_title": "Surveyor",
+    "goal": "Demo profile. Find a fishing or kayaking buddy for early weekend outings.",
+    "date_of_birth": "1996-04-10",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "fishing",
+      "kayaking",
+      "barbecue"
+    ],
+    "filter_option_ids": [
+      "fishing"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (38).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-40",
+    "first_name": "Ian",
+    "job_title": "Journalist",
+    "goal": "Demo profile. Find people to discuss books and films over coffee.",
+    "date_of_birth": "1968-09-13",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "reading",
+      "coffee",
+      "movies"
+    ],
+    "filter_option_ids": [],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (39).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-41",
+    "first_name": "Kevin",
+    "job_title": "Pharmacist",
+    "goal": "Demo profile. Play tennis after work and try a new dinner spot.",
+    "date_of_birth": "1975-02-16",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "tennis",
+      "gym",
+      "dining_out"
+    ],
+    "filter_option_ids": [
+      "tennis"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (40).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-42",
+    "first_name": "Wes",
+    "job_title": "Small business owner",
+    "goal": "Demo profile. Meet fellow business owners and get involved locally.",
+    "date_of_birth": "1982-07-19",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "professional_networking",
+      "golf",
+      "volunteering"
+    ],
+    "filter_option_ids": [
+      "professional_networking",
+      "golf"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (41).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-43",
+    "first_name": "Brandon",
+    "job_title": "Pilot",
+    "goal": "Demo profile. Meet local friends when I am home between trips.",
+    "date_of_birth": "1989-12-22",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "hiking",
+      "photography",
+      "coffee"
+    ],
+    "filter_option_ids": [
+      "hiking"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (42).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-44",
+    "first_name": "Tony",
+    "job_title": "Facilities manager",
+    "goal": "Demo profile. Find a weekend basketball crew and visit car meetups.",
+    "date_of_birth": "1996-05-25",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "cars",
+      "basketball",
+      "barbecue"
+    ],
+    "filter_option_ids": [
+      "cars",
+      "basketball"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (43).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-45",
+    "first_name": "Arjun",
+    "job_title": "Systems engineer",
+    "goal": "Demo profile. A relaxed running partner and friends for home-cooked dinners.",
+    "date_of_birth": "1968-10-01",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "running",
+      "cooking",
+      "board_games"
+    ],
+    "filter_option_ids": [],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (44).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-46",
+    "first_name": "Gabriel",
+    "job_title": "Music teacher",
+    "goal": "Demo profile. Go to performances and meet other music fans.",
+    "date_of_birth": "1975-03-04",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "live_music",
+      "theater",
+      "volunteering"
+    ],
+    "filter_option_ids": [
+      "live_music",
+      "theater"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (45).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-47",
+    "first_name": "Josh",
+    "job_title": "Warehouse supervisor",
+    "goal": "Demo profile. Play some casual pickleball and get to know people nearby.",
+    "date_of_birth": "1982-08-07",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "pickleball",
+      "fishing",
+      "craft_beer"
+    ],
+    "filter_option_ids": [
+      "pickleball"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (46).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-48",
+    "first_name": "Anthony",
+    "job_title": "Recruiter",
+    "goal": "Demo profile. Make friends outside work through coffee and lifting.",
+    "date_of_birth": "1989-01-10",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "professional_networking",
+      "coffee",
+      "gym"
+    ],
+    "filter_option_ids": [
+      "professional_networking",
+      "coffee"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (47).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-49",
+    "first_name": "Nico",
+    "job_title": "Barber",
+    "goal": "Demo profile. Find a regular movie or comedy night with local friends.",
+    "date_of_birth": "1996-06-13",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "comedy",
+      "dining_out",
+      "movies"
+    ],
+    "filter_option_ids": [
+      "comedy"
+    ],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (48).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  },
+  {
+    "demo_id": "demo-50",
+    "first_name": "David",
+    "job_title": "Environmental consultant",
+    "goal": "Demo profile. Plan outdoor weekends and volunteer around the community.",
+    "date_of_birth": "1968-11-16",
+    "city": "Scottsdale",
+    "profile_option_ids": [
+      "hiking",
+      "kayaking",
+      "volunteering"
+    ],
+    "filter_option_ids": [],
+    "photo": {
+      "file": "../../avatars/uifaces-human-avatar (49).jpg",
+      "source_url": "https://www.uifaces.co/",
+      "license": "UI Faces free mockup collection; internal testing only (confirmed by owner)"
+    }
+  }
+]

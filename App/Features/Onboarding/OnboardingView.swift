@@ -25,7 +25,6 @@ struct OnboardingView: View {
 private struct OnboardingContent: View {
     @Bindable var model: OnboardingModel
     let close: () -> Void
-    @State private var email = ""
     @State private var code = ""
     @State private var showsDeletionConfirmation = false
 
@@ -38,7 +37,7 @@ private struct OnboardingContent: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 BrandNavigationLogo()
-                if model.step == .email || model.step == .code {
+                if model.step == .signIn || model.step == .code {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Close", action: close).disabled(model.isBusy)
                     }
@@ -49,7 +48,7 @@ private struct OnboardingContent: View {
                 Button("Delete account", role: .destructive) {
                     Task {
                         await model.deleteAccount()
-                        if model.step == .email { clearSignInFields() }
+                        if model.step == .signIn { clearSignInFields() }
                     }
                 }
             } message: {
@@ -65,32 +64,22 @@ private struct OnboardingContent: View {
             VStack(alignment: .leading, spacing: 24) {
                 switch model.step {
                 case .loading:
-                    ProgressView("Loading your account…")
-                case .email:
-                    title(
-                        "Your next friend\nstarts here.",
-                        subtitle:
-                            "Create an account or sign in with an email code. Meet other men in Scottsdale.")
-                    TextField("Email address", text: $email)
-                        .keyboardType(.emailAddress)
-                        .textContentType(.emailAddress)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled()
-                        .textFieldStyle(.roundedBorder)
-                        .accessibilityIdentifier("signup.email")
-                        .disabled(model.isBusy)
-                    primary("Send sign-in code") { await model.requestCode(email: email) }
+                    ProgressView()
+                case .signIn:
+                    SignInEntryView(model: model)
                 case .code:
                     title(
-                        "Check your inbox.",
-                        subtitle: "Enter the code sent to \(model.email). Check spam if you don’t see it.")
-                    TextField("Email code", text: $code)
+                        model.signInIdentifier?.isPhone == true ? "Check your texts." : "Check your inbox.",
+                        subtitle: "Enter the code sent to \(model.signInIdentifier?.value ?? "").")
+                    TextField("Sign-in code", text: $code)
                         .keyboardType(.numberPad)
                         .textContentType(.oneTimeCode)
-                        .textFieldStyle(.roundedBorder)
+                        .textFieldStyle(BrandTextFieldStyle())
                         .accessibilityIdentifier("signup.code")
                         .disabled(model.isBusy)
-                    primary("Verify email") { await model.verify(code: code) }
+                    primary(model.signInIdentifier?.isPhone == true ? "Verify phone" : "Verify email") {
+                        await model.verify(code: code)
+                    }
                     TimelineView(.periodic(from: .now, by: 1)) { context in
                         let seconds = max(
                             0, Int(ceil(model.resendAvailableAt.timeIntervalSince(context.date))))
@@ -99,9 +88,9 @@ private struct OnboardingContent: View {
                         }
                         .disabled(seconds > 0 || model.isBusy)
                     }
-                    Button("Use a different email") {
+                    Button("Use a different number or email") {
                         code = ""
-                        model.changeEmail()
+                        model.restartSignIn()
                     }
                     .disabled(model.isBusy)
                 case .introduction:
@@ -123,7 +112,9 @@ private struct OnboardingContent: View {
                     accountActions
                 }
 
-                if model.isBusy { ProgressView().frame(maxWidth: .infinity) }
+                if model.isBusy && model.step != .loading {
+                    ProgressView().frame(maxWidth: .infinity)
+                }
                 if let message = model.errorMessage {
                     Text(message)
                         .foregroundStyle(.red)
@@ -151,11 +142,10 @@ private struct OnboardingContent: View {
 
     private func signOut() async {
         await model.signOut()
-        if model.step == .email { clearSignInFields() }
+        if model.step == .signIn { clearSignInFields() }
     }
 
     private func clearSignInFields() {
-        email = ""
         code = ""
     }
 

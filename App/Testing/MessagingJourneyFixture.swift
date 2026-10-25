@@ -2,21 +2,88 @@
     import Foundation
     import NewToTownCore
     import SwiftUI
+    import UIKit
 
     /// Offline dependencies for simulator UI tests only. Compiled out of release builds.
     struct MessagingJourneyFixture: View {
         @State private var account = OnboardingModel(service: JourneyAccountService())
         private let first = JourneyMessagingService(
-            owner: JourneyIDs.first, name: "Alex", marker: "Account A conversation")
+            owner: JourneyIDs.first, name: "Alex", marker: "Account A conversation",
+            startsEmpty: ProcessInfo.processInfo.arguments.contains("--ui-test-empty-chat"))
         private let second = JourneyMessagingService(
             owner: JourneyIDs.second, name: "Taylor", marker: "Account B conversation")
 
+        private let firstPreferences = JourneyPreferencesService()
+        private let secondPreferences = JourneyPreferencesService()
+        @State private var layoutPhotos = LayoutJourneyServices.photos(
+            saved: ProcessInfo.processInfo.arguments.contains("--ui-test-saved-photo"))
+        @State private var firstImages = JourneyPhoto.store()
+        @State private var secondImages = JourneyPhoto.store()
+
         var body: some View {
             AppEntryView(
-                model: account, personalInfoService: nil, photoService: nil,
+                model: account, personalInfoService: nil,
+                photoService: ProcessInfo.processInfo.arguments.contains("--ui-test-photos") ? layoutPhotos : nil,
                 discoveryService: JourneyDiscoveryService(
                     messages: account.accountID == JourneyIDs.second ? second : first),
-                makeMessagingService: { id in id == JourneyIDs.second ? second : first })
+                makeMessagingService: { id in id == JourneyIDs.second ? second : first },
+                makeDiscoveryPreferencesService: { id in
+                    id == JourneyIDs.second ? secondPreferences : firstPreferences
+                },
+                makeReportingService: { id in
+                    JourneyReportingService(messages: id == JourneyIDs.second ? second : first)
+                }
+            )
+            .environment(
+                \.profileImages,
+                ProcessInfo.processInfo.arguments.contains("--ui-test-profile-images")
+                    ? (account.accountID == JourneyIDs.second ? secondImages : firstImages) : nil)
+        }
+    }
+
+    @MainActor private enum JourneyPhoto {
+        static func store() -> ProfileImageStore {
+            let image = UIGraphicsImageRenderer(size: CGSize(width: 32, height: 32)).image { context in
+                UIColor(red: 0.75, green: 0.78, blue: 0.68, alpha: 1).setFill()
+                context.fill(CGRect(x: 0, y: 0, width: 32, height: 32))
+            }
+            let data = image.jpegData(compressionQuality: 0.8)!
+            return ProfileImageStore(loader: AuthorizedPhotoLoader(download: { _ in data }))
+        }
+
+        static var url: URL {
+            let expiry = Int(Date().addingTimeInterval(60).timeIntervalSince1970)
+            let claims = Data("{\"exp\":\(expiry)}".utf8).base64EncodedString()
+                .replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_")
+                .replacingOccurrences(of: "=", with: "")
+            return URL(
+                string:
+                    "https://fixture.example.test/\(JourneyIDs.peer)/profile.jpg?token=header.\(claims).signature"
+            )!
+        }
+    }
+
+    private actor JourneyReportingService: ProfileReportingService {
+        let messages: JourneyMessagingService
+        private var receipts: Set<UUID> = []
+        init(messages: JourneyMessagingService) { self.messages = messages }
+        func submit(_ report: ProfileReport) async throws -> UUID {
+            await messages.block(report.targetID)
+            if receipts.insert(report.retryID).inserted
+                && ProcessInfo.processInfo.arguments.contains("--ui-test-report-lost-response")
+            {
+                throw ProfileReportingError.connection
+            }
+            return report.retryID
+        }
+    }
+
+    private actor JourneyPreferencesService: DiscoveryPreferencesService {
+        private var value = AgePreferences()
+        func load() -> AgePreferences { value }
+        func save(_ preferences: AgePreferences) -> AgePreferences {
+            value = preferences
+            return value
         }
     }
 
@@ -30,9 +97,14 @@
 
     private actor JourneyAccountService: OnboardingService {
         private var owner: UUID? = JourneyIDs.first
-        func currentUserID() -> UUID? { owner }
-        func sendCode(to email: String) {}
-        func verifyCode(_ code: String, email: String) -> UUID {
+        func currentUserID() async throws -> UUID? {
+            if ProcessInfo.processInfo.arguments.contains("--ui-test-loading") {
+                try await Task.sleep(for: .seconds(30))
+            }
+            return owner
+        }
+        func sendCode(to identifier: SignInIdentifier) {}
+        func verifyCode(_ code: String, identifier: SignInIdentifier) -> UUID {
             owner = JourneyIDs.second
             return JourneyIDs.second
         }
@@ -55,18 +127,24 @@
     @MainActor private final class JourneyMessagingService: MessagingService {
         private let owner: UUID
         private let marker: String
+        private let startsEmpty: Bool
+        var hasStarted: Bool { !startsEmpty || !sent.isEmpty }
         private var sent: [ChatMessage] = []
         private var failedFirstSend = false
         private(set) var blocked = false
         let thread: Conversation
 
-        init(owner: UUID, name: String, marker: String) {
+        init(owner: UUID, name: String, marker: String, startsEmpty: Bool = false) {
             self.owner = owner
             self.marker = marker
+            self.startsEmpty = startsEmpty
             let peer = DiscoveryProfile(
                 id: JourneyIDs.peer, firstName: name, jobTitle: "Designer",
-                goal: "Find a hiking buddy.", city: "Scottsdale",
-                photoURL: URL(fileURLWithPath: "/uitest-photo-placeholder"))
+                goal: ProcessInfo.processInfo.arguments.contains("--ui-test-discovery-layout")
+                    ? "Find friends for coffee, hiking, professional networking, local volunteering and relaxed weekend dinners."
+                    : "Find a hiking buddy.", city: "Scottsdale",
+                photoURL: ProcessInfo.processInfo.arguments.contains("--ui-test-profile-images")
+                    ? JourneyPhoto.url : URL(fileURLWithPath: "/uitest-photo-placeholder"))
             thread = Conversation(
                 id: JourneyIDs.thread, participant: peer, createdAt: JourneyIDs.time,
                 lastActivityAt: JourneyIDs.time, lastMessage: nil)
@@ -80,7 +158,7 @@
             let summary = Conversation(
                 id: thread.id, participant: thread.participant, createdAt: thread.createdAt,
                 lastActivityAt: thread.lastActivityAt, lastMessage: sent.last ?? greeting)
-            return ConversationPage(conversations: blocked ? [] : [summary], nextCursor: nil)
+            return ConversationPage(conversations: blocked || !hasStarted ? [] : [summary], nextCursor: nil)
         }
         func open(with peerID: UUID) throws -> Conversation {
             guard !blocked else { throw MessagingError.unavailable }
@@ -88,7 +166,23 @@
         }
         func history(in conversationID: UUID, before cursor: MessageCursor?) throws -> MessagePage {
             guard !blocked else { throw MessagingError.unavailable }
-            return MessagePage(conversation: thread, messages: [greeting] + sent, nextCursor: nil)
+            if ProcessInfo.processInfo.arguments.contains("--ui-test-long-history") {
+                let range = cursor == nil ? 21...70 : 1...20
+                let messages = range.map { index in
+                    ChatMessage(
+                        id: UUID(uuidString: String(format: "00000000-0000-0000-0000-%012d", index + 1000))!,
+                        conversationID: thread.id, senderID: JourneyIDs.peer,
+                        clientMessageID: UUID(), body: "History message \(index)",
+                        createdAt: ISO8601DateFormatter().string(
+                            from: Date(timeIntervalSince1970: Double(index))))
+                }
+                let oldest = messages[0]
+                return MessagePage(
+                    conversation: thread, messages: messages,
+                    nextCursor: cursor == nil ? MessageCursor(time: oldest.createdAt, id: oldest.id) : nil)
+            }
+            return MessagePage(
+                conversation: thread, messages: (startsEmpty ? [] : [greeting]) + sent, nextCursor: nil)
         }
         func send(in conversationID: UUID, retryID: UUID, body: String) throws -> ChatMessage {
             guard !blocked else { throw MessagingError.unavailable }
@@ -108,12 +202,20 @@
 
     @MainActor private final class JourneyDiscoveryService: DiscoveryService {
         let messages: JourneyMessagingService
+        private var visible = true
         init(messages: JourneyMessagingService) { self.messages = messages }
         func load() -> DiscoveryFeed {
             DiscoveryFeed(
-                state: .ready, visible: true, matches: messages.blocked ? [] : [messages.thread.participant])
+                state: visible ? .ready : .hidden, visible: visible,
+                candidates: ProcessInfo.processInfo.arguments.contains("--ui-test-discovery-layout") && !messages.blocked
+                    ? [messages.thread.participant] : [],
+                matches: !visible || messages.blocked || messages.hasStarted
+                    ? [] : [messages.thread.participant])
         }
-        func setVisible(_ visible: Bool) -> DiscoveryFeed { load() }
+        func setVisible(_ visible: Bool) -> DiscoveryFeed {
+            self.visible = visible
+            return load()
+        }
         func decide(on profileID: UUID, choice: ConnectionChoice) -> DiscoveryFeed { load() }
         func block(_ profileID: UUID) -> DiscoveryFeed {
             messages.block(profileID)

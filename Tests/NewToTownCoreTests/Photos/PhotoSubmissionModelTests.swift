@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import NewToTownCore
 
 @MainActor
@@ -186,4 +187,29 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
     await model.save()
     #expect(model.isSaved)
     #expect(service.stored.selfie == nil)
+}
+
+@Test @MainActor func photoActionsReflectSelectionAndPersistedFiles() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    let model = PhotoSubmissionModel(service: service)
+    #expect(!model.canSave && !model.hasStoredPhotos)
+    await model.load()
+    #expect(!model.canSave && !model.hasStoredPhotos)
+    model.selectProfile(jpeg)
+    #expect(model.canSave && !model.hasStoredPhotos)
+    service.failSave = true
+    await model.save()
+    #expect(model.canSave && !model.hasStoredPhotos)
+    service.failSave = false
+    await model.save()
+    #expect(!model.canSave && model.hasStoredPhotos)
+    model.selectProfile(jpeg)
+    #expect(model.canSave && model.hasStoredPhotos)
+    service.failRemove = true
+    await model.remove()
+    #expect(model.hasStoredPhotos)
+    service.failRemove = false
+    await model.remove()
+    #expect(!model.canSave && !model.hasStoredPhotos)
 }

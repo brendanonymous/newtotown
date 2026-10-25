@@ -40,6 +40,8 @@ Swift Package tests validate configuration, profile rules, and onboarding transi
 
 See [architecture](docs/architecture.md) and [delivery plan](docs/delivery-plan.md).
 
+For a separate backend and app installation, select the [NewToTown Test scheme](docs/test-environment.md). The [demo seed tool](scripts/seed-demo/README.md) prepares fifty fictional profiles for that isolated project. The [interests backend](docs/interests.md) is available there; its iPhone editing controls are a separate implementation step.
+
 First-time onboarding and persistent agreement behavior: [onboarding agreement](docs/onboarding-agreement.md).
 
 Private contact details in Settings: [Personal info](docs/personal-info.md).

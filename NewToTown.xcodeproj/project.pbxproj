@@ -25,6 +25,7 @@
 		A00000000000000000000006 /* NewToTown.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = NewToTown.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A00000000000000000000009 /* Configuration/Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration/Base.xcconfig; sourceTree = "<group>"; };
 		C00000000000000000000003 /* NewToTownUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = NewToTownUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D00000000000000000000001 /* Configuration/Test.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration/Test.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -59,6 +60,7 @@
 				C00000000000000000000002 /* UITests */,
 				A00000000000000000000004 /* App */,
 				A00000000000000000000009 /* Configuration/Base.xcconfig */,
+				D00000000000000000000001 /* Configuration/Test.xcconfig */,
 				A00000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -248,6 +250,70 @@
 			};
 			name = Release;
 		};
+		D00000000000000000000012 /* Debug-Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = "Debug-Test";
+		};
+		D00000000000000000000013 /* Release-Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = "Release-Test";
+		};
+		D00000000000000000000014 /* Debug-Test */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D00000000000000000000001 /* Configuration/Test.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+			};
+			name = "Debug-Test";
+		};
+		D00000000000000000000015 /* Release-Test */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D00000000000000000000001 /* Configuration/Test.xcconfig */;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-Test";
+		};
+		D00000000000000000000007 /* Debug-Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.newtotown.ios.test.UITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = NewToTown;
+			};
+			name = "Debug-Test";
+		};
+		D00000000000000000000008 /* Release-Test */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.newtotown.ios.test.UITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = NewToTown;
+			};
+			name = "Release-Test";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -255,7 +321,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A00000000000000000000012 /* Debug */,
+				D00000000000000000000012 /* Debug-Test */,
 				A00000000000000000000013 /* Release */,
+				D00000000000000000000013 /* Release-Test */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -264,7 +332,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A00000000000000000000014 /* Debug */,
+				D00000000000000000000014 /* Debug-Test */,
 				A00000000000000000000015 /* Release */,
+				D00000000000000000000015 /* Release-Test */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -273,7 +343,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C00000000000000000000007 /* Debug */,
+				D00000000000000000000007 /* Debug-Test */,
 				C00000000000000000000008 /* Release */,
+				D00000000000000000000008 /* Release-Test */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -13,7 +13,7 @@ struct ProfileForm: View {
                 Text("What are you up for?").font(.headline)
                 TextField("e.g. Looking for someone to grab a beer with in Old Town.", text: $draft.goal, axis: .vertical)
                     .lineLimit(3...6)
-                    .textFieldStyle(.roundedBorder)
+                    .textFieldStyle(BrandTextFieldStyle())
                 Text("10–280 characters").font(.caption).foregroundStyle(BrandTheme.secondaryInk)
             }
             DatePicker("Birthday", selection: birthday, in: ...Date.now, displayedComponents: .date)
@@ -36,7 +36,7 @@ struct ProfileForm: View {
     private func field(_ title: String, placeholder: String, text: Binding<String>) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title).font(.headline)
-            TextField(placeholder, text: text).textFieldStyle(.roundedBorder)
+            TextField(placeholder, text: text).textFieldStyle(BrandTextFieldStyle())
         }
     }
 }

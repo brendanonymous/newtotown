@@ -110,11 +110,33 @@ public protocol MessagingService: Sendable {
 
 public enum MessageText {
     public static let maximumLength = 500
+
+    /// Keep one space between words and one newline between nonempty lines.
+    public static func normalizedWhitespace(_ value: String) -> String {
+        value.components(separatedBy: .newlines)
+            .map { line in
+                line.components(separatedBy: .whitespaces)
+                    .filter { !$0.isEmpty }.joined(separator: " ")
+            }
+            .filter { !$0.isEmpty }.joined(separator: "\n")
+    }
+
+    /// Match message validation while keeping composed characters (such as emoji) intact.
+    public static func limitedDraft(_ value: String) -> String {
+        var scalarCount = 0
+        return String(
+            value.prefix { character in
+                scalarCount += character.unicodeScalars.count
+                return scalarCount <= maximumLength
+            })
+    }
+
     public static func isValid(_ value: String) -> Bool {
         let whitespace = CharacterSet.whitespacesAndNewlines.union(CharacterSet(charactersIn: "\u{FEFF}"))
         return !value.trimmingCharacters(in: whitespace).isEmpty
             && !value.contains("\0") && value.unicodeScalars.count <= maximumLength
     }
+
     public static func date(_ timestamp: String) -> Date? {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

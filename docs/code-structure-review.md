@@ -49,3 +49,8 @@ Create these files only with their implementations. Keep authorization in the da
 ## Implementation follow-through
 
 The iPhone messaging PR introduces `SignedInView` outside onboarding, adds account-bound adapter/wire-contract tests and simulator account-switch coverage, and keeps messaging state in feature models. PR #11 extracted shared server Auth/HTTP and profile-photo helpers when adding the third endpoint. The historical findings above describe the pre-messaging baseline.
+
+
+## October 22 follow-up
+
+The follow-up PRs keep the same feature/module boundaries. Profile preview reuses the authorized messaging transport and shared card. Moderation owns its report payload, state, adapter, and sheet instead of expanding DiscoveryModel. Phone signup shares one onboarding/account lifecycle and uses a typed sign-in identifier; the entry form is separate from profile/agreement presentation. All new SDK adapters share the existing client/session. Matching unit/adapter folders, SQL policies, handler tests and simulator journeys cover the new behavior. No generic base model, repository framework, extra package dependency, or directory reshuffle was introduced.

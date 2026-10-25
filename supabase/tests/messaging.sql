@@ -44,8 +44,29 @@ begin
     if conversation->'participant'->>'id' <> b::text or conversation->'participant' ? 'date_of_birth'
         or conversation ? 'participant_one_id' then raise exception 'Wrong/private conversation projection'; end if;
     if public.pilot_messaging_open(b, a)->>'id' <> thread::text then raise exception 'Reverse open duplicated thread'; end if;
+    if jsonb_array_length(public.pilot_discovery_feed(a)->'matches') <> 1
+        or jsonb_array_length(public.pilot_discovery_feed(b)->'matches') <> 1 then
+        raise exception 'Opening an empty thread removed the connection'; end if;
+    if jsonb_array_length(public.pilot_messaging_list(a)->'conversations') <> 0
+        or jsonb_array_length(public.pilot_messaging_list(b)->'conversations') <> 0 then
+        raise exception 'Empty thread appeared in inbox'; end if;
+    begin
+        perform public.pilot_messaging_send(a, thread, gen_random_uuid(), '   ');
+        raise exception 'Invalid first send accepted';
+    exception when invalid_parameter_value then null; end;
+    if jsonb_array_length(public.pilot_discovery_feed(a)->'matches') <> 1 then
+        raise exception 'Failed send removed the connection'; end if;
     sent := public.pilot_messaging_send(a, thread, retry, 'Coffee on Saturday?');
     if sent->>'sender_id' <> a::text or sent->>'body' <> 'Coffee on Saturday?' then raise exception 'Wrong message'; end if;
+    if jsonb_array_length(public.pilot_discovery_feed(a)->'matches') <> 0
+        or jsonb_array_length(public.pilot_discovery_feed(b)->'matches') <> 0 then
+        raise exception 'First committed message did not move both participants'; end if;
+    if jsonb_array_length(public.pilot_messaging_list(a)->'conversations') <> 1
+        or jsonb_array_length(public.pilot_messaging_list(b)->'conversations') <> 1 then
+        raise exception 'First message missing from participant inbox'; end if;
+    if (select count(*) from public.connection_decisions
+        where (user_id = a and target_id = b) or (user_id = b and target_id = a)) <> 2 then
+        raise exception 'Transition removed mutual decisions'; end if;
     select last_activity_at into stamp from private.conversations where id = thread;
     if public.pilot_messaging_send(a, thread, retry, 'Coffee on Saturday?') <> sent then raise exception 'Retry changed message'; end if;
     if (select last_activity_at from private.conversations where id = thread) <> stamp then raise exception 'Retry bumped activity'; end if;
@@ -231,6 +252,9 @@ update public.pilot_features set photo_review_required = false;
 set local role service_role;
 select public.pilot_messaging_open('10000000-0000-0000-0000-000000000001', id) is not null as opened
 from public.profiles where id::text like '10000000-0000-0000-0000-%' and id <> '10000000-0000-0000-0000-000000000001';
+-- Only started threads belong in the paginated inbox.
+select public.pilot_messaging_send('10000000-0000-0000-0000-000000000001', id, gen_random_uuid(), 'Hello')
+from private.conversations;
 update private.conversations set last_activity_at = '2026-10-17T00:00:00Z';
 do $$
 declare person uuid := '10000000-0000-0000-0000-000000000001';

@@ -9,7 +9,10 @@ struct NewToTownApp: App {
     private let photoService: (any PhotoService)?
     private let discoveryService: (any DiscoveryService)?
 
+    private let makeDiscoveryPreferencesService: (@Sendable (UUID) -> any DiscoveryPreferencesService)?
     private let makeMessagingService: (@Sendable (UUID) -> any MessagingService)?
+
+    private let makeReportingService: (@Sendable (UUID) -> any ProfileReportingService)?
 
     init() {
         // Construct the backend once at the app boundary; feature views receive state.
@@ -26,11 +29,20 @@ struct NewToTownApp: App {
         photoService = services?.photos
         discoveryService = services?.discovery
         if let shared = services {
+            makeReportingService = { @Sendable (accountID: UUID) -> any ProfileReportingService in
+                shared.reporting(for: accountID)
+            }
+            makeDiscoveryPreferencesService = {
+                @Sendable (accountID: UUID) -> any DiscoveryPreferencesService in
+                shared.discoveryPreferences(for: accountID)
+            }
             makeMessagingService = { @Sendable (accountID: UUID) -> any MessagingService in
                 shared.messaging(for: accountID)
             }
         } else {
+            makeReportingService = nil
             makeMessagingService = nil
+            makeDiscoveryPreferencesService = nil
         }
     }
 
@@ -48,7 +60,6 @@ struct NewToTownApp: App {
                 #endif
             }
             .tint(BrandTheme.ink)
-            .preferredColorScheme(.light)
         }
     }
 
@@ -57,7 +68,9 @@ struct NewToTownApp: App {
             AppEntryView(
                 model: onboardingModel, personalInfoService: personalInfoService,
                 photoService: photoService, discoveryService: discoveryService,
-                makeMessagingService: makeMessagingService)
+                makeMessagingService: makeMessagingService,
+                makeDiscoveryPreferencesService: makeDiscoveryPreferencesService,
+                makeReportingService: makeReportingService)
         } else {
             NavigationStack { WelcomeView(onJoin: nil) }
         }
