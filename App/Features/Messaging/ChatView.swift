@@ -222,8 +222,21 @@ private struct MessageBubble: View {
     let timestamp: String?
     let isOwn: Bool
     var body: some View {
+        HStack(spacing: 0) {
+            if isOwn { Spacer(minLength: 48) }
+
+            content
+                .frame(maxWidth: 320, alignment: isOwn ? .trailing : .leading)
+
+            if !isOwn { Spacer(minLength: 48) }
+        }
+        .frame(maxWidth: .infinity, alignment: isOwn ? .trailing : .leading)
+    }
+
+    private var content: some View {
         VStack(alignment: isOwn ? .trailing : .leading, spacing: 5) {
             Text(text).textSelection(.enabled)
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(14)
                 .foregroundStyle(isOwn ? BrandTheme.background : BrandTheme.ink)
                 .background(
@@ -235,6 +248,5 @@ private struct MessageBubble: View {
                     .font(.caption2).foregroundStyle(BrandTheme.secondaryInk)
             }
         }
-        .frame(maxWidth: .infinity, alignment: isOwn ? .trailing : .leading)
     }
 }
