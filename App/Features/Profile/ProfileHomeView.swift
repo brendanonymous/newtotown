@@ -91,16 +91,20 @@ struct ProfileHomeView: View {
                         ProfilePhotoGallery(count: profilePhotos.count) { index in
                             Image(uiImage: profilePhotos[index]).resizable().scaledToFill()
                         }
-                    } else if photoIsMissing {
-                        Button("Add a profile photo", systemImage: "person.crop.rectangle") {
-                            photoNeedsReload = true
-                            editor = .photos
-                        }.foregroundStyle(BrandTheme.secondaryInk)
-                    } else if photoFailed {
-                        Label("Photo unavailable. Open My photos to try again.", systemImage: "photo")
-                            .font(.callout).padding()
                     } else {
-                        ProgressView()
+                        ProfilePhotoFrame {
+                            if photoIsMissing {
+                                Button("Add a profile photo", systemImage: "person.crop.rectangle") {
+                                    photoNeedsReload = true
+                                    editor = .photos
+                                }.foregroundStyle(BrandTheme.secondaryInk)
+                            } else if photoFailed {
+                                Label("Photo unavailable. Open My photos to try again.", systemImage: "photo")
+                                    .font(.callout).padding()
+                            } else {
+                                ProgressView()
+                            }
+                        }
                     }
                 }
 

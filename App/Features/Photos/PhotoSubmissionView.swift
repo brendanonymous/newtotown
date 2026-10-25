@@ -88,11 +88,9 @@ struct PhotoSubmissionView: View {
     @ViewBuilder private var profilePhotos: some View {
         let photos = model.photos.profilePhotos
         if !photos.isEmpty {
-            ProfilePhotoFrame {
-                ProfilePhotoGallery(count: photos.count, selection: $previewIndex) { index in
-                    if let image = UIImage(data: photos[index]) {
-                        Image(uiImage: image).resizable().scaledToFill()
-                    }
+            ProfilePhotoGallery(count: photos.count, selection: $previewIndex) { index in
+                if let image = UIImage(data: photos[index]) {
+                    Image(uiImage: image).resizable().scaledToFill()
                 }
             }
             Text("\(photos.count) of 3 photos · First photo is your main photo")
