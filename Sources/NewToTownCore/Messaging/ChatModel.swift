@@ -10,6 +10,7 @@ public final class ChatModel {
     public var draft = ""
     public private(set) var pending: PendingMessage?
     public private(set) var isLoading = false
+    public private(set) var olderPageFailed = false
     public private(set) var isSending = false
     public private(set) var isUnavailable = false
     public private(set) var isBlocking = false
@@ -68,6 +69,7 @@ public final class ChatModel {
         }
         let current = generation
         isLoading = true
+        olderPageFailed = false
         errorMessage = nil
         defer { if current == generation { isLoading = false } }
         do {
@@ -99,7 +101,16 @@ public final class ChatModel {
             nextCursor = page.nextCursor
         } catch {
             guard current == generation else { return }
-            if Task.isCancelled { interruptedLoad() } else { handleLoadFailure(error) }
+            if Task.isCancelled {
+                interruptedLoad()
+            } else if older, conversation != nil,
+                error as? MessagingError != .unavailable, error as? MessagingError != .signedOut
+            {
+                olderPageFailed = true
+                errorMessage = "We couldn’t load earlier messages. Try again."
+            } else {
+                handleLoadFailure(error)
+            }
         }
     }
 
@@ -187,6 +198,7 @@ public final class ChatModel {
         sendError = nil
         isSending = false
         isLoading = false
+        olderPageFailed = false
     }
     private func interruptedLoad() {
         if conversation == nil { errorMessage = "Loading was interrupted. Pull down to try again." }

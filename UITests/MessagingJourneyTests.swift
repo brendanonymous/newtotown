@@ -2,6 +2,30 @@ import XCTest
 
 final class MessagingJourneyTests: XCTestCase {
     @MainActor
+    func testConversationStartsAtNewestAndLoadsOlderMessagesOnScroll() {
+        let app = launchFixture(longHistory: true)
+        app.tabBars.buttons["Messages"].tap()
+        let thread = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "Account A conversation"))
+            .firstMatch
+        XCTAssertTrue(thread.waitForExistence(timeout: 10))
+        thread.tap()
+        let newest = app.staticTexts["History message 70"]
+        XCTAssertTrue(newest.waitForExistence(timeout: 10))
+        XCTAssertTrue(newest.isHittable)
+        XCTAssertFalse(app.staticTexts["History message 1"].exists)
+        let history = app.scrollViews["chat.history"]
+        let oldest = app.staticTexts["History message 1"]
+        for _ in 0..<18 {
+            if oldest.exists && oldest.isHittable { break }
+            history.swipeDown()
+        }
+        XCTAssertTrue(oldest.waitForExistence(timeout: 10))
+        XCTAssertTrue(oldest.isHittable)
+        XCTAssertFalse(newest.isHittable)
+        XCTAssertFalse(app.buttons["Load earlier messages"].exists)
+    }
+
+    @MainActor
     func testMessageInputStopsAtLimitAndAllowsDeletion() {
         let app = launchFixture(emptyChat: true)
         app.tabBars.buttons["Connections"].tap()
@@ -294,13 +318,16 @@ final class MessagingJourneyTests: XCTestCase {
         XCTAssertEqual(messages.frame.minY, preferredTop, accuracy: 1)
     }
 
-    @MainActor private func launchFixture(emptyChat: Bool = false, lostReportResponse: Bool = false)
+    @MainActor private func launchFixture(
+        emptyChat: Bool = false, lostReportResponse: Bool = false, longHistory: Bool = false
+    )
         -> XCUIApplication
     {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-messaging"]
         if emptyChat { app.launchArguments.append("--ui-test-empty-chat") }
         if lostReportResponse { app.launchArguments.append("--ui-test-report-lost-response") }
+        if longHistory { app.launchArguments.append("--ui-test-long-history") }
         app.launch()
         XCTAssertTrue(app.tabBars.buttons["Messages"].waitForExistence(timeout: 10))
         return app

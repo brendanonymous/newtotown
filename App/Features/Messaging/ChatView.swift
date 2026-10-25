@@ -10,6 +10,8 @@ struct ChatView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var reportTarget: DiscoveryProfile?
     @State private var showsProfile = false
+    @State private var historyPosition: UUID?
+    @State private var hasScrolledHistory = false
     @Environment(\.scenePhase) private var scenePhase
 
     init(
@@ -107,7 +109,9 @@ struct ChatView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 18) {
                     if model.nextCursor != nil {
-                        Button("Load earlier messages") {
+                        Button(
+                            model.olderPageFailed ? "Try loading earlier messages" : "Load earlier messages"
+                        ) {
                             Task {
                                 let first = model.messages.first?.id
                                 await model.load(older: true)
@@ -143,16 +147,28 @@ struct ChatView: View {
                             model.isUnavailable ? BrandTheme.secondaryInk : .red
                         )
                         .accessibilityIdentifier("chat.error")
-                        if !model.isUnavailable {
+                        if !model.isUnavailable && !model.olderPageFailed {
                             Button("Try again") { Task { await model.load() } }
                         }
                     }
                 }
+                .scrollTargetLayout()
                 .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
             }
+            .accessibilityIdentifier("chat.history")
+            .defaultScrollAnchor(.bottom)
+            .scrollPosition(id: $historyPosition)
             .scrollBounceBehavior(.always, axes: .vertical)
             .scrollDismissesKeyboard(.interactively)
+            .simultaneousGesture(DragGesture().onChanged { _ in hasScrolledHistory = true })
             .refreshable { await model.load() }
+            .onChange(of: historyPosition) { _, id in
+                if hasScrolledHistory, id != nil, id == model.messages.first?.id,
+                    model.nextCursor != nil, !model.isLoading, !model.olderPageFailed
+                {
+                    Task { await model.load(older: true) }
+                }
+            }
             .onChange(of: model.messages.last?.id) { _, id in
                 if let id { proxy.scrollTo(id, anchor: .bottom) }
             }
