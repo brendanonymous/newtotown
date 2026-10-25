@@ -13,6 +13,9 @@ struct SignedInView: View {
     let reportingService: (any ProfileReportingService)?
     @State private var discoveryRevision = 0
     @State private var reportedProfileIDs: Set<UUID> = []
+    @State private var profileImages = ProfileImageStore()
+    @Environment(\.profileImages) private var suppliedProfileImages
+    private var activeProfileImages: ProfileImageStore { suppliedProfileImages ?? profileImages }
     private enum Tab: Hashable { case profile, discovery, connections, messages }
     @State private var selectedTab = Tab.profile
     @State private var confirmsDeletion = false
@@ -97,6 +100,9 @@ struct SignedInView: View {
             .tabItem { Label("Profile", systemImage: "person.crop.circle") }.tag(Tab.profile)
         }
         .tint(BrandTheme.ink)
+        .environment(\.profileImages, activeProfileImages)
+        .onChange(of: reportedProfileIDs) { _, ids in activeProfileImages.exclude(ids) }
+        .onDisappear { activeProfileImages.clear() }
         .foregroundStyle(BrandTheme.ink)
         .alert("Delete your account?", isPresented: $confirmsDeletion) {
             Button("Cancel", role: .cancel) {}

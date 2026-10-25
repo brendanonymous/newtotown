@@ -2,6 +2,20 @@ import XCTest
 
 final class MessagingJourneyTests: XCTestCase {
     @MainActor
+    func testProfilePhotosLoadThroughSharedImagePipeline() {
+        let app = launchFixture(emptyChat: true, profileImages: true)
+        app.tabBars.buttons["Connections"].tap()
+        XCTAssertTrue(app.images["photo.loaded"].firstMatch.waitForExistence(timeout: 10))
+        app.buttons["Message Alex"].tap()
+        let profile = app.buttons["chat.viewProfile"]
+        XCTAssertTrue(profile.waitForExistence(timeout: 10))
+        profile.tap()
+        // The enclosing profile card supplies its own accessibility identifier.
+        XCTAssertTrue(app.images["Profile photo"].firstMatch.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["About me: Find a hiking buddy."].exists)
+    }
+
+    @MainActor
     func testConversationStartsAtNewestAndLoadsOlderMessagesOnScroll() {
         let app = launchFixture(longHistory: true)
         app.tabBars.buttons["Messages"].tap()
@@ -319,7 +333,8 @@ final class MessagingJourneyTests: XCTestCase {
     }
 
     @MainActor private func launchFixture(
-        emptyChat: Bool = false, lostReportResponse: Bool = false, longHistory: Bool = false
+        emptyChat: Bool = false, lostReportResponse: Bool = false, longHistory: Bool = false,
+        profileImages: Bool = false
     )
         -> XCUIApplication
     {
@@ -328,6 +343,7 @@ final class MessagingJourneyTests: XCTestCase {
         if emptyChat { app.launchArguments.append("--ui-test-empty-chat") }
         if lostReportResponse { app.launchArguments.append("--ui-test-report-lost-response") }
         if longHistory { app.launchArguments.append("--ui-test-long-history") }
+        if profileImages { app.launchArguments.append("--ui-test-profile-images") }
         app.launch()
         XCTAssertTrue(app.tabBars.buttons["Messages"].waitForExistence(timeout: 10))
         return app

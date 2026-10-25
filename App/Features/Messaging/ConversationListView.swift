@@ -27,7 +27,7 @@ struct ConversationListView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            LazyVStack(alignment: .leading, spacing: 24) {
                 Text("Messages").font(.system(.largeTitle, design: .serif))
                     .accessibilityIdentifier("messages.title")
                 if model.hasLoaded && model.conversations.isEmpty {

@@ -33,7 +33,7 @@ struct ConnectionsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+            LazyVStack(alignment: .leading, spacing: 24) {
                 Text("Connections").font(.system(.largeTitle, design: .serif))
                     .accessibilityIdentifier("connections.title")
                 if let feed = model.feed {
