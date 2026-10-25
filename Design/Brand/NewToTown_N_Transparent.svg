@@ -2,7 +2,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="4096" height="4096" viewBox="0 0 900 900" role="img" aria-label="New to Town app icon"><defs>
   <linearGradient id="sage" x1="0" x2="0.18" y1="0" y2="1"><stop offset="0" stop-color="#ADB296"/><stop offset="0.48" stop-color="#A8AD8F"/><stop offset="1" stop-color="#9FA587"/></linearGradient>
   <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.19"/><stop offset="0.12" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="0.85" stop-color="#182319" stop-opacity="0"/><stop offset="1" stop-color="#182319" stop-opacity="0.10"/></linearGradient>
-  
+
 </defs>
 <g fill="#FAF5EF" transform="matrix(1.0791367 0 0 1.0935601 -28.0575 -45.9295)"><path d="M 230,203 L 320,203 Q 325,203 329,208 L 488,393 Q 491,397 491,402 L 491,464 Q 491,474 485,472 Q 482,472 479,468 L 324,294 Q 316,286 316,297 L 316,695 Q 316,704 307,704 L 264,704 Q 255,704 255,695 L 255,266 Q 255,255 244,255 L 228,255 Q 221,255 221,248 L 221,211 Q 221,203 230,203 Z"/>
 <path d="M 567,203 L 668,203 Q 678,203 678,212 L 678,244 Q 678,254 668,254 L 660,254 Q 646,254 646,268 L 646,689 Q 646,705 633,705 L 584,705 Q 579,705 575,700 L 410,505 Q 405,500 405,493 L 405,433 Q 405,420 415,425 L 581,614 Q 588,622 588,610 L 588,267 Q 588,254 574,254 L 565,254 Q 558,254 558,248 L 558,212 Q 558,203 567,203 Z"/></g>

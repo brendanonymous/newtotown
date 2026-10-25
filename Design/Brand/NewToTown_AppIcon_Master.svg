@@ -2,7 +2,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="4096" height="4096" viewBox="0 0 900 900" role="img" aria-label="New to Town app icon"><defs>
   <linearGradient id="sage" x1="0" x2="0.18" y1="0" y2="1"><stop offset="0" stop-color="#ADB296"/><stop offset="0.48" stop-color="#A8AD8F"/><stop offset="1" stop-color="#9FA587"/></linearGradient>
   <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.19"/><stop offset="0.12" stop-color="#FFFFFF" stop-opacity="0"/><stop offset="0.85" stop-color="#182319" stop-opacity="0"/><stop offset="1" stop-color="#182319" stop-opacity="0.10"/></linearGradient>
-  
+
 </defs>
 <rect width="900" height="900" fill="url(#sage)"/>
 <rect width="900" height="900" fill="url(#sheen)"/>
