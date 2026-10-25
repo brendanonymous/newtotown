@@ -104,6 +104,6 @@ Tap the participant header in Chat to open their public profile, then use Back t
 
 The iPhone composer caps drafts at 500 Unicode code points, matching `MessageText` validation. Typing and pasting keep only the fitting prefix without splitting a composed character. A counter shows the current count through `500/500` and displays “Character limit reached” at the limit; users can still delete, edit, or send. The server's existing 2,000-code-point ceiling is unchanged by this client update.
 
-Repeated newlines are collapsed to a single newline before creating the pending message. Its body and retry ID then stay fixed across send retries; the editable draft is preserved until the send is confirmed.
+`MessageText.normalizedWhitespace` collapses runs of spaces/tabs to one space, removes whitespace around newlines and at message edges, and removes empty lines. CRLF and other newline separators become a single `\n`. Punctuation, emoji, and accented letters are preserved. Cleanup happens before creating the pending message; its body and retry ID then stay fixed across send retries. The editable draft is preserved until the send is confirmed.
 
 `BrandTextFieldStyle` gives all app text fields the same padding, border, and 16-point corner radius. Message bubbles use the same `BrandTheme.textCornerRadius` value so future appearance changes stay consistent.

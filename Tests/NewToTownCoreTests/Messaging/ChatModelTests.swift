@@ -12,6 +12,22 @@ import Testing
     #expect(MessageText.date(messagingTime) != nil)
 }
 
+@Test func messageWhitespaceCleanupPreservesWordsAndSingleLineBreaks() {
+    let examples = [
+        ("  Coffee   on\t\tSaturday?  ", "Coffee on Saturday?"),
+        ("Hello \n \n\n there", "Hello\nthere"),
+        ("First\r\n\r\nsecond\rthird", "First\nsecond\nthird"),
+        ("Café\u{00A0}\u{2003}at 6:30? 👋", "Café at 6:30? 👋"),
+        ("\n \t\r\n", ""),
+        ("One space\none newline", "One space\none newline"),
+    ]
+    for (input, expected) in examples {
+        let cleaned = MessageText.normalizedWhitespace(input)
+        #expect(cleaned == expected)
+        #expect(MessageText.normalizedWhitespace(cleaned) == cleaned)
+    }
+}
+
 @Test @MainActor func historyPagesPreserveCursorPrecisionAndDeduplicateMessages() async {
     let service = MessagingTestService()
     let newer = ChatMessage(
@@ -77,7 +93,7 @@ import Testing
     let model = ChatModel(
         accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
     await model.load()
-    model.draft = "Coffee\n\n\non Saturday?"
+    model.draft = "  Coffee\n \n\non   Saturday?  "
     var committed: ChatMessage?
     service.onSend = { retry, body in
         if let committed { return committed }
@@ -89,7 +105,7 @@ import Testing
     await model.send()
     let pending = model.pending
     #expect(pending != nil && !model.canSend)
-    #expect(model.draft == "Coffee\n\n\non Saturday?")
+    #expect(model.draft == "  Coffee\n \n\non   Saturday?  ")
     service.historyPages = [
         MessagePage(conversation: messagingThread, messages: [try #require(committed)], nextCursor: nil)
     ]
