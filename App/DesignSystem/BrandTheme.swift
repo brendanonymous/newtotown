@@ -5,6 +5,7 @@ enum BrandTheme {
     static let textCornerRadius: CGFloat = 16
     // Ivory and sage follow the supplied asset pack; ink remains the legible action color.
     static let background = adaptive(light: 0xFAF5EF, dark: 0x1B251E)
+    static let inputSurface = adaptive(light: 0xFFFFFF, dark: 0x293B30)
     static let sage = Color(red: 168 / 255, green: 173 / 255, blue: 143 / 255)
     static let ink = adaptive(light: 0x293B30, dark: 0xFAF5EF)
     static let secondaryInk = adaptive(light: 0x596653, dark: 0xB9BDA9)

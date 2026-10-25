@@ -13,6 +13,8 @@
         private let second = JourneyMessagingService(
             owner: JourneyIDs.second, name: "Taylor", marker: "Account B conversation")
 
+        private let firstContacts = ContactJourneyService()
+        private let secondContacts = ContactJourneyService()
         private let firstInterests = InterestJourneyService()
         private let secondInterests = InterestJourneyService()
         private let firstPreferences = JourneyPreferencesService()
@@ -24,8 +26,11 @@
 
         var body: some View {
             AppEntryView(
-                model: account, personalInfoService: nil,
-                photoService: ProcessInfo.processInfo.arguments.contains("--ui-test-photos") ? layoutPhotos : nil,
+                model: account,
+                personalInfoService: ProcessInfo.processInfo.arguments.contains("--ui-test-contacts")
+                    ? (account.accountID == JourneyIDs.second ? secondContacts : firstContacts) : nil,
+                photoService: ProcessInfo.processInfo.arguments.contains("--ui-test-photos")
+                    ? layoutPhotos : nil,
                 discoveryService: JourneyDiscoveryService(
                     messages: account.accountID == JourneyIDs.second ? second : first),
                 makeMessagingService: { id in id == JourneyIDs.second ? second : first },
@@ -35,7 +40,8 @@
                 makeReportingService: { id in
                     JourneyReportingService(messages: id == JourneyIDs.second ? second : first)
                 },
-                makeInterestsService: { id in id == JourneyIDs.second ? secondInterests : firstInterests }
+                makeInterestsService: { id in id == JourneyIDs.second ? secondInterests : firstInterests },
+                makeContactsService: { id in id == JourneyIDs.second ? secondContacts : firstContacts }
             )
             .environment(
                 \.profileImages,
@@ -210,7 +216,8 @@
         func load() -> DiscoveryFeed {
             DiscoveryFeed(
                 state: visible ? .ready : .hidden, visible: visible,
-                candidates: ProcessInfo.processInfo.arguments.contains("--ui-test-discovery-layout") && !messages.blocked
+                candidates: ProcessInfo.processInfo.arguments.contains("--ui-test-discovery-layout")
+                    && !messages.blocked
                     ? [messages.thread.participant] : [],
                 matches: !visible || messages.blocked || messages.hasStarted
                     ? [] : [messages.thread.participant])
