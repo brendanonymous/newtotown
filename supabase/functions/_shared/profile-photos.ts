@@ -1,9 +1,12 @@
+import { type PublicInterest, readInterests } from "./interests.ts";
+
 export type Card = {
   id: string;
   first_name: string;
   job_title: string;
   goal: string;
   city: string;
+  interests?: PublicInterest[];
 };
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -63,6 +66,9 @@ export function readCards(value: unknown, maximum: number): Card[] {
       job_title: card.job_title,
       goal: card.goal,
       city: card.city,
+      ...(card.interests === undefined
+        ? {}
+        : { interests: readInterests(card.interests) }),
     };
   });
 }

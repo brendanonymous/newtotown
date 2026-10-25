@@ -1,6 +1,6 @@
 # Profile interests and Discovery filters
 
-Status: product direction confirmed October 24, 2026; schema and matching rule awaiting review. No database, endpoint, or interests UI changes have been implemented. This follows the request to review schema designs before implementation.
+Status: schema and recommended any-selected-interest matching approved October 24, 2026. Backend implementation is in the follow-up PR; the iPhone editor and filter controls are a separate UI step.
 
 ## Product behavior
 
@@ -16,7 +16,7 @@ Users choose zero to three interests in each of five categories. All categories 
 
 The five categories and inclusion of Professional networking are confirmed. The initial option list above is the proposed first catalog. No alcohol interest is required.
 
-## Schema proposed for approval
+## Approved schema
 
 Use curated, stable text identifiers rather than free-form labels or unvalidated JSON. Keep raw tables in the private schema with RLS and no direct client privileges. An authenticated endpoint returns the catalog and the owner's selections, and service-only SECURITY INVOKER RPCs perform writes.
 
@@ -31,13 +31,13 @@ The endpoint resolves the live Auth user; clients cannot submit an owner ID. Sav
 
 Public interests are returned only through the existing eligibility-checked Discovery/conversation card projections. Raw selections and private filters are not exposed through unrestricted profile reads. Account deletion cascades through both selection sets. Existing users start with no interests or filters; they are not forced through onboarding again.
 
-## Matching choice awaiting approval
+## Approved matching behavior
 
-Recommended: a candidate matches when they have **any** selected interest across all filtered categories. With no filters selected, every otherwise eligible candidate can appear. A candidate with no interests does not match an active interest filter. Existing age, location, visibility, reporting/blocking, and eligibility rules still apply.
+A candidate matches when they have **any** selected interest across all filtered categories. With no filters selected, every otherwise eligible candidate can appear. A candidate with no interests does not match an active interest filter. Existing age, location, visibility, reporting/blocking, and eligibility rules still apply.
 
-Alternative: require at least one matching option in **each** category containing a filter, while allowing any selected option within a category. This is more precise but can make a small pilot's feed much narrower. Do not silently select a matching rule before review.
+Matching uses OR across all selected options. Filters do not change access to existing connections or conversations.
 
-## Implementation PRs after schema approval
+## Implementation PRs
 
 1. Catalog, selections/filter RPCs, authenticated endpoint, and Discovery filtering. Verify owner scoping, unknown/inactive IDs, duplicates, empty saves, concurrent limits, account deletion, and unchanged messaging eligibility.
 2. Swift domain models, account-bound adapters, and the optional chip editor/public interests. Each category shows its count; selecting three disables the other options while leaving selected options removable. Profile interests live in profile editing; filters live beside age preferences. Test save/reload, clearing choices, max-three behavior, and access across accounts.
