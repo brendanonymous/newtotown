@@ -1,0 +1,8 @@
+// Shared signing/toolchain settings, then an isolated backend with no live fallback.
+#include "Base.xcconfig"
+
+PRODUCT_BUNDLE_IDENTIFIER = com.newtotown.ios.test
+APP_DISPLAY_NAME = newtotown Test
+SUPABASE_PROJECT_HOST =
+SUPABASE_PUBLISHABLE_KEY =
+#include? "Test.Local.xcconfig"
