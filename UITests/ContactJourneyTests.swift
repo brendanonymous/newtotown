@@ -7,6 +7,20 @@ final class ContactJourneyTests: XCTestCase {
     @MainActor func testEmailAccountCanAddVerifiedPhone() {
         verifyMissingContact(kind: "phone", value: "4805550124", preserved: "member@example.com")
     }
+    @MainActor func testExpiredEmailCallbackOpensTheAppWithoutClaimingSuccess() throws {
+        let identifier = try XCTUnwrap(Bundle(for: Self.self).bundleIdentifier)
+        XCTAssertTrue(identifier.hasSuffix(".UITests"))
+        let scheme = String(identifier.dropLast(".UITests".count))
+        let app = XCUIApplication()
+        app.open(try XCTUnwrap(URL(string: "\(scheme)://auth/email-verified#error_code=otp_expired")))
+        let result = app.staticTexts["contact.linkResult"]
+        XCTAssertTrue(result.waitForExistence(timeout: 8))
+        XCTAssertTrue(result.label.contains("expired"))
+        XCTAssertFalse(app.staticTexts["Email verified successfully."].exists)
+        app.buttons["Close"].tap()
+        XCTAssertFalse(result.exists)
+    }
+
     @MainActor private func verifyMissingContact(kind: String, value: String, preserved: String) {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-messaging", "--ui-test-contacts"]
