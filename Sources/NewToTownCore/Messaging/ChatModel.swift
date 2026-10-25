@@ -105,7 +105,7 @@ public final class ChatModel {
 
     public func send() async {
         guard canSend else { return }
-        let body = draft.replacingOccurrences(of: "\n+", with: "\n", options: .regularExpression)
+        let body = MessageText.normalizedWhitespace(draft)
         pending = PendingMessage(id: UUID(), body: body)
         await retrySend()
     }
