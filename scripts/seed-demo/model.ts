@@ -63,7 +63,8 @@ export function validateProfiles(
       !selections(profile.profile_option_ids, catalog) ||
       !selections(profile.filter_option_ids, catalog) ||
       !profile.photo ||
-      !/^photos\/\d{2}\.(jpg|jpeg|png)$/.test(profile.photo.file) ||
+      !/^(photos\/\d{2}\.(jpg|jpeg|png)|\.\.\/\.\.\/avatars\/uifaces-human-avatar(?: \(\d+\))?\.jpg)$/
+        .test(profile.photo.file) ||
       photos.has(profile.photo.file) ||
       typeof profile.photo.source_url !== "string" ||
       typeof profile.photo.license !== "string"

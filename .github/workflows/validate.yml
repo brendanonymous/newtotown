@@ -101,5 +101,5 @@ jobs:
           deno fmt --check scripts/seed-demo
           deno lint scripts/seed-demo
           deno check scripts/seed-demo/seed.ts
-          deno test --allow-read=scripts/seed-demo scripts/seed-demo
-          deno run --allow-read=scripts/seed-demo scripts/seed-demo/seed.ts --dry-run
+          deno test --allow-read=scripts/seed-demo,avatars scripts/seed-demo
+          deno run --allow-read=scripts/seed-demo,avatars scripts/seed-demo/seed.ts --dry-run

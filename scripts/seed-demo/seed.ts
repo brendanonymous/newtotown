@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { SeedBackend } from "./backend.ts";
 import {
   emailFor,
@@ -98,7 +99,7 @@ if (mode === "--dry-run") {
       const executable = `${temporary}/normalize-photo`;
       const compiled = await new Deno.Command("swiftc", {
         args: [
-          new URL("NormalizePhoto.swift", base).pathname,
+          fileURLToPath(new URL("NormalizePhoto.swift", base)),
           "-o",
           executable,
         ],
@@ -114,7 +115,7 @@ if (mode === "--dry-run") {
       for (const profile of profiles) {
         const output = `${temporary}/${profile.demo_id}.jpg`;
         const result = await new Deno.Command(executable, {
-          args: [new URL(profile.photo.file, base).pathname, output],
+          args: [fileURLToPath(new URL(profile.photo.file, base)), output],
           stdout: "null",
           stderr: "null",
         }).output();

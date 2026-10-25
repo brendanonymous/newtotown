@@ -13,9 +13,13 @@ who can respond to messages. No email/SMS invitations are sent.
    Faces free images are intended for design mockups, while paid collections
    cover live products. Keep your license/source records. The script does not
    scrape a site or download images through Unsplash's API.
-2. Put one image per account in `scripts/seed-demo/photos/01.jpg` through
-   `50.jpg`. This folder is ignored by Git. PNG/JPEG inputs are supported;
-   change the corresponding `photo.file` in `profiles.json` if needed.
+2. The current dataset maps the first fifty naturally numbered
+   `uifaces-human-avatar*.jpg` files in the repository-root `avatars/` folder
+   (unnumbered, then 1–49). The extra two files are unused. These source files
+   are ignored by Git. To use another set instead, put one image per account in
+   `scripts/seed-demo/photos/01.jpg` through `50.jpg`. This folder is ignored by
+   Git. PNG/JPEG inputs are supported; change the corresponding `photo.file` in
+   `profiles.json` if needed.
 3. Fill each `photo.source_url` (HTTPS source page) and `photo.license` (license
    name or your permission record) in `profiles.json`. Review the personas and
    interest choices; these files are ordinary editable JSON. Preserve unique
@@ -30,7 +34,7 @@ Install Deno 2, PostgreSQL's `psql`, and Xcode command-line tools. From the
 repository root:
 
 ```sh
-deno run --allow-read=scripts/seed-demo scripts/seed-demo/seed.ts --dry-run
+deno run --allow-read=scripts/seed-demo,avatars scripts/seed-demo/seed.ts --dry-run
 ```
 
 Dry run is also the default. It validates fixture fields and reports missing
@@ -45,9 +49,9 @@ already exist. Keep photo review off for these fixtures; the tool never
 fabricates a selfie or review approval. Test-only agreement records belong only
 to its generated identities, not to real users.
 
-Create a local `.env.seed` at the repository root (ignored by Git). Copy the
-connection values from **the test project's** Connect dialog. Use its database
-password and server-side service-role/secret API key:
+Copy `scripts/seed-demo/seed.env.example` to `.env.seed` at the repository root
+(ignored by Git). Copy the connection values from **the test project's** Connect
+dialog. Use its database password and server-side service-role/secret API key:
 
 ```dotenv
 SUPABASE_SERVICE_ROLE_KEY=YOUR_TEST_SERVER_KEY
@@ -105,7 +109,7 @@ is safe. No portrait files or license fields are required for cleanup.
 ```sh
 deno check scripts/seed-demo/seed.ts
 deno lint scripts/seed-demo
-deno test --allow-read=scripts/seed-demo scripts/seed-demo
+deno test --allow-read=scripts/seed-demo,avatars scripts/seed-demo
 ```
 
 Tests cover fixture validation, database guards, seed ownership, Admin account
