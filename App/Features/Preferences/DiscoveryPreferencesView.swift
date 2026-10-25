@@ -44,7 +44,8 @@ struct DiscoveryPreferencesView: View {
                             .disabled(model.isBusy)
                     }
                 }
-                if model.isBusy { ProgressView("Please wait…") }
+
+                if model.isBusy { ProgressView() }
                 Button("Save preferences") {
                     Task {
                         if await model.save() {

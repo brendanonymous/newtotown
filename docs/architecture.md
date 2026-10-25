@@ -22,7 +22,7 @@ Discovery uses a separate authenticated Edge Function for public profile project
 
 ## UI
 
-The supplied reference informs the palette, spacing, and restrained typography. It is a visual reference, not executable requirements. Text uses semantic font styles and scrollable layouts for Dynamic Type. The foundation intentionally uses a light appearance; dark mode is future work.
+The supplied reference informs the palette, spacing, and restrained typography. It is a visual reference, not executable requirements. Text uses semantic font styles and scrollable layouts for Dynamic Type. Shared brand colors and logo assets adapt to light and dark appearance; the app follows the device appearance.
 
 ## Review
 

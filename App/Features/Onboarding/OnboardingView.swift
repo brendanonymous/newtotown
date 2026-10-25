@@ -112,7 +112,9 @@ private struct OnboardingContent: View {
                     accountActions
                 }
 
-                if model.isBusy { ProgressView().frame(maxWidth: .infinity) }
+                if model.isBusy && model.step != .loading {
+                    ProgressView().frame(maxWidth: .infinity)
+                }
                 if let message = model.errorMessage {
                     Text(message)
                         .foregroundStyle(.red)

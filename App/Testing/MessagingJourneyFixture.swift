@@ -15,12 +15,15 @@
 
         private let firstPreferences = JourneyPreferencesService()
         private let secondPreferences = JourneyPreferencesService()
+        @State private var layoutPhotos = LayoutJourneyServices.photos(
+            saved: ProcessInfo.processInfo.arguments.contains("--ui-test-saved-photo"))
         @State private var firstImages = JourneyPhoto.store()
         @State private var secondImages = JourneyPhoto.store()
 
         var body: some View {
             AppEntryView(
-                model: account, personalInfoService: nil, photoService: nil,
+                model: account, personalInfoService: nil,
+                photoService: ProcessInfo.processInfo.arguments.contains("--ui-test-photos") ? layoutPhotos : nil,
                 discoveryService: JourneyDiscoveryService(
                     messages: account.accountID == JourneyIDs.second ? second : first),
                 makeMessagingService: { id in id == JourneyIDs.second ? second : first },
@@ -94,7 +97,12 @@
 
     private actor JourneyAccountService: OnboardingService {
         private var owner: UUID? = JourneyIDs.first
-        func currentUserID() -> UUID? { owner }
+        func currentUserID() async throws -> UUID? {
+            if ProcessInfo.processInfo.arguments.contains("--ui-test-loading") {
+                try await Task.sleep(for: .seconds(30))
+            }
+            return owner
+        }
         func sendCode(to identifier: SignInIdentifier) {}
         func verifyCode(_ code: String, identifier: SignInIdentifier) -> UUID {
             owner = JourneyIDs.second
@@ -132,7 +140,9 @@
             self.startsEmpty = startsEmpty
             let peer = DiscoveryProfile(
                 id: JourneyIDs.peer, firstName: name, jobTitle: "Designer",
-                goal: "Find a hiking buddy.", city: "Scottsdale",
+                goal: ProcessInfo.processInfo.arguments.contains("--ui-test-discovery-layout")
+                    ? "Find friends for coffee, hiking, professional networking, local volunteering and relaxed weekend dinners."
+                    : "Find a hiking buddy.", city: "Scottsdale",
                 photoURL: ProcessInfo.processInfo.arguments.contains("--ui-test-profile-images")
                     ? JourneyPhoto.url : URL(fileURLWithPath: "/uitest-photo-placeholder"))
             thread = Conversation(
@@ -197,6 +207,8 @@
         func load() -> DiscoveryFeed {
             DiscoveryFeed(
                 state: visible ? .ready : .hidden, visible: visible,
+                candidates: ProcessInfo.processInfo.arguments.contains("--ui-test-discovery-layout") && !messages.blocked
+                    ? [messages.thread.participant] : [],
                 matches: !visible || messages.blocked || messages.hasStarted
                     ? [] : [messages.thread.participant])
         }

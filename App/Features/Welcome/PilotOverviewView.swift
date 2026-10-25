@@ -7,18 +7,26 @@ struct PilotOverviewView: View {
                 Text("A familiar face.\nA new friend.")
                     .font(.system(.largeTitle, design: .serif))
 
-                Text("We’re building a place for men in Scottsdale to find platonic friendship, one real-world plan at a time.")
-                    .foregroundStyle(BrandTheme.secondaryInk)
+                Text(
+                    "We’re building a place for men in Scottsdale to find platonic friendship, one real-world plan at a time."
+                )
+                .foregroundStyle(BrandTheme.secondaryInk)
 
-                detail("Show up as yourself", symbol: "person.crop.rectangle", description: "Share your job, a photo, and what you’d like to do. The pilot will include manual photo review.")
-                detail("Find common ground", symbol: "checkmark", description: "Connect or pass. When you both connect, you’ll be able to start a conversation.")
-                detail("Make a plan", symbol: "cup.and.saucer", description: "Coffee, a hike, or a beer in Old Town. Keep it simple, local, and strictly platonic.")
+                detail(
+                    "Show up as yourself", symbol: "person.crop.rectangle",
+                    description:
+                        "Share your job, a photo, and what you’d like to do. The pilot will include manual photo review."
+                )
+                detail(
+                    "Find common ground", symbol: "checkmark",
+                    description:
+                        "Connect or pass. When you both connect, you’ll be able to start a conversation.")
+                detail(
+                    "Make a plan", symbol: "cup.and.saucer",
+                    description:
+                        "Coffee, a hike, or a beer in Old Town. Keep it simple, local, and strictly platonic."
+                )
 
-                Text("The pilot supports email signup, private profile details, and private photos. Scottsdale discovery and mutual connections are available. Messaging and manual photo review are coming next.")
-                    .font(.footnote)
-                    .foregroundStyle(BrandTheme.secondaryInk)
-                    .padding(20)
-                    .background(BrandTheme.sage.opacity(0.2), in: RoundedRectangle(cornerRadius: 18))
             }
             .padding(28)
             .frame(maxWidth: 520)

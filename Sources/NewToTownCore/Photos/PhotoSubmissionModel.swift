@@ -9,6 +9,12 @@ public final class PhotoSubmissionModel {
     public private(set) var isBusy = false
     public private(set) var isLoaded = false
     public private(set) var isSaved = false
+    public private(set) var hasStoredPhotos = false
+
+    public var canSave: Bool {
+        guard let requirements else { return false }
+        return isLoaded && !isBusy && !isSaved && photos.meets(requirements)
+    }
     public private(set) var errorMessage: String?
 
     private let service: any PhotoService
@@ -23,6 +29,7 @@ public final class PhotoSubmissionModel {
             let requirements = try await service.requirements()
             photos = try await service.load()
             self.requirements = requirements
+            hasStoredPhotos = photos.profile != nil || photos.selfie != nil
             isLoaded = true
             isSaved = photos.meets(requirements)
         } catch {
@@ -65,6 +72,7 @@ public final class PhotoSubmissionModel {
                 selfie: requirements.reviewRequired ? photos.selfie : nil
             )
             try await service.save(submission)
+            hasStoredPhotos = true
             isSaved = true
         } catch let error as PhotoValidationError {
             errorMessage = error.localizedDescription
@@ -82,6 +90,7 @@ public final class PhotoSubmissionModel {
         do {
             try await service.remove()
             photos = PrivatePhotos()
+            hasStoredPhotos = false
             isSaved = false
         } catch {
             errorMessage = "We couldn’t confirm photo removal. Try again to remove any remaining files."

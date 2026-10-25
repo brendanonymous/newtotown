@@ -60,7 +60,6 @@ struct NewToTownApp: App {
                 #endif
             }
             .tint(BrandTheme.ink)
-            .preferredColorScheme(.light)
         }
     }
 

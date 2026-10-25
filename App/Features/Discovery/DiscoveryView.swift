@@ -23,11 +23,9 @@ struct DiscoveryView: View {
 
           if feed.state == .ready {
             if let profile = feed.candidates.first {
-              DiscoveryProfileCard(profile: profile)
-              HStack(spacing: 32) {
-                decisionButton(.pass, symbol: "xmark", name: profile.firstName)
-                decisionButton(.connect, symbol: "checkmark", name: profile.firstName)
-              }.frame(maxWidth: .infinity)
+              DiscoveryProfileCard(profile: profile) { choice in
+                Task { await model.decide(choice) }
+              }
               Button("Block this profile", role: .destructive) { blockTarget = profile }
             } else {
               Text("You’re caught up.").font(.title2)
@@ -87,19 +85,6 @@ struct DiscoveryView: View {
       Button("Join discovery") { Task { await model.setVisible(true) } }
         .buttonStyle(.borderedProminent).foregroundStyle(BrandTheme.background)
     }
-  }
-
-  private func decisionButton(_ choice: ConnectionChoice, symbol: String, name: String) -> some View {
-    Button {
-      Task { await model.decide(choice) }
-    } label: {
-      Image(systemName: symbol).font(.title2.weight(.semibold))
-        .frame(width: 64, height: 64)
-        .foregroundStyle(choice == .connect ? BrandTheme.background : BrandTheme.ink)
-        .background(
-          choice == .connect ? BrandTheme.ink : BrandTheme.sage.opacity(0.3), in: Circle())
-    }
-    .accessibilityLabel(choice == .connect ? "Connect with \(name)" : "Pass on \(name)")
   }
 
   private func statusMessage(_ status: DiscoveryFeed.Status) -> String {
