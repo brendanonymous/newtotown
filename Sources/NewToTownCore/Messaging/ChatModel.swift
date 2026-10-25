@@ -55,6 +55,13 @@ public final class ChatModel {
             && MessageText.isValid(draft)
     }
 
+    /// Apply after a field edit so SwiftUI observes both the edit and its correction.
+    public func limitDraft() {
+        if draft.unicodeScalars.count > MessageText.maximumLength {
+            draft = MessageText.limitedDraft(draft)
+        }
+    }
+
     public func load(older: Bool = false) async {
         guard !isLoading, !isSending, !isUnavailable, !Task.isCancelled, !older || nextCursor != nil else {
             return
@@ -98,7 +105,8 @@ public final class ChatModel {
 
     public func send() async {
         guard canSend else { return }
-        pending = PendingMessage(id: UUID(), body: draft)
+        let body = draft.replacingOccurrences(of: "\n+", with: "\n", options: .regularExpression)
+        pending = PendingMessage(id: UUID(), body: body)
         await retrySend()
     }
 
@@ -112,7 +120,9 @@ public final class ChatModel {
         defer { if current == generation { isSending = false } }
         do {
             let sent = try await messagingService.send(
-                in: conversation.id, retryID: pending.id, body: pending.body)
+                in: conversation.id,
+                retryID: pending.id,
+                body: pending.body)
             guard current == generation else { return }
             guard !Task.isCancelled else {
                 sendError = "Send was interrupted. Retry the same message safely."

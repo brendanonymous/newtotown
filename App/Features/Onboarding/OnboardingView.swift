@@ -74,7 +74,7 @@ private struct OnboardingContent: View {
                     TextField("Sign-in code", text: $code)
                         .keyboardType(.numberPad)
                         .textContentType(.oneTimeCode)
-                        .textFieldStyle(.roundedBorder)
+                        .textFieldStyle(BrandTextFieldStyle())
                         .accessibilityIdentifier("signup.code")
                         .disabled(model.isBusy)
                     primary(model.signInIdentifier?.isPhone == true ? "Verify phone" : "Verify email") {

@@ -34,6 +34,7 @@ struct ReportProfileView: View {
                         .accessibilityIdentifier("report.reason")
                         TextField("Details (optional)", text: $model.details, axis: .vertical)
                             .lineLimit(3...7)
+                            .textFieldStyle(BrandTextFieldStyle())
                             .disabled(model.pending != nil || model.isSending)
                             .accessibilityIdentifier("report.details")
                         Text("\(model.details.unicodeScalars.count)/\(ProfileReport.maximumDetailsLength)")

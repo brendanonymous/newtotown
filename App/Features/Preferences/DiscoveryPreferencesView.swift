@@ -23,11 +23,11 @@ struct DiscoveryPreferencesView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Minimum age").font(.subheadline)
                     TextField("Minimum age", text: $model.minimumAge)
-                        .keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+                        .keyboardType(.numberPad).textFieldStyle(BrandTextFieldStyle())
                         .accessibilityIdentifier("preferences.minimumAge")
                     Text("Maximum age").font(.subheadline)
                     TextField("No upper limit", text: $model.maximumAge)
-                        .keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+                        .keyboardType(.numberPad).textFieldStyle(BrandTextFieldStyle())
                         .accessibilityIdentifier("preferences.maximumAge")
                     Text("Leave maximum age blank for no upper limit.")
                         .font(.caption).foregroundStyle(BrandTheme.secondaryInk)

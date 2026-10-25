@@ -35,12 +35,49 @@ import Testing
     #expect(model.nextCursor == nil)
 }
 
+@Test @MainActor func draftCapsTypingAndPastingButStillAllowsEditingAndSending() async {
+    let service = MessagingTestService()
+    let model = ChatModel(
+        accountID: messagingOwner, target: .peer(messagingPeer.id), messagingService: service)
+    await model.load()
+    let full = String(repeating: "a", count: MessageText.maximumLength)
+    model.draft = full
+    model.draft += "b"
+    #expect(!model.canSend)
+    model.limitDraft()
+    #expect(model.draft == full && model.canSend)
+    model.draft.removeLast()
+    model.draft += "c"
+    #expect(model.draft == String(full.dropLast()) + "c")
+    model.draft = String(repeating: "x", count: 700)
+    model.limitDraft()
+    #expect(model.draft == String(repeating: "x", count: 500))
+    await model.send()
+    #expect(service.sendCalls.first?.1 == String(repeating: "x", count: 500))
+}
+
+@Test @MainActor func draftLimitNeverSplitsComposedCharacters() {
+    let model = ChatModel(
+        accountID: messagingOwner, target: .peer(messagingPeer.id), messagingService: MessagingTestService())
+    let prefix = String(repeating: "a", count: 499)
+    model.draft = prefix + "👨‍👩‍👧‍👦"
+    model.limitDraft()
+    #expect(model.draft == prefix)
+    model.draft = prefix + "e\u{301}"
+    model.limitDraft()
+    #expect(model.draft == prefix)
+    model.draft = String(repeating: "😀", count: 501)
+    model.limitDraft()
+    #expect(model.draft == String(repeating: "😀", count: 500))
+    #expect(MessageText.isValid(model.draft))
+}
+
 @Test @MainActor func uncertainSendReusesIdentityEvenAfterRefreshRecoversCommittedMessage() async throws {
     let service = MessagingTestService()
     let model = ChatModel(
         accountID: messagingOwner, target: .conversation(messagingThread.id), messagingService: service)
     await model.load()
-    model.draft = "Coffee on Saturday?"
+    model.draft = "Coffee\n\n\non Saturday?"
     var committed: ChatMessage?
     service.onSend = { retry, body in
         if let committed { return committed }
@@ -52,7 +89,7 @@ import Testing
     await model.send()
     let pending = model.pending
     #expect(pending != nil && !model.canSend)
-    #expect(model.draft == "Coffee on Saturday?")
+    #expect(model.draft == "Coffee\n\n\non Saturday?")
     service.historyPages = [
         MessagePage(conversation: messagingThread, messages: [try #require(committed)], nextCursor: nil)
     ]
@@ -61,6 +98,7 @@ import Testing
     #expect(service.sendCalls.count == 2)
     #expect(service.sendCalls[0].0 == service.sendCalls[1].0)
     #expect(service.sendCalls[0].1 == service.sendCalls[1].1)
+    #expect(service.sendCalls[0].1 == "Coffee\non Saturday?")
     #expect(model.messages.count == 1)
     #expect(model.pending == nil && model.draft.isEmpty && model.sendError == nil)
 }
