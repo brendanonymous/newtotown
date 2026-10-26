@@ -74,8 +74,8 @@ struct DiscoveryView: View {
                     reduceMotion
                         ? .identity
                         : .asymmetric(
-                            insertion: .opacity.combined(with: .offset(x: 12)),
-                            removal: .opacity.combined(with: .offset(x: lastChoice == .connect ? 20 : -20))))
+                            insertion: .opacity.combined(with: .offset(x: lastChoice == .connect ? -48 : 48)),
+                            removal: .opacity.combined(with: .offset(x: lastChoice == .connect ? 72 : -72))))
             } else {
                 VStack(alignment: .leading, spacing: 24) {
                     Text("You’re caught up.").font(.title2)
@@ -85,7 +85,7 @@ struct DiscoveryView: View {
                 .transition(reduceMotion ? .identity : .opacity)
             }
         }
-        .animation(reduceMotion ? nil : .easeOut(duration: 0.2), value: feed.candidates.first?.id)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.35), value: feed.candidates.first?.id)
     }
 
     @ViewBuilder private func visibilityControls(_ feed: DiscoveryFeed) -> some View {
