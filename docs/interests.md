@@ -57,3 +57,9 @@ For this rollout, apply `20261025204822_expand_interest_catalog.sql` to the isol
 
 
 The October 25 deployment to `newtotown-test` applied this migration through the CLI with the repository timestamp recorded in migration history. Authenticated hosted acceptance returned all 37 active options, including the seven new labels, across five categories; Discovery and a signed private photo download also passed. Counts and digests of the existing 150 profile-interest rows and 60 filter rows were unchanged. All ten SQL suites passed after replaying all thirteen migrations into a fresh local database. The original app project was not modified.
+
+
+The next social-catalog migration adds `chess` first and `sports_betting` last, and retires `board_games` without changing its ID or stored selections. The resulting catalog has 39 stored options and 38 active choices. New seed inputs use Chess; existing seeded accounts are not rewritten. See [the catalog migration guide](catalog-migrations.md) for copyable CLI steps, ordering rules, test/deployment checks, and the distinction between migration timestamp order and UI display order.
+
+
+Hosted verification of `20261025210222_chess_and_sports_betting.sql` returned 38 selectable options across five categories, with Chess first and Sports betting last in Social & hobbies. Board games remains inactive at position 10. Existing selection counts and digests were unchanged. All fourteen migrations replayed successfully, all ten SQL suites and six seed tests passed, and all fifty future seed profiles validated against the active catalog. Authenticated Discovery/catalog/private-photo checks also passed; only the isolated test project was updated.

@@ -83,6 +83,25 @@ import Observation
         }
     }
 
+    /// The callback is only a signal. Require the pending destination on the original owner.
+    public func checkEmailVerification() async -> Bool {
+        guard kind == .email, !isBusy, let destination, !Task.isCancelled else { return false }
+        let current = generation
+        isBusy = true
+        errorMessage = nil
+        defer { if current == generation { isBusy = false } }
+        do {
+            let info = try await service.confirmedEmail()
+            guard current == generation, !Task.isCancelled else { return false }
+            guard destination.matches(info) else { throw ContactDetailsError.invalidCode }
+            return true
+        } catch {
+            guard current == generation, !Task.isCancelled else { return false }
+            errorMessage = "Email isn’t verified yet. Open the latest verification link and try again."
+            return false
+        }
+    }
+
     public func reset() {
         generation += 1
         input = ""

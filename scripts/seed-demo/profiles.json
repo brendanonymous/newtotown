@@ -46,16 +46,16 @@
     "demo_id": "demo-03",
     "first_name": "Ben",
     "job_title": "Software engineer",
-    "goal": "Demo profile. Start a small board game night with people nearby.",
+    "goal": "Demo profile. Find a regular chess partner and grab coffee nearby.",
     "date_of_birth": "1989-04-10",
     "city": "Scottsdale",
     "profile_option_ids": [
-      "board_games",
+      "chess",
       "video_games",
       "coffee"
     ],
     "filter_option_ids": [
-      "board_games"
+      "chess"
     ],
     "photo": {
       "file": "../../avatars/uifaces-human-avatar (2).jpg",
@@ -366,12 +366,12 @@
     "city": "Scottsdale",
     "profile_option_ids": [
       "hiking",
-      "board_games",
+      "chess",
       "coffee"
     ],
     "filter_option_ids": [
       "hiking",
-      "board_games"
+      "chess"
     ],
     "photo": {
       "file": "../../avatars/uifaces-human-avatar (17).jpg",
@@ -534,7 +534,7 @@
     "profile_option_ids": [
       "cycling",
       "barbecue",
-      "board_games"
+      "chess"
     ],
     "filter_option_ids": [
       "cycling",
@@ -681,7 +681,7 @@
     "city": "Scottsdale",
     "profile_option_ids": [
       "reading",
-      "board_games",
+      "chess",
       "theater"
     ],
     "filter_option_ids": [
@@ -766,7 +766,7 @@
     "profile_option_ids": [
       "hiking",
       "camping",
-      "board_games"
+      "chess"
     ],
     "filter_option_ids": [
       "hiking"
@@ -935,7 +935,7 @@
     "profile_option_ids": [
       "running",
       "cooking",
-      "board_games"
+      "chess"
     ],
     "filter_option_ids": [],
     "photo": {

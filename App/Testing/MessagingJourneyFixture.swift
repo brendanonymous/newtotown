@@ -60,6 +60,12 @@
             return ProfileImageStore(loader: AuthorizedPhotoLoader(download: { _ in data }))
         }
 
+        static func urlForSlot(_ slot: Int) -> URL {
+            URL(
+                string: url.absoluteString.replacingOccurrences(
+                    of: "profile.jpg", with: "profile-\(slot).jpg"))!
+        }
+
         static var url: URL {
             let expiry = Int(Date().addingTimeInterval(60).timeIntervalSince1970)
             let claims = Data("{\"exp\":\(expiry)}".utf8).base64EncodedString()
@@ -155,7 +161,9 @@
                     ? "Find friends for coffee, hiking, professional networking, local volunteering and relaxed weekend dinners."
                     : "Find a hiking buddy.", city: "Scottsdale",
                 photoURL: ProcessInfo.processInfo.arguments.contains("--ui-test-profile-images")
-                    ? JourneyPhoto.url : URL(fileURLWithPath: "/uitest-photo-placeholder"))
+                    ? JourneyPhoto.url : URL(fileURLWithPath: "/uitest-photo-placeholder"),
+                photoURLs: ProcessInfo.processInfo.arguments.contains("--ui-test-photo-gallery")
+                    ? [JourneyPhoto.url, JourneyPhoto.urlForSlot(2), JourneyPhoto.urlForSlot(3)] : nil)
             thread = Conversation(
                 id: JourneyIDs.thread, participant: peer, createdAt: JourneyIDs.time,
                 lastActivityAt: JourneyIDs.time, lastMessage: nil)

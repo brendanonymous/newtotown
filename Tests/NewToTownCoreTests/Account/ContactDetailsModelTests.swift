@@ -6,6 +6,11 @@ import Testing
 @MainActor private final class ContactStub: ContactDetailsService {
     var requested: [ContactDestination] = []
     var resends = 0
+    var confirmedInfo = PersonalInfo(email: nil, phone: nil)
+    func confirmedEmail() throws -> PersonalInfo {
+        if let failure { throw failure }
+        return confirmedInfo
+    }
     var failure: ContactDetailsError?
     var onVerify: (@MainActor (ContactDestination) async throws -> PersonalInfo)?
     func requestVerification(for destination: ContactDestination) throws {
@@ -103,4 +108,18 @@ import Testing
     model.code = "123456"
     service.onVerify = { _ in PersonalInfo(email: "other@example.com", phone: nil) }
     #expect(await model.verify() == false)
+}
+
+@Test @MainActor func browserVerificationRequiresThePendingEmailAndSupportsRetry() async {
+    let service = ContactStub()
+    let model = ContactDetailsModel(kind: .email, service: service)
+    model.input = "alex@example.com"
+    await model.requestCode()
+    service.confirmedInfo = PersonalInfo(email: "other@example.com", phone: nil)
+    #expect(await model.checkEmailVerification() == false)
+    #expect(model.destination?.value == "alex@example.com")
+    service.confirmedInfo = PersonalInfo(email: "alex@example.com", phone: nil)
+    #expect(await model.checkEmailVerification())
+    model.reset()
+    #expect(await model.checkEmailVerification() == false)
 }

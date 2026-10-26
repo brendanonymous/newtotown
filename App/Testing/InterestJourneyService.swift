@@ -25,8 +25,8 @@
             (
                 "social_hobbies", "Social & hobbies",
                 [
-                    "Board games", "Video games", "Volunteering", "Professional networking", "Reading",
-                    "Cars", "DIY", "Mogging", "Poker",
+                    "Chess", "Video games", "Volunteering", "Professional networking", "Reading",
+                    "Cars", "DIY", "Mogging", "Poker", "Sports betting",
                 ]
             ),
         ].map { id, title, options in

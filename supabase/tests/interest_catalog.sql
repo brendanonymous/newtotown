@@ -7,6 +7,43 @@ insert into public.profiles(id, first_name, job_title, goal, date_of_birth, city
 select id, 'Alex', 'Designer', 'Find a coffee buddy.', current_date - interval '30 years', 'Scottsdale', true
 from auth.users where id::text like '62000000-%';
 
+-- Model a legacy selection retained across the Board games retirement.
+insert into private.profile_interest_selections(user_id, category_id, option_id)
+values ('62000000-0000-0000-0000-000000000001', 'social_hobbies', 'board_games');
+set local role service_role;
+do $$
+declare
+    a uuid := '62000000-0000-0000-0000-000000000001';
+    b uuid := '62000000-0000-0000-0000-000000000002';
+    result jsonb;
+    social jsonb;
+begin
+    result := public.pilot_interests(a);
+    select category->'options' into social
+    from jsonb_array_elements(result->'categories') category
+    where category->>'id' = 'social_hobbies';
+    if social->0->>'id' <> 'chess'
+        or social->(jsonb_array_length(social) - 1)->>'id' <> 'sports_betting'
+        or exists(select 1 from jsonb_array_elements(social) option where option->>'id' = 'board_games') then
+        raise exception 'Social catalog replacement/order incorrect';
+    end if;
+    if (result->'profile_option_ids') ? 'board_games' or (result->'profile_option_ids') ? 'chess'
+        or not exists(select 1 from private.profile_interest_selections where user_id = a and option_id = 'board_games') then
+        raise exception 'Legacy choice lost or reinterpreted as Chess';
+    end if;
+    perform public.pilot_interests_save(b, 'profile', array['chess', 'sports_betting', 'poker']);
+    perform public.pilot_interests_save(b, 'filters', array['chess', 'sports_betting']);
+    begin
+        perform public.pilot_interests_save(b, 'profile', array['chess', 'sports_betting', 'poker', 'diy']);
+        raise exception 'New social choices bypassed category limit';
+    exception when invalid_parameter_value then null;
+    end;
+    if jsonb_array_length(public.pilot_interests(b)->'profile_option_ids') <> 3 then
+        raise exception 'Rejected social replacement lost saved choices';
+    end if;
+end $$;
+reset role;
+
 set local role service_role;
 do $$
 declare

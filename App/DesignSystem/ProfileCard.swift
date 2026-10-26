@@ -2,7 +2,8 @@ import NewToTownCore
 import SwiftUI
 
 /// Identical public profile layout for the owner, discovery, and connections.
-/// Callers provide their authorized photo source and an optional dedicated action column.
+/// Callers provide framed photo content (including any indicators below it)
+/// and an optional dedicated action column.
 struct ProfileCard<Photo: View, Actions: View>: View {
     let firstName: String
     let jobTitle: String
@@ -15,16 +16,7 @@ struct ProfileCard<Photo: View, Actions: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text(firstName).font(.system(.title, design: .serif))
-            // Constrain aspect-fill images to the available card width. Their
-            // intrinsic width must not expand the scroll content past its margins.
-            GeometryReader { geometry in
-                photo()
-                    .frame(width: geometry.size.width, height: geometry.size.height)
-                    .clipped()
-            }
-            .frame(height: 300)
-            .background(BrandTheme.sage.opacity(0.22))
-            .brandPhotoStyle()
+            photo()
             HStack(alignment: .top, spacing: 16) {
                 VStack(alignment: .leading, spacing: 14) {
                     Label {

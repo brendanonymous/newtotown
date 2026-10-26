@@ -16,7 +16,7 @@ private final class TestPhotoService: PhotoService {
         if failRequirements { throw Failure.unavailable }
         return policy
     }
-    func loadProfilePhoto() async throws -> Data? { stored.profile }
+    func loadProfilePhotos() async throws -> [Data] { stored.profilePhotos }
     func load() async throws -> PrivatePhotos { stored }
     func save(_ photos: PrivatePhotos) async throws {
         saves += 1
@@ -30,6 +30,62 @@ private final class TestPhotoService: PhotoService {
 }
 
 private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
+
+@Test @MainActor func unsavedPhotoChangesTrackTheLoadedSnapshotNotReadiness() async {
+    let service = TestPhotoService()
+    let model = PhotoSubmissionModel(service: service)
+    #expect(!model.hasUnsavedChanges)
+    await model.load()
+    #expect(!model.isSaved && !model.hasUnsavedChanges)
+    model.addProfile(jpeg)
+    #expect(model.hasUnsavedChanges && !model.canSave)
+    model.removeProfile(at: 0)
+    #expect(!model.hasUnsavedChanges)
+    model.captureSelfie(jpeg)
+    #expect(model.hasUnsavedChanges && !model.canSave)
+    await model.load()
+    #expect(!model.hasUnsavedChanges)
+}
+
+@Test @MainActor func restoringTheOriginalPhotoClearsPendingChanges() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    service.stored = PrivatePhotos(profile: jpeg, additionalProfiles: [jpeg])
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    model.replaceProfile(at: 0, with: jpeg)
+    #expect(!model.hasUnsavedChanges)
+    let changed = Data([0xff, 0xd8, 0xff, 0x02, 0xff, 0xd9])
+    model.replaceProfile(at: 0, with: changed)
+    #expect(model.hasUnsavedChanges)
+    model.replaceProfile(at: 0, with: jpeg)
+    #expect(!model.hasUnsavedChanges)
+    model.removeProfile(at: 1)
+    #expect(model.hasUnsavedChanges)
+    model.addProfile(jpeg)
+    #expect(!model.hasUnsavedChanges)
+}
+
+@Test @MainActor func onlySuccessfulPhotoWritesClearPendingChanges() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    model.addProfile(jpeg)
+    service.failSave = true
+    await model.save()
+    #expect(model.hasUnsavedChanges)
+    service.failSave = false
+    await model.save()
+    #expect(!model.hasUnsavedChanges)
+    model.addProfile(jpeg)
+    service.failRemove = true
+    await model.remove()
+    #expect(model.hasUnsavedChanges)
+    service.failRemove = false
+    await model.remove()
+    #expect(!model.hasUnsavedChanges && model.photos.profilePhotos.isEmpty)
+}
 
 @Test @MainActor func photosSaveWithoutRepeatedAgreement() async {
     let service = TestPhotoService()
@@ -212,4 +268,69 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
     service.failRemove = false
     await model.remove()
     #expect(!model.canSave && !model.hasStoredPhotos)
+}
+
+@Test @MainActor func galleryCapsAtThreeAndPromotesTheNextPhotoWhenRemovingMain() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    let second = Data([0xff, 0xd8, 0xff, 0x02, 0xff, 0xd9])
+    let third = Data([0xff, 0xd8, 0xff, 0x03, 0xff, 0xd9])
+    for data in [jpeg, second, third, jpeg] { model.addProfile(data) }
+    #expect(model.photos.profilePhotos == [jpeg, second, third])
+    #expect(model.errorMessage != nil)
+    model.removeProfile(at: 0)
+    #expect(model.photos.profile == second)
+    #expect(model.photos.profilePhotos == [second, third])
+    model.replaceProfile(at: 1, with: jpeg)
+    await model.save()
+    #expect(model.isSaved)
+    #expect(service.stored.profilePhotos == [second, jpeg])
+    #expect(service.stored.selfie == nil)
+}
+
+@Test @MainActor func invalidAdditionalPhotoAndFourPhotoServiceSubmissionsAreRejected() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    model.addProfile(jpeg)
+    model.addProfile(Data([0, 1]))
+    await model.save()
+    #expect(service.saves == 0 && !model.isSaved)
+    #expect(throws: PhotoValidationError.tooManyPhotos) {
+        try PrivatePhotos(profile: jpeg, additionalProfiles: [jpeg, jpeg, jpeg])
+            .validate(requirements: PhotoRequirements(reviewRequired: false))
+    }
+}
+
+@Test @MainActor func galleryDraftSurvivesFailedSaveAndOnePhotoCannotBeRemovedAccidentally() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    service.stored = PrivatePhotos(profile: jpeg)
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    model.removeProfile(at: 0)
+    #expect(model.photos.profilePhotos.count == 1)
+    model.addProfile(jpeg)
+    model.addProfile(jpeg)
+    service.failSave = true
+    await model.save()
+    #expect(model.photos.profilePhotos.count == 3 && !model.isSaved)
+    service.failSave = false
+    await model.save()
+    #expect(service.stored.profilePhotos.count == 3 && model.isSaved)
+}
+
+@Test @MainActor func removingTheLastUnsavedPhotoOnlyClearsTheLocalDraft() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    model.addProfile(jpeg)
+    model.removeProfile(at: 0)
+    #expect(model.photos.profilePhotos.isEmpty)
+    #expect(!model.canSave && !model.hasStoredPhotos && !model.isSaved)
+    #expect(service.saves == 0 && service.stored.profile == nil)
 }

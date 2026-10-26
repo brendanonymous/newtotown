@@ -4,9 +4,10 @@ import SwiftUI
 
 @main
 struct NewToTownApp: App {
+    @State private var emailVerification = EmailVerificationRouter()
     @State private var onboardingModel: OnboardingModel?
     private let personalInfoService: (any PersonalInfoService)?
-    private let photoService: (any PhotoService)?
+    private let makePhotoService: (@Sendable (UUID) -> any PhotoService)?
     private let discoveryService: (any DiscoveryService)?
 
     private let makeDiscoveryPreferencesService: (@Sendable (UUID) -> any DiscoveryPreferencesService)?
@@ -28,11 +29,16 @@ struct NewToTownApp: App {
         }
         _onboardingModel = State(initialValue: services.map { OnboardingModel(service: $0.onboarding) })
         personalInfoService = services?.personalInfo
-        photoService = services?.photos
         discoveryService = services?.discovery
         if let shared = services {
+            makePhotoService = { @Sendable (accountID: UUID) -> any PhotoService in
+                shared.photos(for: accountID)
+            }
             makeContactsService = { @Sendable (accountID: UUID) -> any ContactDetailsService in
-                shared.contacts(for: accountID)
+                shared.contacts(
+                    for: accountID,
+                    emailRedirectURL: EmailVerificationCallback.redirectURL(
+                        scheme: Bundle.main.bundleIdentifier ?? "com.newtotown.ios"))
             }
             makeInterestsService = { @Sendable (accountID: UUID) -> any InterestsService in
                 shared.interests(for: accountID)
@@ -48,6 +54,7 @@ struct NewToTownApp: App {
                 shared.messaging(for: accountID)
             }
         } else {
+            makePhotoService = nil
             makeContactsService = nil
             makeInterestsService = nil
             makeReportingService = nil
@@ -58,9 +65,14 @@ struct NewToTownApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
+            // Keep URL-result presentation attached while session routing changes.
+            ZStack {
                 #if DEBUG
-                    if ProcessInfo.processInfo.arguments.contains("--ui-test-messaging") {
+                    if ProcessInfo.processInfo.arguments.contains("--ui-test-discovery-transitions") {
+                        DiscoveryTransitionJourneyFixture()
+                    } else if ProcessInfo.processInfo.arguments.contains("--ui-test-photo-crop") {
+                        PhotoCropJourneyFixture()
+                    } else if ProcessInfo.processInfo.arguments.contains("--ui-test-messaging") {
                         MessagingJourneyFixture()
                     } else {
                         productionContent
@@ -70,6 +82,19 @@ struct NewToTownApp: App {
                 #endif
             }
             .tint(BrandTheme.ink)
+            .environment(emailVerification)
+            .onOpenURL { url in
+                emailVerification.receive(url, scheme: Bundle.main.bundleIdentifier ?? "com.newtotown.ios")
+            }
+            .sheet(item: $emailVerification.callback) { callback in
+                EmailVerificationResultView(
+                    callback: callback, accountID: onboardingModel?.accountID,
+                    isRestoring: onboardingModel?.step == .loading,
+                    makeService: makeContactsService,
+                    onVerified: { emailVerification.completedCount += 1 }
+                )
+                .id(callback.id)
+            }
         }
     }
 
@@ -77,11 +102,11 @@ struct NewToTownApp: App {
         if let onboardingModel {
             AppEntryView(
                 model: onboardingModel, personalInfoService: personalInfoService,
-                photoService: photoService, discoveryService: discoveryService,
+                photoService: nil, discoveryService: discoveryService,
                 makeMessagingService: makeMessagingService,
                 makeDiscoveryPreferencesService: makeDiscoveryPreferencesService,
                 makeReportingService: makeReportingService, makeInterestsService: makeInterestsService,
-                makeContactsService: makeContactsService)
+                makeContactsService: makeContactsService, makePhotoService: makePhotoService)
         } else {
             NavigationStack { WelcomeView(onJoin: nil) }
         }

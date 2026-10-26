@@ -8,8 +8,11 @@ public struct SupabaseServices: Sendable {
     private let configuration: SupabaseConfiguration
     public let personalInfo: SupabasePersonalInfoService
     public let onboarding: SupabaseOnboardingService
-    public let photos: SupabasePhotoService
     public let discovery: SupabaseDiscoveryService
+
+    public func photos(for accountID: UUID) -> SupabasePhotoService {
+        SupabasePhotoService(client: client, accountID: accountID)
+    }
 
     public func messaging(for accountID: UUID) -> SupabaseMessagingService {
         SupabaseMessagingService(client: client, accountID: accountID, configuration: configuration)
@@ -20,8 +23,10 @@ public struct SupabaseServices: Sendable {
             client: client, accountID: accountID, configuration: configuration)
     }
 
-    public func contacts(for accountID: UUID) -> SupabaseContactDetailsService {
-        SupabaseContactDetailsService(client: client, accountID: accountID, configuration: configuration)
+    public func contacts(for accountID: UUID, emailRedirectURL: URL? = nil) -> SupabaseContactDetailsService {
+        SupabaseContactDetailsService(
+            client: client, accountID: accountID, configuration: configuration,
+            emailRedirectURL: emailRedirectURL)
     }
 
     public func interests(for accountID: UUID) -> SupabaseInterestsService {
@@ -39,7 +44,6 @@ public struct SupabaseServices: Sendable {
         self.client = client
         personalInfo = SupabasePersonalInfoService(client: client)
         onboarding = SupabaseOnboardingService(client: client)
-        photos = SupabasePhotoService(client: client)
         discovery = SupabaseDiscoveryService(client: client)
     }
 }
