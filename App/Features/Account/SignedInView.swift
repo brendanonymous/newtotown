@@ -36,6 +36,7 @@ struct SignedInView: View {
                     .toolbar { BrandNavigationLogo() }
                 }
                 .tabItem { Label("Discovery", systemImage: "person.2") }.tag(Tab.discovery)
+                
                 NavigationStack {
                     ConnectionsView(
                         service: discoveryService, accountID: accountID,
@@ -46,7 +47,10 @@ struct SignedInView: View {
                     .navigationTitle("").navigationBarTitleDisplayMode(.inline)
                     .toolbar { BrandNavigationLogo() }
                 }
-                .tabItem { Label("Connections", systemImage: "hands.clap.fill") }.tag(Tab.connections)
+                .tabItem {
+                    Image("Handshake")
+                    Text("Connections")
+                }.tag(Tab.connections)
             }
 
             if let messagingService {

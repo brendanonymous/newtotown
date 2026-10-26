@@ -18,7 +18,6 @@ struct PhotoCropEditor: View {
         EditorSheet {
             ScrollView {
                 VStack(spacing: 24) {
-                    Text("Make it fit.").font(.system(.largeTitle, design: .serif))
                     Text("Pinch to zoom. Drag to position your photo.")
                         .foregroundStyle(BrandTheme.secondaryInk)
                     PhotoCropViewport(image: selection.image, controller: controller)

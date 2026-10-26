@@ -27,12 +27,16 @@ struct PhotoSubmissionView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     Text("Show up as yourself.").font(.system(.largeTitle, design: .serif))
+                    Text(
+                        "Add your photos below. Tap a photo to replace it."
+                    ).foregroundStyle(BrandTheme.secondaryInk)
+                    
                     if reviewRequired && model.isLoaded {
                         Text(
                             "Add your photos and take a private selfie for photo review. Your selfie never appears on your profile."
-                        )
-                        .foregroundStyle(BrandTheme.secondaryInk)
+                        ).foregroundStyle(BrandTheme.secondaryInk)
                     }
+                    
                     if model.isLoaded {
                         profilePhotos
                         if reviewRequired { selfieControls }
@@ -80,7 +84,8 @@ struct PhotoSubmissionView: View {
         let photos = model.photos.profilePhotos
         if !photos.isEmpty {
             ProfilePhotoGallery(
-                count: photos.count, selection: $previewIndex,
+                count: photos.count,
+                selection: $previewIndex,
                 onReplace: { choosePhoto(replacing: $0) },
                 onRemove: { index in
                     if photos.count == 1 && model.hasStoredPhotos {
@@ -96,14 +101,13 @@ struct PhotoSubmissionView: View {
                 }
             }
             .disabled(isBusy)
-            Text("\(photos.count) of 3 photos · First photo is your main photo")
-                .font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
         }
+        
         if photos.count < PrivatePhotos.maximumProfilePhotos {
             Button {
                 choosePhoto(replacing: nil)
             } label: {
-                Label(photos.isEmpty ? "Choose your photo" : "Add a photo", systemImage: "photo.on.rectangle")
+                Label(photos.isEmpty ? "Upload" : "Add a photo", systemImage: "photo.on.rectangle")
             }
             .disabled(isBusy).accessibilityIdentifier("photos.choose")
         }

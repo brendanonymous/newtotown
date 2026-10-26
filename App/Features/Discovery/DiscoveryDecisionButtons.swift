@@ -27,9 +27,10 @@ struct DiscoveryDecisionButtons: View {
                     Image(systemName: symbol).font(.title2.weight(.semibold))
                 }
             }
-            .frame(width: 64, height: 64)
+            .frame(width: 56, height: 44)
             .foregroundStyle(choice == .connect ? BrandTheme.background : BrandTheme.ink)
-            .background(choice == .connect ? BrandTheme.ink : BrandTheme.sage.opacity(0.3), in: Circle())
+            .background(choice == .connect ? BrandTheme.ink : BrandTheme.sage.opacity(0.3), in: RoundedRectangle(cornerRadius: 12)
+            )
         }
         .accessibilityLabel(choice == .connect ? "Connect with \(name)" : "Pass on \(name)")
         .accessibilityValue(pendingDecision == choice ? "Saving decision" : "")
