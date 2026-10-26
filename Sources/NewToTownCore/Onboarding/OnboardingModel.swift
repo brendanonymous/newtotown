@@ -5,7 +5,7 @@ import Observation
 @Observable
 public final class OnboardingModel {
     public enum Step: Equatable {
-        case loading, signIn, code, introduction, profile, saved, restoreFailed
+        case loading, signIn, code, introduction, profile, interests, saved, restoreFailed
     }
 
     public private(set) var step: Step = .loading
@@ -126,12 +126,19 @@ public final class OnboardingModel {
             let profile = try Profile(id: userID, draft: draft)
             try await service.save(profile)
             draft = ProfileDraft(profile: profile)
-            step = .saved
+            step = .interests
         } catch let error as ProfileValidationError {
             errorMessage = error.localizedDescription
         } catch {
             errorMessage = "Your profile wasn’t saved. Check your connection and try again."
         }
+    }
+
+    /// Interests are optional. Only a newly saved profile enters this prompt;
+    /// restored accounts continue directly to their signed-in home.
+    public func finishInterestPrompt() {
+        guard !isBusy, step == .interests, userID != nil else { return }
+        step = .saved
     }
 
     public func acceptIntroduction() async {

@@ -10,11 +10,16 @@ final class ProfileEditorTests: XCTestCase {
         let interests = app.buttons["profile.interests"]
         XCTAssertEqual(interests.label, "Edit interests")
         interests.tap()
+        let sports = app.buttons["interests.category.sports_fitness"]
+        XCTAssertTrue(sports.waitForExistence(timeout: 5))
+        sports.tap()
         let golf = app.buttons["interest.golf"]
         XCTAssertTrue(golf.waitForExistence(timeout: 5))
         golf.tap()
         closeEditor(in: app)
         interests.tap()
+        XCTAssertTrue(sports.waitForExistence(timeout: 5))
+        sports.tap()
         XCTAssertTrue(golf.waitForExistence(timeout: 5))
         XCTAssertEqual(golf.value as? String, "Not selected")
         closeEditor(in: app)

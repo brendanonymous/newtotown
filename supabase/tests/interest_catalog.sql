@@ -23,7 +23,7 @@ begin
     from jsonb_array_elements(result->'categories') category
     where category->>'id' = 'social_hobbies';
     if social->0->>'id' <> 'chess'
-        or social->(jsonb_array_length(social) - 1)->>'id' <> 'sports_betting'
+        or social->9->>'id' <> 'sports_betting'
         or exists(select 1 from jsonb_array_elements(social) option where option->>'id' = 'board_games') then
         raise exception 'Social catalog replacement/order incorrect';
     end if;
@@ -108,6 +108,38 @@ do $$ declare result jsonb; begin
     result := public.pilot_interests('62000000-0000-0000-0000-000000000001');
     if not (result->'profile_option_ids') ? 'diy' or not (result->'filter_option_ids') ? 'diy' then
         raise exception 'Reactivating an option did not restore retained choices';
+    end if;
+end $$;
+reset role;
+-- Newly appended choices are exposed and saved by the same owner-scoped RPCs.
+set local role service_role;
+do $$
+declare
+    a uuid := '62000000-0000-0000-0000-000000000001';
+    result jsonb;
+begin
+    result := public.pilot_interests(a);
+    if (select count(*) from jsonb_array_elements(result->'categories') category,
+        jsonb_array_elements(category->'options') option) <> 63 then
+        raise exception 'Expected 63 active interest choices';
+    end if;
+    if exists(select 1 from jsonb_array_elements(result->'categories') category
+        where jsonb_array_length(category->'options') < 11) then
+        raise exception 'Every category should offer at least eleven choices';
+    end if;
+    result := public.pilot_interests_save(a, 'profile',
+        array['swimming', 'rock_climbing', 'brunch', 'podcasts', 'entrepreneurship']);
+    if jsonb_array_length(result->'profile_option_ids') <> 5 then
+        raise exception 'Could not save new choices across all five categories';
+    end if;
+    perform public.pilot_interests_save(a, 'filters', array['swimming', 'yoga', 'soccer']);
+    begin
+        perform public.pilot_interests_save(a, 'filters', array['swimming', 'yoga', 'soccer', 'baseball']);
+        raise exception 'New choices bypassed the per-category limit';
+    exception when invalid_parameter_value then null;
+    end;
+    if jsonb_array_length(public.pilot_interests(a)->'filter_option_ids') <> 3 then
+        raise exception 'Failed new-choice save overwrote filters';
     end if;
 end $$;
 reset role;

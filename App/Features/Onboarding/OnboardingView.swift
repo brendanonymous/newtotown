@@ -3,6 +3,7 @@ import SwiftUI
 
 struct OnboardingView: View {
     let model: OnboardingModel?
+    var interestsService: (any InterestsService)? = nil
     let close: () -> Void
 
     var body: some View {
@@ -10,6 +11,7 @@ struct OnboardingView: View {
             if let model {
                 OnboardingContent(
                     model: model,
+                    interestsService: interestsService,
                     close: close
                 )
             } else {
@@ -24,41 +26,60 @@ struct OnboardingView: View {
 
 private struct OnboardingContent: View {
     @Bindable var model: OnboardingModel
+    let interestsService: (any InterestsService)?
     let close: () -> Void
     @State private var code = ""
     @State private var showsDeletionConfirmation = false
 
     var body: some View {
-        signupContent
-            .scrollDismissesKeyboard(.interactively)
-            .foregroundStyle(BrandTheme.ink)
-            .background(BrandTheme.background)
-            .navigationTitle("")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                if model.isSignedIn {
-                    BrandNavigationLogo()
-                }
-                if model.step == .signIn || model.step == .code {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Close", action: close).disabled(model.isBusy)
+        Group {
+            if model.step == .interests {
+                if let interestsService {
+                    InterestEditorView(service: interestsService, kind: .profile, presentation: .onboarding) {
+                        model.finishInterestPrompt()
+                    }
+                } else {
+                    ContentUnavailableView {
+                        Label("Add interests later", systemImage: "list.bullet")
+                    } description: {
+                        Text("You can choose your interests from your profile.")
+                    } actions: {
+                        Button("Continue") { model.finishInterestPrompt() }
                     }
                 }
+            } else {
+                signupContent
             }
-            .alert("Delete your account?", isPresented: $showsDeletionConfirmation) {
-                Button("Cancel", role: .cancel) {}
-                Button("Delete account", role: .destructive) {
-                    Task {
-                        await model.deleteAccount()
-                        if model.step == .signIn { clearSignInFields() }
-                    }
+        }
+        .scrollDismissesKeyboard(.interactively)
+        .foregroundStyle(BrandTheme.ink)
+        .background(BrandTheme.background)
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if model.isSignedIn {
+                BrandNavigationLogo()
+            }
+            if model.step == .signIn || model.step == .code {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close", action: close).disabled(model.isBusy)
                 }
-            } message: {
-                Text(
-                    "This permanently deletes your account, private profile, and conversations for both participants. You’ll need to create a new account to use newtotown again."
-                )
             }
-            .interactiveDismissDisabled(model.isBusy)
+        }
+        .alert("Delete your account?", isPresented: $showsDeletionConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete account", role: .destructive) {
+                Task {
+                    await model.deleteAccount()
+                    if model.step == .signIn { clearSignInFields() }
+                }
+            }
+        } message: {
+            Text(
+                "This permanently deletes your account, private profile, and conversations for both participants. You’ll need to create a new account to use newtotown again."
+            )
+        }
+        .interactiveDismissDisabled(model.isBusy)
     }
 
     private var signupContent: some View {
@@ -104,7 +125,7 @@ private struct OnboardingContent: View {
                     ProfileForm(draft: $model.draft)
                         .disabled(model.isBusy)
                     primary("Save my profile") { await model.saveProfile() }
-                case .saved:
+                case .interests, .saved:
                     EmptyView()  // AppEntryView routes saved accounts into SignedInView.
                 case .restoreFailed:
                     title("Let’s reconnect.", subtitle: "We haven’t changed your saved profile.")

@@ -56,3 +56,7 @@ Security advisors report the pre-existing RLS helper execution-grant findings ([
 ## Test gallery deployment — October 25, 2026
 
 Migration `20261025232255` and version 3 of `discovery`, `messaging`, and `delete-account` are deployed to `newtotown-test` (`acmrnolvakubxnaxwpzt`), with JWT verification enabled. Production was not changed. Authenticated acceptance with disposable test accounts verified three ordered, downloadable private JPEGs in Discovery and conversation profiles; missing slots reduce the gallery on refresh. Cross-account selfie reads, client metadata-RPC access, and a fourth profile upload were rejected. The deployed deletion function removed all four paths and Auth accounts; admin folder listings were empty afterward. No email/SMS was sent and existing seed accounts were unchanged.
+
+The photo editor's Save photos action spans the content width with a large
+control size and the shared 16-point text-control corner radius. Visibility,
+disabled state, upload behavior, and successful-save dismissal stay unchanged.

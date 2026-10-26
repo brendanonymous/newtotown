@@ -30,13 +30,13 @@ struct PhotoSubmissionView: View {
                     Text(
                         "Add your photos below. Tap a photo to replace it."
                     ).foregroundStyle(BrandTheme.secondaryInk)
-                    
+
                     if reviewRequired && model.isLoaded {
                         Text(
                             "Add your photos and take a private selfie for photo review. Your selfie never appears on your profile."
                         ).foregroundStyle(BrandTheme.secondaryInk)
                     }
-                    
+
                     if model.isLoaded {
                         profilePhotos
                         if reviewRequired { selfieControls }
@@ -102,7 +102,7 @@ struct PhotoSubmissionView: View {
             }
             .disabled(isBusy)
         }
-        
+
         if photos.count < PrivatePhotos.maximumProfilePhotos {
             Button {
                 choosePhoto(replacing: nil)
@@ -127,13 +127,18 @@ struct PhotoSubmissionView: View {
 
     @ViewBuilder private var saveControls: some View {
         if model.canSave || (model.isBusy && model.photos.profile != nil && !model.isSaved) {
-            Button("Save photos") {
+            Button {
                 Task {
                     await model.save()
                     if model.isSaved && model.errorMessage == nil { dismiss() }
                 }
+            } label: {
+                Text("Save photos").font(.headline)
+                    .frame(maxWidth: .infinity, minHeight: 32)
             }
-            .buttonStyle(.borderedProminent).foregroundStyle(BrandTheme.background)
+            .buttonStyle(.borderedProminent).controlSize(.large)
+            .buttonBorderShape(.roundedRectangle(radius: BrandTheme.textCornerRadius))
+            .foregroundStyle(BrandTheme.background)
             .disabled(!model.canSave || isPreparingImage).accessibilityIdentifier("photos.save")
         }
         if model.hasStoredPhotos && model.photos.profilePhotos.isEmpty {

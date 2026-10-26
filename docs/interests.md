@@ -63,3 +63,37 @@ The next social-catalog migration adds `chess` first and `sports_betting` last, 
 
 
 Hosted verification of `20261025210222_chess_and_sports_betting.sql` returned 38 selectable options across five categories, with Chess first and Sports betting last in Social & hobbies. Board games remains inactive at position 10. Existing selection counts and digests were unchanged. All fourteen migrations replayed successfully, all ten SQL suites and six seed tests passed, and all fifty future seed profiles validated against the active catalog. Authenticated Discovery/catalog/private-photo checks also passed; only the isolated test project was updated.
+
+## Signup prompt and dropdown editor
+
+New profiles enter an optional interests step after their profile save succeeds,
+before opening the signed-in home. Continue saves changed choices and advances
+only after success; Skip for now leaves interests unchanged. Each category still
+allows zero to three choices. Failed saves retain the selection and allow retry.
+Existing/restored saved accounts go directly home. Because this is optional setup,
+restarting after the profile save also resumes home; no mandatory-completion flag
+or new consent is stored. Interests remain editable from Profile afterward.
+
+The same editor serves signup, profile editing, and Discovery filters. Categories
+start closed, expand on tap, and summarize their chosen options and count when
+closed. Profile interests and Discovery filters remain separate. The catalog stays
+server-driven; the iPhone does not hardcode live choices.
+
+`20261026204620_more_profile_interests.sql` appends 25 active options in unused
+positions, preserving every existing ID, display order, selection, and retirement.
+This brings the catalog to 63 active choices (64 stored including retired Board
+games): 13 Sports & fitness, 11 Outdoors, 13 Food & drinks, 11 Arts & entertainment,
+and 15 Social & hobbies. Additions include Swimming, Rock climbing, Brunch,
+Podcasts, and Entrepreneurship. Professional networking remains available.
+Only the isolated test project receives this catalog deployment; production is
+unchanged. No Edge Function deployment is needed.
+
+Validation includes onboarding state transitions, optional skip, failed-save
+retry, dropdown selection persistence and limits, independent Discovery filters,
+and SQL checks of the expanded catalog through the existing owner-scoped RPCs.
+
+The test deployment of this migration is complete. The owner RPC returns all 63
+choices; before/after digests of saved profile interests and private filters match.
+All sixteen migrations and the eleven SQL suites replayed successfully against a
+fresh disposable PostgreSQL database. Existing private-table RLS and grants were
+unchanged.
