@@ -144,19 +144,37 @@ export class SeedBackend {
     });
       commit;`);
   }
-  async upload(id: string, photo: Uint8Array) {
-    const response = await this.api(
-      `/storage/v1/object/private-photos/${id}/profile.jpg`,
-      "POST",
-      photo,
-      {
-        "Content-Type": "image/jpeg",
-        "x-upsert": "true",
-        "cache-control": "0",
-      },
-    );
-    await response.body?.cancel();
-    // Visibility follows successful upload, so a partially seeded profile lacks no required photo.
+  async upload(id: string, photo: Uint8Array, additional?: Uint8Array[]) {
+    if (additional && additional.length > 2) {
+      throw new Error("At most two additional photos");
+    }
+    const photos = [photo, ...(additional ?? [])];
+    const slots = ["profile.jpg", "profile-2.jpg", "profile-3.jpg"];
+    for (const [index, bytes] of photos.entries()) {
+      const response = await this.api(
+        `/storage/v1/object/private-photos/${id}/${slots[index]}`,
+        "POST",
+        bytes,
+        {
+          "Content-Type": "image/jpeg",
+          "x-upsert": "true",
+          "cache-control": "0",
+        },
+      );
+      await response.body?.cancel();
+    }
+    // Only reconcile extra slots when a gallery pool was explicitly configured.
+    // Upload first so a failed replacement does not delete the previous gallery.
+    if (additional !== undefined && photos.length < slots.length) {
+      const response = await this.api(
+        "/storage/v1/object/private-photos",
+        "DELETE",
+        JSON.stringify({
+          prefixes: slots.slice(photos.length).map((slot) => `${id}/${slot}`),
+        }),
+      );
+      await response.body?.cancel();
+    }
     await this.sql(
       `select public.pilot_discovery_visibility(${literal(id)},true);`,
     );

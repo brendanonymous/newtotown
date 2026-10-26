@@ -1,4 +1,5 @@
 import { fileURLToPath } from "node:url";
+import { galleryFor, validateGallery } from "./gallery.ts";
 import { SeedBackend } from "./backend.ts";
 import {
   emailFor,
@@ -17,24 +18,37 @@ const base = new URL("./", import.meta.url);
 const profiles = validateProfiles(
   JSON.parse(await Deno.readTextFile(new URL("profiles.json", base))),
 );
+const gallery = mode === "--cleanup" ? [] : validateGallery(
+  JSON.parse(await Deno.readTextFile(new URL("gallery-photos.json", base))),
+);
+const sourcePhotos = [...profiles.map((profile) => profile.photo), ...gallery];
 const missing: string[] = [];
 if (mode !== "--cleanup") {
-  for (const profile of profiles) {
+  for (const photo of sourcePhotos) {
     try {
-      const stat = await Deno.stat(new URL(profile.photo.file, base));
+      const stat = await Deno.stat(new URL(photo.file, base));
       if (!stat.isFile || stat.size === 0 || stat.size > 25 * 1024 * 1024) {
-        missing.push(`${profile.demo_id}: missing/oversized portrait`);
+        missing.push(`${photo.file}: missing/oversized photo`);
       }
     } catch {
-      missing.push(`${profile.demo_id}: portrait not found`);
+      missing.push(`${photo.file}: photo not found`);
     }
     if (
-      !profile.photo.source_url.startsWith("https://") ||
-      !profile.photo.license.trim()
-    ) missing.push(`${profile.demo_id}: add source URL and license`);
+      !photo.source_url.startsWith("https://") ||
+      !photo.license.trim()
+    ) missing.push(`${photo.file}: add source URL and license`);
   }
 }
 if (mode === "--dry-run") {
+  const counts = [0, 0, 0];
+  for (const profile of profiles) counts[galleryFor(profile, gallery).length]++;
+  console.log(
+    gallery.length
+      ? `Gallery plan: ${
+        counts.join(" / ")
+      } profiles with 0 / 1 / 2 extra photos.`
+      : "Gallery pool disabled; existing additional photos will remain unchanged.",
+  );
   console.log(
     `Validated ${profiles.length} fictional profiles for test project ${testProjectRef}. No network calls or writes.`,
   );
@@ -112,21 +126,21 @@ if (mode === "--dry-run") {
         );
       }
       const photos = new Map<string, Uint8Array>();
-      for (const profile of profiles) {
-        const output = `${temporary}/${profile.demo_id}.jpg`;
+      for (const [index, photo] of sourcePhotos.entries()) {
+        const output = `${temporary}/${index}.jpg`;
         const result = await new Deno.Command(executable, {
-          args: [fileURLToPath(new URL(profile.photo.file, base)), output],
+          args: [fileURLToPath(new URL(photo.file, base)), output],
           stdout: "null",
           stderr: "null",
         }).output();
         if (!result.success) {
-          throw new Error(`Invalid portrait: ${profile.demo_id}`);
+          throw new Error(`Invalid photo: ${photo.file}`);
         }
         const data = await Deno.readFile(output);
         if (!data.length || data.length > 3 * 1024 * 1024) {
-          throw new Error(`Portrait exceeds upload limit: ${profile.demo_id}`);
+          throw new Error(`Photo exceeds upload limit: ${photo.file}`);
         }
-        photos.set(profile.demo_id, data);
+        photos.set(photo.file, data);
       }
       for (const profile of profiles) {
         const user = users.find((user) => ownedUser(user, profile)) ??
@@ -135,7 +149,15 @@ if (mode === "--dry-run") {
           throw new Error(`Unexpected created account: ${profile.demo_id}`);
         }
         await backend.saveProfile(user.id, profile);
-        await backend.upload(user.id, photos.get(profile.demo_id)!);
+        await backend.upload(
+          user.id,
+          photos.get(profile.photo.file)!,
+          gallery.length
+            ? galleryFor(profile, gallery).map((photo) =>
+              photos.get(photo.file)!
+            )
+            : undefined,
+        );
         console.log(`Seeded ${profile.demo_id}`);
       }
     } finally {
