@@ -13,6 +13,6 @@ Test settings explicitly replace the normal scheme's backend defaults with the t
 
 ## TestFlight
 
-Create a separate App Store Connect app using the test bundle ID if distributing this variant through TestFlight. Archive **NewToTown Test** (uses `Release-Test`), verify the bundle ID/name, and upload to that app's internal testing group. Both variants can be installed at once. The backend is selected at build time: changing it requires rebuilding/reinstalling or uploading a new TestFlight build. Keep version/build numbers unique within each App Store Connect app.
+Create a separate App Store Connect app using the test bundle ID if distributing this variant through TestFlight. Archive **NewToTown Test** (uses `Release-Test`), verify the bundle ID/name, and upload to that app's internal testing group. Both variants can be installed at once. The backend is selected at build time: changing it requires rebuilding/reinstalling or uploading a new TestFlight build. Keep version/build numbers unique within each App Store Connect app. Create a **Team** internal group for this separate app and grant its testers app access; follow the [release checklist](testflight.md).
 
 The separate project is `newtotown-test` (`acmrnolvakubxnaxwpzt`). Only its host and publishable key are checked in; no administrative credentials ship in the app. Auth setup, device signing, and the separate TestFlight app must be configured before hosted end-to-end testing. Seed fictional profiles only into this isolated project; see the seed tooling instructions once available.
