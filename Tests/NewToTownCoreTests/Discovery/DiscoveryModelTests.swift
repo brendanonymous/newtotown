@@ -10,6 +10,7 @@ import Testing
     var visibilityCalls = 0
     var onVisibility: (@MainActor () async throws -> DiscoveryFeed)?
     var onLoad: (@MainActor () async throws -> DiscoveryFeed)?
+    var onDecision: (@MainActor () async throws -> DiscoveryFeed)?
     var decisions: [UUID] = []
     func load() async throws -> DiscoveryFeed {
         if let onLoad { return try await onLoad() }
@@ -25,6 +26,7 @@ import Testing
     }
     func decide(on profileID: UUID, choice: ConnectionChoice) async throws -> DiscoveryFeed {
         decisions.append(profileID)
+        if let onDecision { return try await onDecision() }
         if fails { throw Failure.unavailable }
         feed = DiscoveryFeed(state: .ready, visible: true, matches: feed.candidates)
         return feed
@@ -34,6 +36,55 @@ import Testing
         feed = DiscoveryFeed(state: .ready, visible: true)
         return feed
     }
+}
+
+@Test @MainActor func decisionFeedbackWaitsForSuccessAndRejectsDuplicateTaps() async {
+    let service = TestDiscoveryService()
+    service.feed = DiscoveryFeed(state: .ready, visible: true, candidates: [localFriend])
+    let model = DiscoveryModel(service: service)
+    await model.load()
+    var response: CheckedContinuation<DiscoveryFeed, any Error>?
+    service.onDecision = { try await withCheckedThrowingContinuation { response = $0 } }
+    let decision = Task { await model.decide(.connect, on: localFriend.id) }
+    while response == nil { await Task.yield() }
+    #expect(model.pendingDecision == .connect && model.isBusy)
+    #expect(model.feed?.candidates.first?.id == localFriend.id)
+    await model.decide(.pass, on: localFriend.id)
+    #expect(service.decisions == [localFriend.id])
+    #expect(model.pendingDecision == .connect)
+    response?.resume(returning: DiscoveryFeed(state: .ready, visible: true))
+    await decision.value
+    #expect(model.feed?.candidates.isEmpty == true)
+    #expect(model.pendingDecision == nil && !model.isBusy)
+}
+
+@Test @MainActor func outgoingCardCannotDecideOnItsReplacement() async {
+    let service = TestDiscoveryService()
+    let next = DiscoveryProfile(
+        id: UUID(), firstName: "Sam", jobTitle: "Teacher", goal: "Go hiking.",
+        city: "Scottsdale", photoURL: localFriend.photoURL)
+    service.feed = DiscoveryFeed(state: .ready, visible: true, candidates: [next])
+    let model = DiscoveryModel(service: service)
+    await model.load()
+    await model.decide(.pass, on: localFriend.id)
+    #expect(service.decisions.isEmpty)
+    #expect(model.pendingDecision == nil)
+    #expect(model.feed?.candidates.first?.id == next.id)
+}
+
+@Test(arguments: [false, true]) @MainActor
+func failedOrCancelledDecisionClearsFeedback(cancelled: Bool) async {
+    let service = TestDiscoveryService()
+    service.feed = DiscoveryFeed(state: .ready, visible: true, candidates: [localFriend])
+    let model = DiscoveryModel(service: service)
+    await model.load()
+    service.onDecision = {
+        if cancelled { withUnsafeCurrentTask { $0?.cancel() } }
+        throw TestDiscoveryService.Failure.unavailable
+    }
+    await Task { await model.decide(.pass) }.value
+    #expect(model.pendingDecision == nil && !model.isBusy)
+    #expect(model.feed == nil && model.errorMessage != nil)
 }
 
 private let localFriend = DiscoveryProfile(

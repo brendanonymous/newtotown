@@ -1,64 +1,46 @@
 # TestFlight distribution
 
-TestFlight distributes the Release app to iPhones without pairing each device with Xcode. This first beta includes the messaging changes in PR #12; that PR remains a separate review.
+Both app variants use the same release process. Select the scheme and matching App Store Connect app before uploading.
 
-## App Store Connect setup (once)
+| Variant | Xcode scheme | Archive configuration | Default bundle ID |
+| --- | --- | --- | --- |
+| Base app | NewToTown | Release | `com.newtotown.ios` |
+| Test app | NewToTown Test | Release-Test | `com.newtotown.ios.test` |
 
-Use the same paid Apple Developer team selected in Xcode. In [App Store Connect](https://appstoreconnect.apple.com/apps), choose **Apps → + → New App**:
+The test variant uses the isolated `newtotown-test` backend and installs alongside the base app. Accounts and data are separate. See [test environment settings](test-environment.md).
 
-| Field | Value |
-| --- | --- |
-| Platform | iOS |
-| Name | newtotown (subject to availability) |
-| Primary language | English (U.S.) |
-| Bundle ID | `com.newtotown.ios` |
-| SKU | `newtotown-ios` |
-| User access | Full access for the owner |
+## One-time setup for the test app
 
-If the bundle ID is missing, register that exact explicit identifier in [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list). Do not change it between uploads. Accept any outstanding Apple agreements using the account holder's login.
+1. In [App Store Connect](https://appstoreconnect.apple.com/apps), create a separate iOS app record named **NewToTown Test**, using bundle ID `com.newtotown.ios.test` and a unique SKU such as `newtotown-ios-test`. If the ID is missing, register that explicit identifier under the same paid Apple Developer team used in Xcode.
+2. Give the existing team members access to this new app under **Users and Access**. Access to the base app does not automatically imply access to the test app when a user's access is scoped to selected apps.
+3. Under the new app's **TestFlight** tab, create an internal group named **Team**, add yourself and John, and enable automatic build distribution if desired. Each app has its own tester groups.
 
-## Archive and upload
+Internal testers must be App Store Connect users with access to the app. They install Apple's TestFlight app and accept the new app's invitation. No new Apple Developer membership or device registration is needed for a tester. See [Apple's internal tester instructions](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers/).
 
-1. Open `NewToTown.xcodeproj`. Confirm the NewToTown target uses your paid team and automatic signing. Local signing settings belong in ignored `Configuration/Local.xcconfig`.
-2. Keep the marketing version at `0.1.0` for this beta. Set `CURRENT_PROJECT_VERSION` in `Configuration/Base.xcconfig` to a new build number for each upload (first candidate: `1`). Do not reuse an uploaded number.
-3. Select the NewToTown scheme and **Any iOS Device (arm64)**, then **Product → Archive**. The shared scheme archives with Release configuration; simulator journey fixtures compile only in Debug.
-4. In Organizer, choose **Distribute App → App Store Connect** and upload with automatic signing. Use the normal App Store Connect distribution option so the build can later be submitted for external testing. Uploading a build does not publish it on the App Store.
-5. Wait for processing, then open the app's **TestFlight** tab in App Store Connect. Resolve any processing or compliance messages before assigning testers.
+## Each release
 
-The app uses Apple's system networking, Security, and CryptoKit through its SDK dependencies. `ITSAppUsesNonExemptEncryption` is false for this implementation, following [Apple's system-encryption guidance](https://developer.apple.com/documentation/security/complying-with-encryption-export-regulations). Reassess this declaration if adding custom cryptography or changing these dependencies.
+1. Use the reviewed, merged source and run the applicable checks. Xcode archives the files currently on disk, including uncommitted local edits; merging alone does not exclude them.
+2. Select **NewToTown Test** in Xcode. Confirm the paid team, automatic signing, and bundle ID `com.newtotown.ios.test`. This scheme archives with **Release-Test**; Debug-only simulator fixtures are excluded.
+3. Use a new build number for each upload to this app. The first upload can use `1`; later uploads must increase it. `Configuration/Base.xcconfig` supplies `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION`. The base and test App Store Connect records track their uploads separately.
+4. Select **Any iOS Device (arm64)**, then **Product → Archive**.
+5. In Organizer, choose **Distribute App → TestFlight Internal Only** and complete the upload for team testing. This follows the internal-testing release path used by the base app. Uploading does not publish an App Store release.
+6. In App Store Connect, open **NewToTown Test → TestFlight**, wait for processing, and resolve any processing/compliance prompts. Add the build to **Team** if it was not assigned automatically.
+7. Install or update **NewToTown Test** in TestFlight on each phone. Test matching and messaging with separate app accounts.
 
-A terminal archive uses the same signing account already added to Xcode:
+For future external testers, upload through **App Store Connect** distribution instead. A build uploaded as **TestFlight Internal Only** cannot be assigned to external groups. External testing requires TestFlight App Review and working reviewer sign-in instructions; see [Apple's external testing guide](https://developer.apple.com/help/app-store-connect/test-a-beta-version/invite-external-testers/).
 
-```sh
-xcodebuild -project NewToTown.xcodeproj -scheme NewToTown \
-  -configuration Release -destination 'generic/platform=iOS' \
-  -archivePath /tmp/newtotown-testflight/NewToTown-0.1.0-1.xcarchive \
-  -allowProvisioningUpdates archive
-open /tmp/newtotown-testflight/NewToTown-0.1.0-1.xcarchive
-```
+Archives contain signed binaries and stay outside Git. Signing settings belong in ignored local configuration. Never commit signing certificates, private keys, or App Store Connect credentials.
 
-Change the archive path/version/build together for subsequent candidates. Archives contain signed binaries and stay outside Git. Never commit signing certificates, private keys, or App Store Connect credentials.
-
-## Testers
-
-Start with an internal group named **Device QA**, add the owner as a tester, and assign the processed build. Internal testers must be App Store Connect users with app access; do not give ordinary pilot participants developer-account access just to test. Install Apple's TestFlight app on each device, accept the invitation, and install newtotown.
-
-For friends or pilot participants, create an external group named **Scottsdale Pilot**. Supply beta description, feedback email, review contact, and working review access, then submit the build for TestFlight App Review. Once approved, invite the intended testers by email or enable a controlled public link. Each participant should sign in with their own app account when testing matching and messaging. Signing into the same account on two phones does not simulate two participants.
-
-Email OTP requires access to the recipient inbox. Before external review, arrange an Apple-review-accessible sign-in path and document it in review notes; do not assume a reviewer can access the owner's email. There is no authentication bypass in the app.
-
-TestFlight uses the live backend and stores real profiles, photos, connections, and messages. Test account deletion removes data through the normal app flow. Builds expire after 90 days; upload replacements as needed. Testers do not need a paid developer membership.
+The current app declares `ITSAppUsesNonExemptEncryption` as false for its existing system-networking and SDK implementation. Reassess that declaration if cryptography changes; see [Apple's system-encryption guidance](https://developer.apple.com/documentation/security/complying-with-encryption-export-regulations).
 
 ## Device acceptance
 
 Use two different app accounts on two phones:
 
-- Complete email-code sign-in, the first-signup agreement, profile details, and photo upload.
-- Enable discovery for both; connect in both directions and confirm the mutual connection.
-- Open Messages, send each way, and pull to refresh on the receiving phone. Live delivery and push notifications are not implemented yet.
-- Background/foreground, sign out/in, and confirm no conversation from another account appears.
-- Block the other participant; confirm the conversation is unavailable on both phones after refresh.
+- Complete sign-in, the first-signup agreement, profile details, and contact verification.
+- Add/crop up to three photos, cycle the gallery, save, and check the unsaved-exit warning. Verify the direct × removal action.
+- Open Discovery for both accounts, connect in both directions, and confirm the mutual connection. Check transition feel with Reduce Motion on and off.
+- Send messages each way and refresh on the receiving phone. Background/foreground and switch accounts; previous-account conversations must not reappear.
+- Report a disposable test connection and verify the intended exclusion after refresh. Use the normal deletion flow to remove disposable accounts.
 
-Record the TestFlight version/build with any bug report. Run the existing Swift tests, Release archive, and simulator journeys before each candidate; the device exercise adds real signing, network, and cross-account coverage.
-
-References: [upload builds](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds/), [internal testers](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers/), [external testing](https://developer.apple.com/help/app-store-connect/test-a-beta-version/invite-external-testers/).
+Record the TestFlight version/build with bug reports. TestFlight builds expire after 90 days; upload replacements as needed. References: [upload builds](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds/), [internal testers](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers/), [TestFlight overview](https://developer.apple.com/help/app-store-connect/test-a-beta-version/testflight-overview/).

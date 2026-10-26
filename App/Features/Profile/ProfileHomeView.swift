@@ -14,7 +14,7 @@ struct ProfileHomeView: View {
         var id: String { rawValue }
     }
     @State private var editor: Editor?
-    @State private var profilePhoto: UIImage?
+    @State private var profilePhotos: [UIImage] = []
     @State private var photoIsMissing = false
     @State private var photoFailed = false
     @State private var photoNeedsReload = true
@@ -64,18 +64,13 @@ struct ProfileHomeView: View {
         let generation = photoLoadGeneration
         photoFailed = false
         do {
-            let data = try await photoService.loadProfilePhoto()
-            let decoded: ProfileImagePixels?
-            if let data {
-                decoded = try await Task.detached(priority: .utility) {
-                    try ProfileImageDecoder.decode(data, pixels: 1200)
-                }.value
-            } else {
-                decoded = nil
-            }
+            let data = try await photoService.loadProfilePhotos()
+            let decoded = try await Task.detached(priority: .utility) {
+                try data.map { try ProfileImageDecoder.decode($0, pixels: 1200) }
+            }.value
             guard !Task.isCancelled, generation == photoLoadGeneration else { return }
-            profilePhoto = decoded.map { UIImage(cgImage: $0.cgImage) }
-            photoIsMissing = decoded == nil
+            profilePhotos = decoded.map { UIImage(cgImage: $0.cgImage) }
+            photoIsMissing = decoded.isEmpty
             photoNeedsReload = false
         } catch {
             // Unknown photo status must not prompt an existing member to add one.
@@ -92,18 +87,24 @@ struct ProfileHomeView: View {
                     goal: model.draft.goal, city: "Scottsdale",
                     interests: interests?.snapshot?.profileInterests ?? []
                 ) {
-                    if let profilePhoto {
-                        Image(uiImage: profilePhoto).resizable().scaledToFill()
-                    } else if photoIsMissing {
-                        Button("Add a profile photo", systemImage: "person.crop.rectangle") {
-                            photoNeedsReload = true
-                            editor = .photos
-                        }.foregroundStyle(BrandTheme.secondaryInk)
-                    } else if photoFailed {
-                        Label("Photo unavailable. Open My photos to try again.", systemImage: "photo")
-                            .font(.callout).padding()
+                    if !profilePhotos.isEmpty {
+                        ProfilePhotoGallery(count: profilePhotos.count) { index in
+                            Image(uiImage: profilePhotos[index]).resizable().scaledToFill()
+                        }
                     } else {
-                        ProgressView()
+                        ProfilePhotoFrame {
+                            if photoIsMissing {
+                                Button("Add a profile photo", systemImage: "person.crop.rectangle") {
+                                    photoNeedsReload = true
+                                    editor = .photos
+                                }.foregroundStyle(BrandTheme.secondaryInk)
+                            } else if photoFailed {
+                                Label("Photo unavailable. Open My photos to try again.", systemImage: "photo")
+                                    .font(.callout).padding()
+                            } else {
+                                ProgressView()
+                            }
+                        }
                     }
                 }
 

@@ -7,8 +7,11 @@ struct PhotoSubmissionView: View {
     @State private var model: PhotoSubmissionModel
     @State private var selection: PhotosPickerItem?
     @State private var isPreparingImage = false
+    @State private var showsPhotoPicker = false
     @State private var showsCamera = false
-    @State private var confirmsRemoval = false
+    @State private var cropSelection: PhotoCropSelection?
+    @State private var replacementIndex: Int?
+    @State private var previewIndex = 0
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
 
@@ -17,63 +20,26 @@ struct PhotoSubmissionView: View {
     }
 
     private var isBusy: Bool { model.isBusy || isPreparingImage }
-
     private var reviewRequired: Bool { model.requirements?.reviewRequired ?? true }
 
     var body: some View {
-        EditorSheet(isBusy: isBusy) {
+        EditorSheet(isBusy: isBusy, hasUnsavedChanges: model.hasUnsavedChanges) {
             ScrollView {
-                VStack(alignment: .center, spacing: 24) {
+                VStack(spacing: 24) {
                     Text("Show up as yourself.").font(.system(.largeTitle, design: .serif))
-                    if model.requirements?.reviewRequired == true {
+                    if reviewRequired && model.isLoaded {
                         Text(
-                            "Choose a profile photo and take a private selfie for photo review. Only your profile photo is shared when you join discovery."
+                            "Add your photos and take a private selfie for photo review. Your selfie never appears on your profile."
                         )
                         .foregroundStyle(BrandTheme.secondaryInk)
                     }
                     if model.isLoaded {
-                        if let data = model.photos.profile {
-                            photoPreview(nil, data: data)
-                        }
-                        PhotosPicker(selection: $selection, matching: .images) {
-                            Label("Choose your photo", systemImage: "photo.on.rectangle")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .disabled(isBusy)
-                        .accessibilityIdentifier("photos.choose")
-
-                        if reviewRequired {
-                            photoPreview("Private selfie", data: model.photos.selfie)
-                            Button("Take selfie", systemImage: "camera") { Task { await startCamera() } }
-                                .frame(maxWidth: .infinity)
-                                .disabled(isBusy)
-                            Text("Face the camera in good light. Your selfie won’t appear on your profile.")
-                                .font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
-                        }
-
-                        if model.canSave || (model.isBusy && model.photos.profile != nil && !model.isSaved) {
-                            Button("Save photo") {
-                                Task {
-                                    await model.save()
-                                    if model.isSaved && model.errorMessage == nil { dismiss() }
-                                }
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .foregroundStyle(BrandTheme.background)
-                            .frame(maxWidth: .infinity)
-                            .disabled(!model.canSave || isPreparingImage)
-                            .accessibilityIdentifier("photos.save")
-                        }
-                        if model.hasStoredPhotos {
-                            Button("Remove my photos", role: .destructive) { confirmsRemoval = true }
-                                .frame(maxWidth: .infinity)
-                                .disabled(isBusy)
-                                .accessibilityIdentifier("photos.remove")
-                        }
+                        profilePhotos
+                        if reviewRequired { selfieControls }
+                        saveControls
                     } else if !model.isBusy {
                         Button("Try loading again") { Task { await model.load() } }
                     }
-
                     if isBusy { ProgressView() }
                     if let error = model.errorMessage { Text(error).foregroundStyle(.red).font(.callout) }
                     if reviewRequired && AVCaptureDevice.authorizationStatus(for: .video) == .denied {
@@ -82,20 +48,22 @@ struct PhotoSubmissionView: View {
                         }
                     }
                 }
-                .padding(28)
-                .frame(maxWidth: 520)
-                .frame(maxWidth: .infinity)
+                .padding(28).frame(maxWidth: 520).frame(maxWidth: .infinity)
             }
-            .foregroundStyle(BrandTheme.ink)
-            .background(BrandTheme.background)
-            .navigationTitle("")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                BrandNavigationLogo()
-            }
+            .foregroundStyle(BrandTheme.ink).background(BrandTheme.background)
+            .navigationTitle("").navigationBarTitleDisplayMode(.inline)
+            .toolbar { BrandNavigationLogo() }
             .task { await model.load() }
-            .onChange(of: selection) { _, item in
-                Task { await prepareProfile(item) }
+            .photosPicker(isPresented: $showsPhotoPicker, selection: $selection, matching: .images)
+            .onChange(of: selection) { _, item in Task { await prepareProfile(item) } }
+            .sheet(item: $cropSelection) { selection in
+                PhotoCropEditor(selection: selection) { data in
+                    if let replacementIndex {
+                        model.replaceProfile(at: replacementIndex, with: data)
+                    } else {
+                        model.addProfile(data)
+                    }
+                }
             }
             .fullScreenCover(isPresented: $showsCamera) {
                 SelfieCamera { image in
@@ -104,33 +72,76 @@ struct PhotoSubmissionView: View {
                     }
                 }.ignoresSafeArea()
             }
-            .alert("Remove your photos?", isPresented: $confirmsRemoval) {
-                Button("Cancel", role: .cancel) {}
-                Button("Remove photos", role: .destructive) { Task { await model.remove() } }
-            } message: {
-                Text(
-                    "This removes your profile photo and any previously uploaded selfie. You can add photos again later."
-                )
-            }
         }
         .tint(BrandTheme.ink)
     }
 
-    private func photoPreview(_ title: String?, data: Data?) -> some View {
-        VStack(spacing: 8) {
-            if let title { Text(title).font(.headline) }
-            if let data, let image = UIImage(data: data) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .brandPhotoStyle()
-                    .frame(maxHeight: 220)
-            } else {
-                Label("No photo yet", systemImage: "person.crop.rectangle")
-                    .foregroundStyle(BrandTheme.secondaryInk)
+    @ViewBuilder private var profilePhotos: some View {
+        let photos = model.photos.profilePhotos
+        if !photos.isEmpty {
+            ProfilePhotoGallery(
+                count: photos.count, selection: $previewIndex,
+                onReplace: { choosePhoto(replacing: $0) },
+                onRemove: { index in
+                    if photos.count == 1 && model.hasStoredPhotos {
+                        Task { await model.remove() }
+                    } else {
+                        model.removeProfile(at: index)
+                        previewIndex = 0
+                    }
+                }
+            ) { index in
+                if let image = UIImage(data: photos[index]) {
+                    Image(uiImage: image).resizable().scaledToFill()
+                }
             }
+            .disabled(isBusy)
+            Text("\(photos.count) of 3 photos · First photo is your main photo")
+                .font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
         }
-        .frame(maxWidth: .infinity)
+        if photos.count < PrivatePhotos.maximumProfilePhotos {
+            Button {
+                choosePhoto(replacing: nil)
+            } label: {
+                Label(photos.isEmpty ? "Choose your photo" : "Add a photo", systemImage: "photo.on.rectangle")
+            }
+            .disabled(isBusy).accessibilityIdentifier("photos.choose")
+        }
+    }
+
+    private var selfieControls: some View {
+        VStack(spacing: 16) {
+            if let data = model.photos.selfie, let image = UIImage(data: data) {
+                Text("Private selfie").font(.headline)
+                Image(uiImage: image).resizable().scaledToFit().brandPhotoStyle().frame(maxHeight: 220)
+            }
+            Button("Take selfie", systemImage: "camera") { Task { await startCamera() } }.disabled(isBusy)
+            Text("Face the camera in good light. Your selfie won’t appear on your profile.")
+                .font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
+        }
+    }
+
+    @ViewBuilder private var saveControls: some View {
+        if model.canSave || (model.isBusy && model.photos.profile != nil && !model.isSaved) {
+            Button("Save photos") {
+                Task {
+                    await model.save()
+                    if model.isSaved && model.errorMessage == nil { dismiss() }
+                }
+            }
+            .buttonStyle(.borderedProminent).foregroundStyle(BrandTheme.background)
+            .disabled(!model.canSave || isPreparingImage).accessibilityIdentifier("photos.save")
+        }
+        if model.hasStoredPhotos && model.photos.profilePhotos.isEmpty {
+            Button("Remove my photos", role: .destructive) { Task { await model.remove() } }
+                .disabled(isBusy).accessibilityIdentifier("photos.remove")
+        }
+    }
+
+    private func choosePhoto(replacing index: Int?) {
+        guard !isBusy else { return }
+        replacementIndex = index
+        showsPhotoPicker = true
     }
 
     @MainActor private func prepareProfile(_ item: PhotosPickerItem?) async {
@@ -144,7 +155,11 @@ struct PhotoSubmissionView: View {
             guard let data = try await item.loadTransferable(type: Data.self) else {
                 throw PhotoValidationError.invalidImage
             }
-            model.selectProfile(try PhotoImageEncoder.jpeg(from: data))
+            let pixels = try await Task.detached(priority: .userInitiated) {
+                try ProfileImageDecoder.decode(data, pixels: 1200)
+            }.value
+            guard !Task.isCancelled else { return }
+            cropSelection = PhotoCropSelection(image: UIImage(cgImage: pixels.cgImage))
         } catch {
             model.showImageError("We couldn’t prepare that photo. Choose a different image and try again.")
         }
@@ -155,8 +170,7 @@ struct PhotoSubmissionView: View {
             model.showImageError("A camera is required. Try this step on your iPhone.")
             return
         }
-        let allowed = await AVCaptureDevice.requestAccess(for: .video)
-        if allowed {
+        if await AVCaptureDevice.requestAccess(for: .video) {
             showsCamera = true
         } else {
             model.showImageError("Allow camera access in Settings to take your selfie.")
