@@ -67,6 +67,9 @@ Deno.test("feed projects public fields and signs profile-only paths for sixty se
       const body = options?.body ? JSON.parse(String(options.body)) : {};
       calls.push({ url, body });
       if (url.endsWith("/user")) return Response.json({ id: person });
+      if (url.endsWith("/rpc/pilot_profile_photo_paths")) {
+        return Response.json([`${target}/profile.jpg`]);
+      }
       if (url.includes("/rpc/")) {
         return Response.json({
           state: "ready",
@@ -88,9 +91,9 @@ Deno.test("feed projects public fields and signs profile-only paths for sixty se
   assert(feed.candidates[0].date_of_birth === undefined);
   assert(feed.candidates[0].photo_url.startsWith(config.projectURL));
   assert(calls[1].body.person === person);
-  assert(calls[2].body.expiresIn === 60);
+  assert(calls[3].body.expiresIn === 60);
   assert(
-    JSON.stringify(calls[2].body.paths) ===
+    JSON.stringify(calls[3].body.paths) ===
       JSON.stringify([`${target}/profile.jpg`]),
   );
   assert(response.headers.get("Cache-Control") === "no-store");
@@ -140,6 +143,9 @@ Deno.test("signing failures and unexpected URL paths fail without leaking data",
     config,
     mockFetch((input) => {
       if (String(input).endsWith("/user")) return Response.json({ id: person });
+      if (String(input).endsWith("/rpc/pilot_profile_photo_paths")) {
+        return Response.json([`${target}/profile.jpg`]);
+      }
       if (String(input).includes("/rpc/")) {
         return Response.json({
           state: "ready",

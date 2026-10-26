@@ -164,7 +164,12 @@ Deno.test("photo cleanup targets only the verified owner's fixed keys", async ()
   );
   expect(
     JSON.stringify(keys) ===
-      JSON.stringify([`${ownerID}/profile.jpg`, `${ownerID}/selfie.jpg`]),
+      JSON.stringify([
+        `${ownerID}/profile.jpg`,
+        `${ownerID}/profile-2.jpg`,
+        `${ownerID}/profile-3.jpg`,
+        `${ownerID}/selfie.jpg`,
+      ]),
     "Cleanup escaped owner prefix",
   );
 });

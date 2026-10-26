@@ -27,11 +27,12 @@ final class ProfileLayoutTests: XCTestCase {
         let app = launch(["--ui-test-photos", "--ui-test-saved-photo"])
         XCTAssertTrue(app.buttons["My photos"].waitForExistence(timeout: 10))
         app.buttons["My photos"].tap()
-        XCTAssertTrue(app.buttons["photos.remove"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["photos.removeOne"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["photos.save"].exists)
-        app.buttons["photos.remove"].tap()
-        app.alerts.buttons["Remove photos"].tap()
+        app.buttons["photos.removeOne"].tap()
         XCTAssertTrue(app.buttons["photos.choose"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.alerts.firstMatch.exists)
+        XCTAssertFalse(app.buttons["photos.removeOne"].exists)
         XCTAssertFalse(app.buttons["photos.remove"].exists)
     }
 

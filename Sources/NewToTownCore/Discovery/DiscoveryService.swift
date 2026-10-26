@@ -8,11 +8,12 @@ public struct DiscoveryProfile: Decodable, Equatable, Identifiable, Sendable {
     public let goal: String
     public let city: String
     public let photoURL: URL
+    public let photoURLs: [URL]
     public let interests: [ProfileInterest]
 
     public init(
         id: UUID, firstName: String, jobTitle: String, goal: String, city: String, photoURL: URL,
-        interests: [ProfileInterest] = []
+        interests: [ProfileInterest] = [], photoURLs: [URL]? = nil
     ) {
         self.id = id
         self.firstName = firstName
@@ -20,24 +21,35 @@ public struct DiscoveryProfile: Decodable, Equatable, Identifiable, Sendable {
         self.goal = goal
         self.city = city
         self.photoURL = photoURL
+        self.photoURLs = photoURLs ?? [photoURL]
         self.interests = interests
     }
     public init(from decoder: any Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        let primary = try values.decode(URL.self, forKey: .photoURL)
+        let gallery = try values.decodeIfPresent([URL].self, forKey: .photoURLs) ?? [primary]
+        guard (1...PrivatePhotos.maximumProfilePhotos).contains(gallery.count),
+            gallery.first == primary, Set(gallery).count == gallery.count
+        else {
+            throw DecodingError.dataCorruptedError(
+                forKey: .photoURLs, in: values, debugDescription: "Invalid profile photo gallery")
+        }
         self.init(
             id: try values.decode(UUID.self, forKey: .id),
             firstName: try values.decode(String.self, forKey: .firstName),
             jobTitle: try values.decode(String.self, forKey: .jobTitle),
             goal: try values.decode(String.self, forKey: .goal),
             city: try values.decode(String.self, forKey: .city),
-            photoURL: try values.decode(URL.self, forKey: .photoURL),
-            interests: try values.decodeIfPresent([ProfileInterest].self, forKey: .interests) ?? [])
+            photoURL: primary,
+            interests: try values.decodeIfPresent([ProfileInterest].self, forKey: .interests) ?? [],
+            photoURLs: gallery)
     }
     enum CodingKeys: String, CodingKey {
         case id, goal, city, interests
         case firstName = "first_name"
         case jobTitle = "job_title"
         case photoURL = "photo_url"
+        case photoURLs = "photo_urls"
     }
 }
 
