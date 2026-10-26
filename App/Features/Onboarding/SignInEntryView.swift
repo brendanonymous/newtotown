@@ -47,6 +47,7 @@ struct SignInEntryView: View {
                     .foregroundStyle(BrandTheme.background)
                     .background(BrandTheme.ink, in: RoundedRectangle(cornerRadius: 18))
             }
+            .accessibilityIdentifier("signup.sendCode")
             Button(usesEmail ? "Use phone sign-in" : "Already joined with email? Sign in with email") {
                 model.restartSignIn()
                 phone = ""

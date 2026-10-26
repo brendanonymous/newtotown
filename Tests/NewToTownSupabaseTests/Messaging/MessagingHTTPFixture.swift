@@ -14,6 +14,7 @@ final class MessagingHTTPFixture: @unchecked Sendable {
     private var status = 200
     private var payload = Data("{}".utf8)
     private var calls: [URLRequest] = []
+    private var responsesByRequest: [String: (Int, Data)] = [:]
     private var responsePaths: Set<String> = []
     private var hold = false
     private var pending: (@Sendable () -> Void)?
@@ -68,6 +69,9 @@ final class MessagingHTTPFixture: @unchecked Sendable {
             self.hold = hold
         }
     }
+    func respondRaw(_ data: Data, path: String, method: String = "GET", status: Int = 200) {
+        lock.withLock { responsesByRequest[method + " " + path] = (status, data) }
+    }
     func release() {
         let completion = lock.withLock {
             let value = pending
@@ -98,6 +102,12 @@ final class MessagingHTTPFixture: @unchecked Sendable {
                 recorded.httpBody = data
             }
             calls.append(recorded)
+            if let (status, data) = responsesByRequest[
+                (request.httpMethod ?? "GET") + " " + (request.url?.path ?? "")]
+            {
+                reply(status, data)
+                return false
+            }
             if request.url?.path.contains("/functions/") == true
                 || responsePaths.contains(request.url?.path ?? "")
             {

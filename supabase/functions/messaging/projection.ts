@@ -1,3 +1,4 @@
+import { profilePhotoURLs } from "../_shared/profile-photos.ts";
 import { isUUID } from "../_shared/auth.ts";
 import { type Card, readCards } from "../_shared/profile-photos.ts";
 import { isTimestamp } from "./commands.ts";
@@ -106,6 +107,7 @@ export async function withPhotoURLs(
     participant: {
       ...thread.participant,
       photo_url: urls.get(`${thread.participant.id}/profile.jpg`),
+      photo_urls: profilePhotoURLs(thread.participant.id, urls),
     },
   }));
 }

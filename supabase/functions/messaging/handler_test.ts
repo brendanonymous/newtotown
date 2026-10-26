@@ -65,6 +65,9 @@ function backend(result: unknown, rpcStatus = 200) {
       if (url.endsWith("/auth/v1/user")) {
         return Promise.resolve(Response.json({ id: caller }));
       }
+      if (url.endsWith("/rpc/pilot_profile_photo_paths")) {
+        return Promise.resolve(Response.json([`${peer}/profile.jpg`]));
+      }
       if (url.includes("/rpc/")) {
         return Promise.resolve(Response.json(result, { status: rpcStatus }));
       }
@@ -126,10 +129,10 @@ Deno.test("inbox, open, and history explicitly project fields and sign only auth
     );
     assert(text.includes("photo_url"));
     assert(
-      JSON.stringify(calls[2].body.paths) ===
+      JSON.stringify(calls[3].body.paths) ===
         JSON.stringify([`${peer}/profile.jpg`]),
     );
-    assert(calls[2].body.expiresIn === 60);
+    assert(calls[3].body.expiresIn === 60);
   }
 });
 Deno.test("empty inbox avoids signing and cursor microseconds are preserved", async () => {
