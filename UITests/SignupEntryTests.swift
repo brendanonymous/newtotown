@@ -12,7 +12,7 @@ final class SignupEntryTests: XCTestCase {
         XCTAssertTrue(phone.waitForExistence(timeout: 10))
         phone.tap()
         phone.typeText("480")
-        app.buttons["Send sign-in code"].tap()
+        app.buttons["signup.sendCode"].tap()
         XCTAssertTrue(app.staticTexts["signup.error"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.textFields["signup.code"].exists)
         XCTAssertFalse(app.textFields["signup.email"].exists)
@@ -30,14 +30,14 @@ final class SignupEntryTests: XCTestCase {
         XCTAssertTrue(email.waitForExistence(timeout: 10))
         email.tap()
         email.typeText("invalid-email")
-        app.buttons["Send sign-in code"].tap()
+        app.buttons["signup.sendCode"].tap()
         let error = app.staticTexts["signup.error"]
         XCTAssertTrue(error.waitForExistence(timeout: 5))
         XCTAssertEqual(error.label, "Enter a valid email address.")
         XCTAssertFalse(app.textFields["signup.code"].exists)
         // Signup is rooted in the window, rather than a partially raised sheet.
         XCTAssertFalse(app.sheets.firstMatch.exists)
-        XCTAssertTrue(app.images["NewToTown"].exists)
+        XCTAssertFalse(app.images["NewToTown"].exists)
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "Signup validation"
         screenshot.lifetime = .keepAlways

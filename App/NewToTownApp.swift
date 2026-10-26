@@ -67,7 +67,9 @@ struct NewToTownApp: App {
         WindowGroup {
             Group {
                 #if DEBUG
-                    if ProcessInfo.processInfo.arguments.contains("--ui-test-photo-crop") {
+                    if ProcessInfo.processInfo.arguments.contains("--ui-test-discovery-transitions") {
+                        DiscoveryTransitionJourneyFixture()
+                    } else if ProcessInfo.processInfo.arguments.contains("--ui-test-photo-crop") {
                         PhotoCropJourneyFixture()
                     } else if ProcessInfo.processInfo.arguments.contains("--ui-test-messaging") {
                         MessagingJourneyFixture()

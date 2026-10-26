@@ -118,7 +118,7 @@ final class MessagingJourneyTests: XCTestCase {
         XCTAssertTrue(email.waitForExistence(timeout: 10))
         email.tap()
         email.typeText("second@example.test")
-        app.buttons["Send sign-in code"].tap()
+        app.buttons["signup.sendCode"].tap()
         let code = app.textFields["signup.code"]
         XCTAssertTrue(code.waitForExistence(timeout: 10))
         code.tap()
@@ -148,7 +148,7 @@ final class MessagingJourneyTests: XCTestCase {
         XCTAssertTrue(phone.waitForExistence(timeout: 10))
         phone.tap()
         phone.typeText("4805550142")
-        app.buttons["Send sign-in code"].tap()
+        app.buttons["signup.sendCode"].tap()
         let code = app.textFields["signup.code"]
         XCTAssertTrue(code.waitForExistence(timeout: 10))
         code.tap()
