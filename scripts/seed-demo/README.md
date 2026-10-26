@@ -35,11 +35,12 @@ product or marketing.
 
 ## Optional extra gallery photos
 
-Download a small pool of nature/activity photos from [Pexels](https://www.pexels.com/license/)
-or [Unsplash](https://unsplash.com/license). These are free under their respective
+Download a small pool of nature/activity photos from
+[Pexels](https://www.pexels.com/license/) or
+[Unsplash](https://unsplash.com/license). These are free under their respective
 licenses, rather than public-domain images. Save the source page and license for
-each download. Two images are enough; 10–15 gives more variety. Reuse is fine for
-these explicitly fictional internal fixtures.
+each download. Two images are enough; 10–15 gives more variety. Reuse is fine
+for these explicitly fictional internal fixtures.
 
 Store JPEG/PNG files in the ignored `scripts/seed-demo/photos/` directory and
 edit `scripts/seed-demo/gallery-photos.json`, for example:
@@ -59,18 +60,19 @@ edit `scripts/seed-demo/gallery-photos.json`, for example:
 ]
 ```
 
-An empty catalog (the default) preserves existing extra photos. With at least two
-entries, the same `--apply` command keeps every main portrait and assigns 17 users
-no extras, 17 one extra, and 16 two extras. The assignments depend on fixture ID
-and catalog order, so reruns stay stable. A configured pool reconciles both extra
-slots, including deleting previously uploaded extras beyond the assigned count.
-It only touches owned seed accounts in the pinned test project. It never modifies
-real users, selfies, or production. No app changes or schema migration are needed.
+An empty catalog (the default) preserves existing extra photos. With at least
+two entries, the same `--apply` command keeps every main portrait and assigns 17
+users no extras, 17 one extra, and 16 two extras. The assignments depend on
+fixture ID and catalog order, so reruns stay stable. A configured pool
+reconciles both extra slots, including deleting previously uploaded extras
+beyond the assigned count. It only touches owned seed accounts in the pinned
+test project. It never modifies real users, selfies, or production. No app
+changes or schema migration are needed.
 
 All source images are validated and normalized before any writes. Shared stock
-images are decoded once per run, then uploaded into each account's private slots.
-Run the dry run first to check preparation and the planned distribution. An
-interrupted upload can leave a partial gallery; rerun to finish it.
+images are decoded once per run, then uploaded into each account's private
+slots. Run the dry run first to check preparation and the planned distribution.
+An interrupted upload can leave a partial gallery; rerun to finish it.
 
 ## Dry run
 
