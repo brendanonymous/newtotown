@@ -88,25 +88,25 @@ struct PhotoSubmissionView: View {
     @ViewBuilder private var profilePhotos: some View {
         let photos = model.photos.profilePhotos
         if !photos.isEmpty {
-            ProfilePhotoGallery(count: photos.count, selection: $previewIndex) { index in
+            ProfilePhotoGallery(
+                count: photos.count, selection: $previewIndex,
+                onReplace: { choosePhoto(replacing: $0) },
+                onRemove: { index in
+                    if photos.count == 1 && model.hasStoredPhotos {
+                        confirmsRemoval = true
+                    } else {
+                        model.removeProfile(at: index)
+                        previewIndex = 0
+                    }
+                }
+            ) { index in
                 if let image = UIImage(data: photos[index]) {
                     Image(uiImage: image).resizable().scaledToFill()
                 }
             }
+            .disabled(isBusy)
             Text("\(photos.count) of 3 photos · First photo is your main photo")
                 .font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
-            HStack(spacing: 24) {
-                Button("Replace photo") { choosePhoto(replacing: min(previewIndex, photos.count - 1)) }
-                    .accessibilityIdentifier("photos.replace")
-                if photos.count > 1 {
-                    Button("Remove photo", role: .destructive) {
-                        model.removeProfile(at: min(previewIndex, photos.count - 1))
-                        previewIndex = 0
-                    }
-                    .accessibilityIdentifier("photos.removeOne")
-                }
-            }
-            .disabled(isBusy)
         }
         if photos.count < PrivatePhotos.maximumProfilePhotos {
             Button {
@@ -141,13 +141,14 @@ struct PhotoSubmissionView: View {
             .buttonStyle(.borderedProminent).foregroundStyle(BrandTheme.background)
             .disabled(!model.canSave || isPreparingImage).accessibilityIdentifier("photos.save")
         }
-        if model.hasStoredPhotos {
+        if model.hasStoredPhotos && model.photos.profilePhotos.isEmpty {
             Button("Remove my photos", role: .destructive) { confirmsRemoval = true }
                 .disabled(isBusy).accessibilityIdentifier("photos.remove")
         }
     }
 
     private func choosePhoto(replacing index: Int?) {
+        guard !isBusy else { return }
         replacementIndex = index
         showsPhotoPicker = true
     }

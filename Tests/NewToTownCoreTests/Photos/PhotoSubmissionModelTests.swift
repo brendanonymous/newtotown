@@ -252,9 +252,9 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
 @Test @MainActor func galleryDraftSurvivesFailedSaveAndOnePhotoCannotBeRemovedAccidentally() async {
     let service = TestPhotoService()
     service.policy = PhotoRequirements(reviewRequired: false)
+    service.stored = PrivatePhotos(profile: jpeg)
     let model = PhotoSubmissionModel(service: service)
     await model.load()
-    model.addProfile(jpeg)
     model.removeProfile(at: 0)
     #expect(model.photos.profilePhotos.count == 1)
     model.addProfile(jpeg)
@@ -265,4 +265,16 @@ private let jpeg = Data([0xff, 0xd8, 0xff, 0x01, 0xff, 0xd9])
     service.failSave = false
     await model.save()
     #expect(service.stored.profilePhotos.count == 3 && model.isSaved)
+}
+
+@Test @MainActor func removingTheLastUnsavedPhotoOnlyClearsTheLocalDraft() async {
+    let service = TestPhotoService()
+    service.policy = PhotoRequirements(reviewRequired: false)
+    let model = PhotoSubmissionModel(service: service)
+    await model.load()
+    model.addProfile(jpeg)
+    model.removeProfile(at: 0)
+    #expect(model.photos.profilePhotos.isEmpty)
+    #expect(!model.canSave && !model.hasStoredPhotos && !model.isSaved)
+    #expect(service.saves == 0 && service.stored.profile == nil)
 }

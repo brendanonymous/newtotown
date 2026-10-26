@@ -24,6 +24,22 @@ final class PhotoGalleryJourneyTests: XCTestCase {
         let remove = app.buttons["photos.removeOne"]
         XCTAssertTrue(remove.waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["photos.choose"].exists)
+        XCTAssertFalse(app.buttons["photos.replace"].exists)
+        XCTAssertFalse(app.buttons["photos.remove"].exists)
+        let editorGallery = app.buttons["photos.editorGallery"]
+        editorGallery.swipeLeft()
+        XCTAssertEqual(editorGallery.value as? String, "2 of 3")
+        XCTAssertTrue(editorGallery.isHittable, "Browsing must not open the replacement picker")
+        capture(app, name: "My photos with corner removal")
+        editorGallery.tap()
+        let cancel = app.buttons["Cancel"].firstMatch
+        XCTAssertTrue(
+            cancel.waitForExistence(timeout: 8), "Tapping a photo should open the replacement picker")
+        cancel.tap()
+        XCTAssertTrue(remove.waitForExistence(timeout: 5))
+        XCTAssertEqual(editorGallery.value as? String, "2 of 3")
+        XCTAssertGreaterThan(remove.frame.midX, editorGallery.frame.midX)
+        XCTAssertLessThan(remove.frame.midY, editorGallery.frame.midY)
         remove.tap()
         XCTAssertTrue(app.buttons["photos.choose"].exists)
         app.buttons["photos.save"].tap()

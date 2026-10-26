@@ -63,7 +63,9 @@ public final class PhotoSubmissionModel {
     /// separate, confirmed server action so an empty draft cannot look saved.
     public func removeProfile(at index: Int) {
         var remaining = photos.profilePhotos
-        guard !isBusy, remaining.count > 1, remaining.indices.contains(index) else { return }
+        guard !isBusy, remaining.indices.contains(index),
+            remaining.count > 1 || !hasStoredPhotos
+        else { return }
         remaining.remove(at: index)
         photos.profile = remaining.first
         photos.additionalProfiles = Array(remaining.dropFirst())
