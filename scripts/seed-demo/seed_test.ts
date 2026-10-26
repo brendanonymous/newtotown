@@ -1,3 +1,4 @@
+import { galleryFor, validateGallery } from "./gallery.ts";
 import {
   assertTestDatabase,
   emailFor,
@@ -172,4 +173,96 @@ Deno.test("cleanup deletes Storage bytes before Auth and stops if file removal f
   assert(
     count === 1 && error.includes("503") && !error.includes("not printed"),
   );
+});
+
+Deno.test("gallery assignment is stable and covers one, two and three total photos", () => {
+  const pool = validateGallery([
+    {
+      file: "photos/gallery-desert.jpg",
+      source_url: "https://example.com/desert",
+      license: "Pexels",
+    },
+    {
+      file: "photos/gallery-mountain.jpg",
+      source_url: "https://example.com/mountain",
+      license: "Pexels",
+    },
+  ]);
+  const profiles = validateProfiles(raw);
+  const counts = [0, 0, 0];
+  for (const profile of profiles) {
+    const selected = galleryFor(profile, pool);
+    counts[selected.length]++;
+    assert(
+      new Set(selected.map((photo) => photo.file)).size === selected.length,
+    );
+    assert(
+      JSON.stringify(selected) === JSON.stringify(galleryFor(profile, pool)),
+    );
+  }
+  assert(JSON.stringify(counts) === "[17,17,16]");
+  assert(galleryFor(profiles[0], []).length === 0);
+  for (
+    const value of [
+      null,
+      [pool[0]],
+      [{ ...pool[0], file: "../../secret.jpg" }, pool[1]],
+      [pool[0], pool[0]],
+      [{ ...pool[0], license: "" }, pool[1]],
+    ]
+  ) {
+    rejects(() => validateGallery(value));
+  }
+});
+
+Deno.test("gallery upload precedes stale-slot removal; failed upload never removes photos or enables visibility", async () => {
+  const id = "00000000-0000-0000-0000-000000000041";
+  class FakeBackend extends SeedBackend {
+    queries: string[] = [];
+    override sql(query: string): Promise<string> {
+      this.queries.push(query);
+      return Promise.resolve("");
+    }
+  }
+  const requests: { path: string; method: string; body: unknown }[] = [];
+  const backend = new FakeBackend(
+    settings,
+    ((url, init) => {
+      requests.push({
+        path: new URL(String(url)).pathname,
+        method: init!.method!,
+        body: init!.body,
+      });
+      return Promise.resolve(Response.json({}));
+    }) as typeof fetch,
+  );
+  await backend.upload(id, new Uint8Array([1]), [new Uint8Array([2])]);
+  assert(
+    requests[0].path.endsWith("/profile.jpg") &&
+      requests[1].path.endsWith("/profile-2.jpg"),
+  );
+  assert(requests[2].method === "DELETE");
+  assert(
+    JSON.stringify(JSON.parse(String(requests[2].body)).prefixes) ===
+      JSON.stringify([`${id}/profile-3.jpg`]),
+  );
+  assert(backend.queries.length === 1);
+  requests.length = 0;
+  await backend.upload(id, new Uint8Array([1]));
+  assert(requests.length === 1 && requests[0].method === "POST");
+  let attempts = 0;
+  const failed = new FakeBackend(
+    settings,
+    (() => {
+      attempts++;
+      return Promise.resolve(Response.json({}, { status: 503 }));
+    }) as typeof fetch,
+  );
+  let rejected = false;
+  try {
+    await failed.upload(id, new Uint8Array([1]), []);
+  } catch {
+    rejected = true;
+  }
+  assert(rejected && attempts === 1 && failed.queries.length === 0);
 });
