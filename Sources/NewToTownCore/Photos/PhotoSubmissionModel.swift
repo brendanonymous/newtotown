@@ -10,6 +10,7 @@ public final class PhotoSubmissionModel {
     public private(set) var isLoaded = false
     public private(set) var isSaved = false
     public private(set) var hasStoredPhotos = false
+    public var hasUnsavedChanges: Bool { isLoaded && photos != savedPhotos }
 
     public var canSave: Bool {
         guard let requirements else { return false }
@@ -18,6 +19,7 @@ public final class PhotoSubmissionModel {
     public private(set) var errorMessage: String?
 
     private let service: any PhotoService
+    private var savedPhotos = PrivatePhotos()
     public init(service: any PhotoService) { self.service = service }
 
     public func load() async {
@@ -28,6 +30,7 @@ public final class PhotoSubmissionModel {
         do {
             let requirements = try await service.requirements()
             photos = try await service.load()
+            savedPhotos = photos
             self.requirements = requirements
             hasStoredPhotos = !photos.profilePhotos.isEmpty || photos.selfie != nil
             isLoaded = true
@@ -102,6 +105,7 @@ public final class PhotoSubmissionModel {
                 additionalProfiles: photos.additionalProfiles
             )
             try await service.save(submission)
+            savedPhotos = photos
             hasStoredPhotos = true
             isSaved = true
         } catch let error as PhotoValidationError {
@@ -120,6 +124,7 @@ public final class PhotoSubmissionModel {
         do {
             try await service.remove()
             photos = PrivatePhotos()
+            savedPhotos = photos
             hasStoredPhotos = false
             isSaved = false
         } catch {

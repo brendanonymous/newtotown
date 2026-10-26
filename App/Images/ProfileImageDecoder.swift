@@ -7,6 +7,10 @@ enum ProfileImageDecodingError: Error { case invalidData }
 struct ProfileImagePixels: @unchecked Sendable { let cgImage: CGImage }
 
 enum ProfileImageDecoder {
+    static func pixels(for size: CGSize, scale: CGFloat) -> Int {
+        Int(min(1200, max(1, max(size.width, size.height) * scale)))
+    }
+
     /// Decode only the pixels needed by the view, rather than a full-size bitmap.
     static func decode(_ data: Data, pixels: Int) throws -> ProfileImagePixels {
         guard pixels > 0,

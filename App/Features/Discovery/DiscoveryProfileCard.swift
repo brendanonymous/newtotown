@@ -3,6 +3,7 @@ import SwiftUI
 
 struct DiscoveryProfileCard: View {
     let profile: DiscoveryProfile
+    var pendingDecision: ConnectionChoice? = nil
     var onDecision: ((ConnectionChoice) -> Void)? = nil
 
     var body: some View {
@@ -16,7 +17,8 @@ struct DiscoveryProfileCard: View {
             .id(profile.id)
         } actions: {
             if let onDecision {
-                DiscoveryDecisionButtons(name: profile.firstName, onDecision: onDecision)
+                DiscoveryDecisionButtons(
+                    name: profile.firstName, pendingDecision: pendingDecision, onDecision: onDecision)
             }
         }
     }

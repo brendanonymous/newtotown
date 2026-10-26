@@ -41,6 +41,40 @@ private func photoURL(expiry: Int = 1060, version: String = "one", owner: UUID =
     )!
 }
 
+@Test func decodedPhotoIdentityIgnoresOnlyTheSignature() throws {
+    let owner = UUID()
+    let now = Date(timeIntervalSince1970: 1000)
+    let original = photoURL(owner: owner)
+    let renewed = photoURL(expiry: 1090, version: "renewed", owner: owner)
+    let identity = try AuthorizedPhotoLoader.resourceURL(for: original, now: now)
+    #expect(identity == (try AuthorizedPhotoLoader.resourceURL(for: renewed, now: now)))
+    for changed in [
+        original.absoluteString.replacingOccurrences(of: "photos.example.test", with: "other.example.test"),
+        photoURL(owner: UUID()).absoluteString,
+        original.absoluteString.replacingOccurrences(of: "profile.jpg", with: "profile-2.jpg"),
+        original.absoluteString + "&width=100",
+    ] {
+        #expect(try AuthorizedPhotoLoader.resourceURL(for: URL(string: changed)!, now: now) != identity)
+    }
+}
+
+@Test func decodedPhotoIdentityRejectsExpiredUnsignedAndPrivateSelfieURLs() throws {
+    let now = Date(timeIntervalSince1970: 1000)
+    #expect(throws: AuthorizedPhotoError.expired) {
+        try AuthorizedPhotoLoader.resourceURL(for: photoURL(expiry: 999), now: now)
+    }
+    for invalid in [
+        "https://photos.example.test/\(UUID())/profile.jpg",
+        photoURL().absoluteString.replacingOccurrences(of: "profile.jpg", with: "selfie.jpg"),
+        photoURL().absoluteString.replacingOccurrences(of: "https:", with: "http:"),
+        photoURL().absoluteString + "&token=duplicate",
+    ] {
+        #expect(throws: AuthorizedPhotoError.invalidURL) {
+            try AuthorizedPhotoLoader.resourceURL(for: URL(string: invalid)!, now: now)
+        }
+    }
+}
+
 @Test func concurrentPhotoConsumersShareARequestAndCancellationDoesNotCancelOthers() async throws {
     let clock = PhotoClock()
     let stub = PhotoDownloadStub()

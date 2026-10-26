@@ -23,7 +23,7 @@ struct PhotoSubmissionView: View {
     private var reviewRequired: Bool { model.requirements?.reviewRequired ?? true }
 
     var body: some View {
-        EditorSheet(isBusy: isBusy) {
+        EditorSheet(isBusy: isBusy, hasUnsavedChanges: model.hasUnsavedChanges) {
             ScrollView {
                 VStack(spacing: 24) {
                     Text("Show up as yourself.").font(.system(.largeTitle, design: .serif))
