@@ -65,7 +65,8 @@ struct NewToTownApp: App {
 
     var body: some Scene {
         WindowGroup {
-            Group {
+            // Keep URL-result presentation attached while session routing changes.
+            ZStack {
                 #if DEBUG
                     if ProcessInfo.processInfo.arguments.contains("--ui-test-discovery-transitions") {
                         DiscoveryTransitionJourneyFixture()
