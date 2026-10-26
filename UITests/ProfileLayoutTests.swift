@@ -30,8 +30,9 @@ final class ProfileLayoutTests: XCTestCase {
         XCTAssertTrue(app.buttons["photos.removeOne"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["photos.save"].exists)
         app.buttons["photos.removeOne"].tap()
-        app.alerts.buttons["Remove photos"].tap()
         XCTAssertTrue(app.buttons["photos.choose"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.alerts.firstMatch.exists)
+        XCTAssertFalse(app.buttons["photos.removeOne"].exists)
         XCTAssertFalse(app.buttons["photos.remove"].exists)
     }
 

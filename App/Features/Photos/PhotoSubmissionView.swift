@@ -12,7 +12,6 @@ struct PhotoSubmissionView: View {
     @State private var cropSelection: PhotoCropSelection?
     @State private var replacementIndex: Int?
     @State private var previewIndex = 0
-    @State private var confirmsRemoval = false
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
 
@@ -73,14 +72,6 @@ struct PhotoSubmissionView: View {
                     }
                 }.ignoresSafeArea()
             }
-            .alert("Remove your photos?", isPresented: $confirmsRemoval) {
-                Button("Cancel", role: .cancel) {}
-                Button("Remove photos", role: .destructive) { Task { await model.remove() } }
-            } message: {
-                Text(
-                    "This removes all your profile photos and any previously uploaded selfie. You can add photos again later."
-                )
-            }
         }
         .tint(BrandTheme.ink)
     }
@@ -93,7 +84,7 @@ struct PhotoSubmissionView: View {
                 onReplace: { choosePhoto(replacing: $0) },
                 onRemove: { index in
                     if photos.count == 1 && model.hasStoredPhotos {
-                        confirmsRemoval = true
+                        Task { await model.remove() }
                     } else {
                         model.removeProfile(at: index)
                         previewIndex = 0
@@ -142,7 +133,7 @@ struct PhotoSubmissionView: View {
             .disabled(!model.canSave || isPreparingImage).accessibilityIdentifier("photos.save")
         }
         if model.hasStoredPhotos && model.photos.profilePhotos.isEmpty {
-            Button("Remove my photos", role: .destructive) { confirmsRemoval = true }
+            Button("Remove my photos", role: .destructive) { Task { await model.remove() } }
                 .disabled(isBusy).accessibilityIdentifier("photos.remove")
         }
     }

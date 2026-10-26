@@ -60,7 +60,7 @@ public final class PhotoSubmissionModel {
     }
 
     /// Removing the main photo promotes the next photo. Remove-all remains a
-    /// separate, confirmed server action so an empty draft cannot look saved.
+    /// separate server action so an empty draft cannot look saved.
     public func removeProfile(at index: Int) {
         var remaining = photos.profilePhotos
         guard !isBusy, remaining.indices.contains(index),
