@@ -34,7 +34,10 @@ import UIKit
     func image(for url: URL, pixels: Int) async throws -> UIImage {
         try Task.checkCancellation()
         guard !isExcluded(url) else { throw AuthorizedPhotoError.unavailable }
-        let key = Key(url: url, pixels: max(1, min(1200, pixels)))
+        // A new feed can renew the signature for the same object. Reuse only a
+        // still-valid bitmap; its original deadline is never extended by a hit.
+        let resource = try AuthorizedPhotoLoader.resourceURL(for: url)
+        let key = Key(url: resource, pixels: max(1, min(1200, pixels)))
         sequence += 1
         if var entry = cache[key], entry.photo.expiresAt > Date() {
             entry.lastUse = sequence

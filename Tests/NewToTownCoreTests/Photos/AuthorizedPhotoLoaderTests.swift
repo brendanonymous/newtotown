@@ -41,6 +41,40 @@ private func photoURL(expiry: Int = 1060, version: String = "one", owner: UUID =
     )!
 }
 
+@Test func decodedPhotoIdentityIgnoresOnlyTheSignature() throws {
+    let owner = UUID()
+    let now = Date(timeIntervalSince1970: 1000)
+    let original = photoURL(owner: owner)
+    let renewed = photoURL(expiry: 1090, version: "renewed", owner: owner)
+    let identity = try AuthorizedPhotoLoader.resourceURL(for: original, now: now)
+    #expect(identity == (try AuthorizedPhotoLoader.resourceURL(for: renewed, now: now)))
+    for changed in [
+        original.absoluteString.replacingOccurrences(of: "photos.example.test", with: "other.example.test"),
+        photoURL(owner: UUID()).absoluteString,
+        original.absoluteString.replacingOccurrences(of: "profile.jpg", with: "profile-2.jpg"),
+        original.absoluteString + "&width=100",
+    ] {
+        #expect(try AuthorizedPhotoLoader.resourceURL(for: URL(string: changed)!, now: now) != identity)
+    }
+}
+
+@Test func decodedPhotoIdentityRejectsExpiredUnsignedAndPrivateSelfieURLs() throws {
+    let now = Date(timeIntervalSince1970: 1000)
+    #expect(throws: AuthorizedPhotoError.expired) {
+        try AuthorizedPhotoLoader.resourceURL(for: photoURL(expiry: 999), now: now)
+    }
+    for invalid in [
+        "https://photos.example.test/\(UUID())/profile.jpg",
+        photoURL().absoluteString.replacingOccurrences(of: "profile.jpg", with: "selfie.jpg"),
+        photoURL().absoluteString.replacingOccurrences(of: "https:", with: "http:"),
+        photoURL().absoluteString + "&token=duplicate",
+    ] {
+        #expect(throws: AuthorizedPhotoError.invalidURL) {
+            try AuthorizedPhotoLoader.resourceURL(for: URL(string: invalid)!, now: now)
+        }
+    }
+}
+
 @Test func concurrentPhotoConsumersShareARequestAndCancellationDoesNotCancelOthers() async throws {
     let clock = PhotoClock()
     let stub = PhotoDownloadStub()
@@ -146,4 +180,20 @@ private func photoURL(expiry: Int = 1060, version: String = "one", owner: UUID =
     let oversized = AuthorizedPhotoLoader(
         now: { clock.now() }, download: { _ in Data(count: PrivatePhotos.maximumFileSize + 1) })
     await #expect(throws: AuthorizedPhotoError.invalidData) { try await oversized.load(photoURL()) }
+}
+
+@Test func allThreeGallerySlotsAreAllowedButSelfiesAndFourthPhotosAreRejected() async throws {
+    let clock = PhotoClock()
+    let stub = PhotoDownloadStub()
+    let loader = AuthorizedPhotoLoader(now: { clock.now() }, download: { try await stub.download($0) })
+    let original = photoURL()
+    for name in ["profile.jpg", "profile-2.jpg", "profile-3.jpg"] {
+        let url = URL(string: original.absoluteString.replacingOccurrences(of: "profile.jpg", with: name))!
+        #expect(try await loader.load(url).data == Data([1, 2]))
+    }
+    for name in ["selfie.jpg", "profile-4.jpg"] {
+        let url = URL(string: original.absoluteString.replacingOccurrences(of: "profile.jpg", with: name))!
+        await #expect(throws: AuthorizedPhotoError.invalidURL) { try await loader.load(url) }
+    }
+    #expect(await stub.calls == 3)
 }

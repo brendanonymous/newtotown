@@ -26,7 +26,7 @@ struct RemoteProfilePhoto: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let pixels = Int(min(1200, max(1, max(geometry.size.width, geometry.size.height) * displayScale)))
+            let pixels = ProfileImageDecoder.pixels(for: geometry.size, scale: displayScale)
             Group {
                 if let image {
                     Image(uiImage: image).resizable().scaledToFill()
