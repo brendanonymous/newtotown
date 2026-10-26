@@ -114,6 +114,23 @@ public actor AuthorizedPhotoLoader {
         bytes = 0
     }
 
+    /// Stable identity for a currently valid signed photo, suitable for an
+    /// account-scoped decoded-image cache. Keep the downloaded source's expiry;
+    /// this validates retention bounds, not the signature (Storage does that).
+    public static func resourceURL(for url: URL, now: Date = Date()) throws -> URL {
+        _ = try owner(of: url)
+        _ = try expiry(of: url, now: now)
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+            components.host != nil,
+            components.queryItems?.filter({ $0.name == "token" }).count == 1
+        else { throw AuthorizedPhotoError.invalidURL }
+        components.queryItems = components.queryItems?.filter { $0.name != "token" }
+        if components.queryItems?.isEmpty == true { components.queryItems = nil }
+        components.fragment = nil
+        guard let resource = components.url else { throw AuthorizedPhotoError.invalidURL }
+        return resource
+    }
+
     private func store(_ photo: AuthorizedPhotoData, for url: URL) {
         guard photo.data.count <= maximumBytes else { return }
         remove(url)
@@ -136,7 +153,8 @@ public actor AuthorizedPhotoLoader {
     }
 
     private static func owner(of url: URL) throws -> UUID {
-        guard url.scheme == "https", url.lastPathComponent == "profile.jpg",
+        guard url.scheme == "https",
+            ["profile.jpg", "profile-2.jpg", "profile-3.jpg"].contains(url.lastPathComponent),
             let owner = UUID(uuidString: url.deletingLastPathComponent().lastPathComponent)
         else { throw AuthorizedPhotoError.invalidURL }
         return owner

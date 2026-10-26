@@ -5,6 +5,7 @@ import SwiftUI
 struct ContactDetailsView: View {
     @State private var model: ContactDetailsModel
     let onVerified: () -> Void
+    @Environment(EmailVerificationRouter.self) private var emailVerification
     @Environment(\.dismiss) private var dismiss
 
     init(kind: ContactDetailKind, service: any ContactDetailsService, onVerified: @escaping () -> Void) {
@@ -18,8 +19,15 @@ struct ContactDetailsView: View {
                 Text(model.kind == .email ? "Add email" : "Add phone number")
                     .font(.system(.largeTitle, design: .serif))
                 if let destination = model.destination {
-                    Text("Enter the code sent to \(destination.value).")
-                        .foregroundStyle(BrandTheme.secondaryInk)
+                    Text(
+                        model.kind == .email
+                            ? "Open the verification link sent to \(destination.value). You can also enter the code from the email."
+                            : "Enter the code sent to \(destination.value)."
+                    )
+                    .foregroundStyle(BrandTheme.secondaryInk)
+                    if model.kind == .email {
+                        Button("I’ve verified my email") { Task { await finishEmailVerification() } }
+                    }
                     TextField("Verification code", text: $model.code)
                         .keyboardType(.numberPad).textContentType(.oneTimeCode)
                         .accessibilityIdentifier("contact.code")
@@ -37,7 +45,8 @@ struct ContactDetailsView: View {
                     TimelineView(.periodic(from: .now, by: 1)) { context in
                         let remaining = max(
                             0, Int(ceil(model.resendAvailableAt.timeIntervalSince(context.date))))
-                        Button(remaining > 0 ? "Resend code in \(remaining)s" : "Resend code") {
+                        let label = model.kind == .email ? "Resend email" : "Resend code"
+                        Button(remaining > 0 ? "\(label) in \(remaining)s" : label) {
                             Task { await model.resend() }
                         }
                         .disabled(remaining > 0 || model.isBusy)
@@ -46,8 +55,12 @@ struct ContactDetailsView: View {
                         model.reset()
                     }
                 } else {
-                    Text("We’ll send a code to verify this contact before adding it to your account.")
-                        .foregroundStyle(BrandTheme.secondaryInk)
+                    Text(
+                        model.kind == .email
+                            ? "We’ll send a verification link to add this email to your account."
+                            : "We’ll send a code to verify this phone number before adding it to your account."
+                    )
+                    .foregroundStyle(BrandTheme.secondaryInk)
                     TextField(model.kind == .email ? "Email address" : "Phone number", text: $model.input)
                         .keyboardType(model.kind == .email ? .emailAddress : .phonePad)
                         .textContentType(model.kind == .email ? .emailAddress : .telephoneNumber)
@@ -57,10 +70,12 @@ struct ContactDetailsView: View {
                         Text("US numbers can use ten digits. Include the country code for other countries.")
                             .font(.callout).foregroundStyle(BrandTheme.secondaryInk)
                     }
-                    Button("Send code") { Task { await model.requestCode() } }
-                        .buttonStyle(.borderedProminent).tint(BrandTheme.ink)
-                        .foregroundStyle(BrandTheme.background)
-                        .accessibilityIdentifier("contact.send")
+                    Button(model.kind == .email ? "Send verification email" : "Send code") {
+                        Task { await model.requestCode() }
+                    }
+                    .buttonStyle(.borderedProminent).tint(BrandTheme.ink)
+                    .foregroundStyle(BrandTheme.background)
+                    .accessibilityIdentifier("contact.send")
                 }
                 if model.isBusy { ProgressView() }
                 if let error = model.errorMessage {
@@ -76,6 +91,19 @@ struct ContactDetailsView: View {
         .foregroundStyle(BrandTheme.ink).background(BrandTheme.background)
         .navigationTitle("").navigationBarTitleDisplayMode(.inline)
         .toolbar { BrandNavigationLogo() }.toolbar(.hidden, for: .tabBar)
-        .onDisappear { model.reset() }
+        .onDisappear {
+            // A verification result can temporarily cover this editor.
+            if emailVerification.callback == nil { model.reset() }
+        }
+        .onChange(of: emailVerification.completedCount) { _, _ in
+            Task { await finishEmailVerification() }
+        }
+    }
+
+    private func finishEmailVerification() async {
+        if await model.checkEmailVerification() {
+            onVerified()
+            dismiss()
+        }
     }
 }

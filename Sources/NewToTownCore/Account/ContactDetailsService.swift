@@ -42,9 +42,11 @@ public enum ContactDetailsError: Error, Equatable, Sendable {
 }
 
 public protocol ContactDetailsService: Sendable {
-    /// Only adds missing contacts. The server sends a confirmation code; no account is created.
+    /// Only adds missing contacts. Auth sends a verification email or SMS code; no account is created.
     func requestVerification(for destination: ContactDestination) async throws
     func resendVerification(for destination: ContactDestination) async throws
+    /// Checks Auth after a browser verification; never adopts a session from a callback URL.
+    func confirmedEmail() async throws -> PersonalInfo
     /// Returns fresh, confirmed details for the original authenticated owner.
     func verify(_ destination: ContactDestination, code: String) async throws -> PersonalInfo
 }

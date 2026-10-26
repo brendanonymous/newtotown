@@ -17,7 +17,34 @@ export async function signProfilePhotos(
   headers: Record<string, string>,
   send: typeof fetch,
 ): Promise<Map<string, string>> {
-  const paths = [...new Set(profiles.map((card) => `${card.id}/profile.jpg`))];
+  const people = [...new Set(profiles.map((card) => card.id))];
+  if (!people.length) return new Map();
+  const metadata = await send(
+    `${projectURL}/rest/v1/rpc/pilot_profile_photo_paths`,
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ people }),
+      signal: AbortSignal.timeout(15_000),
+    },
+  );
+  if (!metadata.ok) throw new Error("Photo metadata unavailable");
+  const paths: unknown = await metadata.json();
+  const permitted = new Set(
+    people.flatMap((id) =>
+      ["profile.jpg", "profile-2.jpg", "profile-3.jpg"].map((name) =>
+        `${id}/${name}`
+      )
+    ),
+  );
+  if (
+    !Array.isArray(paths) || paths.length > people.length * 3 ||
+    new Set(paths).size !== paths.length ||
+    paths.some((path) => !permitted.has(path)) ||
+    people.some((id) => !paths.includes(`${id}/profile.jpg`))
+  ) {
+    throw new Error("Invalid photo metadata");
+  }
   const urls = new Map<string, string>();
   if (!paths.length) return urls;
   const signed = await send(
@@ -35,7 +62,7 @@ export async function signProfilePhotos(
   for (const item of results) {
     if (
       paths.includes(item.path) && typeof item.signedURL === "string" &&
-      !item.error
+      !item.error && !urls.has(item.path)
     ) {
       const expected = `/object/sign/private-photos/${item.path}?`;
       if (!item.signedURL.startsWith(expected)) {
@@ -71,4 +98,15 @@ export function readCards(value: unknown, maximum: number): Card[] {
         : { interests: readInterests(card.interests) }),
     };
   });
+}
+
+/** Preserve main-photo compatibility for avatars while exposing an ordered gallery. */
+export function profilePhotoURLs(
+  id: string,
+  urls: Map<string, string>,
+): string[] {
+  return ["profile.jpg", "profile-2.jpg", "profile-3.jpg"]
+    .map((name) => urls.get(`${id}/${name}`)).filter((url): url is string =>
+      !!url
+    );
 }

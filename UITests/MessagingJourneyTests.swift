@@ -2,16 +2,18 @@ import XCTest
 
 final class MessagingJourneyTests: XCTestCase {
     @MainActor
-    func testProfilePhotosLoadThroughSharedImagePipeline() {
+    func testConversationProfileDisplaysAnInteractivePhotoGallery() {
         let app = launchFixture(emptyChat: true, profileImages: true)
         app.tabBars.buttons["Connections"].tap()
-        XCTAssertTrue(app.images["photo.loaded"].firstMatch.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["Message Alex"].waitForExistence(timeout: 10))
         app.buttons["Message Alex"].tap()
         let profile = app.buttons["chat.viewProfile"]
         XCTAssertTrue(profile.waitForExistence(timeout: 10))
         profile.tap()
-        // The enclosing profile card supplies its own accessibility identifier.
-        XCTAssertTrue(app.images["Profile photo"].firstMatch.waitForExistence(timeout: 10))
+        // The card supplies its own identifier; the gallery keeps its accessible label.
+        let gallery = app.buttons["Profile photos"]
+        XCTAssertTrue(gallery.waitForExistence(timeout: 10))
+        XCTAssertEqual(gallery.value as? String, "1 of 1")
         XCTAssertTrue(app.staticTexts["About me: Find a hiking buddy."].exists)
     }
 
@@ -116,7 +118,7 @@ final class MessagingJourneyTests: XCTestCase {
         XCTAssertTrue(email.waitForExistence(timeout: 10))
         email.tap()
         email.typeText("second@example.test")
-        app.buttons["Send sign-in code"].tap()
+        app.buttons["signup.sendCode"].tap()
         let code = app.textFields["signup.code"]
         XCTAssertTrue(code.waitForExistence(timeout: 10))
         code.tap()
@@ -146,7 +148,7 @@ final class MessagingJourneyTests: XCTestCase {
         XCTAssertTrue(phone.waitForExistence(timeout: 10))
         phone.tap()
         phone.typeText("4805550142")
-        app.buttons["Send sign-in code"].tap()
+        app.buttons["signup.sendCode"].tap()
         let code = app.textFields["signup.code"]
         XCTAssertTrue(code.waitForExistence(timeout: 10))
         code.tap()

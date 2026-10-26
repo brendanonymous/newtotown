@@ -13,6 +13,10 @@
                 phone: emailAccount ? nil : "+14805550123")
         }
         func load() -> PersonalInfo { info }
+        func confirmedEmail() throws -> PersonalInfo {
+            guard info.email != nil else { throw ContactDetailsError.invalidCode }
+            return info
+        }
         func requestVerification(for destination: ContactDestination) throws {
             guard destination.kind == .email ? info.email == nil : info.phone == nil else {
                 throw ContactDetailsError.alreadyProvided

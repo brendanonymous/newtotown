@@ -102,3 +102,71 @@ func contactVerificationRequiresConfirmedOwnerAndKeepsExistingSession(kind: Cont
     #expect(fixture.client.auth.currentSession?.accessToken == nextToken)
     #expect(fixture.client.auth.currentSession?.user.id == fixture.peer)
 }
+
+@Test func emailRequestAndResendCarryExplicitRedirectButSMSDoesNot() async throws {
+    let fixture = try MessagingHTTPFixture()
+    _ = try await fixture.signIn()
+    let redirect = EmailVerificationCallback.redirectURL(scheme: "com.newtotown.ios.test")
+    let service = SupabaseContactDetailsService(
+        client: fixture.client, accountID: fixture.owner, configuration: fixture.configuration,
+        session: fixture.session, emailRedirectURL: redirect)
+    try fixture.respond(["id": fixture.owner.uuidString], path: "/auth/v1/user")
+    try await service.requestVerification(for: destination(.email))
+    try fixture.respond([:], path: "/auth/v1/resend")
+    try await service.resendVerification(for: destination(.email))
+    for path in ["/auth/v1/user", "/auth/v1/resend"] {
+        let request = try #require(fixture.requests(to: path).last)
+        let url = try #require(request.url)
+        #expect(
+            URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems == [
+                URLQueryItem(name: "redirect_to", value: redirect.absoluteString)
+            ])
+    }
+    try await service.resendVerification(for: destination(.phone))
+    #expect(fixture.requests(to: "/auth/v1/resend").last?.url?.query == nil)
+}
+
+@Test func browserVerificationReadsConfirmedOriginalOwnerWithoutAcceptingURLSessions() async throws {
+    let fixture = try MessagingHTTPFixture()
+    let token = try await fixture.signIn()
+    try fixture.respond(
+        [
+            "id": fixture.owner.uuidString, "email": "alex@example.com",
+            "email_confirmed_at": "2026-10-25T00:00:00Z",
+        ], path: "/auth/v1/user")
+    #expect(try await contacts(fixture).confirmedEmail().email == "alex@example.com")
+    #expect(fixture.client.auth.currentSession?.accessToken == token)
+    #expect(fixture.requests(to: "/auth/v1/verify").isEmpty)
+    try fixture.respond(["id": fixture.owner.uuidString, "email": "alex@example.com"], path: "/auth/v1/user")
+    await #expect(throws: ContactDetailsError.invalidCode) { try await contacts(fixture).confirmedEmail() }
+    try fixture.respond(
+        [
+            "id": fixture.peer.uuidString, "email": "peer@example.com",
+            "email_confirmed_at": "2026-10-25T00:00:00Z",
+        ], path: "/auth/v1/user")
+    await #expect(throws: ContactDetailsError.signedOut) { try await contacts(fixture).confirmedEmail() }
+}
+
+@Test func browserConfirmationDiscardsALateResponseAfterSwitchingAccounts() async throws {
+    let fixture = try MessagingHTTPFixture()
+    _ = try await fixture.signIn()
+    try fixture.respond(
+        [
+            "id": fixture.owner.uuidString, "email": "alex@example.com",
+            "email_confirmed_at": "2026-10-25T00:00:00Z",
+        ], hold: true, path: "/auth/v1/user")
+    var started = fixture.started.stream.makeAsyncIterator()
+    let pending = Task { try await contacts(fixture).confirmedEmail() }
+    await started.next()
+    // The fixture intercepts GET /user for both clients. Switch using a fresh
+    // payload so the SDK can finish signing in, then release the original read.
+    try fixture.respond(
+        [
+            "id": fixture.peer.uuidString, "aud": "authenticated",
+            "created_at": "2026-10-17T00:00:00Z", "updated_at": "2026-10-17T00:00:00Z",
+        ], path: "/auth/v1/user")
+    let nextToken = try await fixture.signIn(fixture.peer)
+    fixture.release()
+    await #expect(throws: ContactDetailsError.signedOut) { try await pending.value }
+    #expect(fixture.client.auth.currentSession?.accessToken == nextToken)
+}

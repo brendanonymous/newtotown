@@ -10,15 +10,17 @@ public final class SupabaseContactDetailsService: ContactDetailsService {
     private let accountID: UUID
     private let configuration: SupabaseConfiguration
     private let session: URLSession
+    private let emailRedirectURL: URL?
 
     init(
         client: SupabaseClient, accountID: UUID, configuration: SupabaseConfiguration,
-        session: URLSession = .shared
+        session: URLSession = .shared, emailRedirectURL: URL? = nil
     ) {
         self.client = client
         self.accountID = accountID
         self.configuration = configuration
         self.session = session
+        self.emailRedirectURL = emailRedirectURL
     }
 
     public func requestVerification(for destination: ContactDestination) async throws {
@@ -30,7 +32,8 @@ public final class SupabaseContactDetailsService: ContactDetailsService {
         }
         // No confirmation flags or administrative credentials; Auth must send and verify the code.
         let data = try await request(
-            "user", method: "PUT", body: [destination.kind.rawValue: destination.value], token: token)
+            "user", method: "PUT", body: [destination.kind.rawValue: destination.value], token: token,
+            redirect: destination.kind == .email ? emailRedirectURL : nil)
         guard try JSONDecoder().decode(ContactUser.self, from: data).id == accountID else {
             throw ContactDetailsError.signedOut
         }
@@ -41,7 +44,7 @@ public final class SupabaseContactDetailsService: ContactDetailsService {
         _ = try await request(
             "resend", method: "POST",
             body: [destination.kind.rawValue: destination.value, "type": verificationType(destination)],
-            token: token)
+            token: token, redirect: destination.kind == .email ? emailRedirectURL : nil)
     }
 
     public func verify(_ destination: ContactDestination, code: String) async throws -> PersonalInfo {
@@ -60,6 +63,15 @@ public final class SupabaseContactDetailsService: ContactDetailsService {
         let confirmed = try await user(token: token)
         let timestamp = destination.kind == .email ? confirmed.emailConfirmedAt : confirmed.phoneConfirmedAt
         guard destination.matches(confirmed.info), timestamp?.isEmpty == false else {
+            throw ContactDetailsError.invalidCode
+        }
+        return confirmed.info
+    }
+
+    public func confirmedEmail() async throws -> PersonalInfo {
+        let token = try await credentials()
+        let confirmed = try await user(token: token)
+        guard confirmed.info.email != nil, confirmed.emailConfirmedAt?.isEmpty == false else {
             throw ContactDetailsError.invalidCode
         }
         return confirmed.info
@@ -86,12 +98,17 @@ public final class SupabaseContactDetailsService: ContactDetailsService {
 
     private func request(
         _ path: String, method: String, body: [String: String]?, token: String,
-        fallback: ContactDetailsError = .connection
+        redirect: URL? = nil, fallback: ContactDetailsError = .connection
     ) async throws -> Data {
         try Task.checkCancellation()
         guard client.auth.currentSession?.user.id == accountID else { throw ContactDetailsError.signedOut }
         var request = URLRequest(
             url: configuration.projectURL.appendingPathComponent("auth/v1").appendingPathComponent(path))
+        if let redirect {
+            request.url = request.url?.appending(queryItems: [
+                URLQueryItem(name: "redirect_to", value: redirect.absoluteString)
+            ])
+        }
         request.httpMethod = method
         request.timeoutInterval = 30
         request.cachePolicy = .reloadIgnoringLocalCacheData

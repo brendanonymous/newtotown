@@ -5,6 +5,7 @@ import Observation
 public final class DiscoveryModel {
     public private(set) var feed: DiscoveryFeed?
     public private(set) var isBusy = false
+    public private(set) var pendingDecision: ConnectionChoice?
     public private(set) var errorMessage: String?
     private let service: any DiscoveryService
     private var excludedProfileIDs: Set<UUID> = []
@@ -39,8 +40,12 @@ public final class DiscoveryModel {
         await perform { try await self.service.setVisible(visible) }
     }
 
-    public func decide(_ choice: ConnectionChoice) async {
-        guard let profile = feed?.candidates.first, feed?.state == .ready else { return }
+    public func decide(_ choice: ConnectionChoice, on expectedProfileID: UUID? = nil) async {
+        guard !isBusy, !Task.isCancelled, let profile = feed?.candidates.first,
+            feed?.state == .ready, expectedProfileID == nil || expectedProfileID == profile.id
+        else { return }
+        pendingDecision = choice
+        defer { pendingDecision = nil }
         await perform { try await self.service.decide(on: profile.id, choice: choice) }
     }
 

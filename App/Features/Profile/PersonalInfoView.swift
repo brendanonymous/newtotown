@@ -4,6 +4,7 @@ import SwiftUI
 struct PersonalInfoView: View {
     let contactsService: (any ContactDetailsService)?
     @State private var model: PersonalInfoModel
+    @Environment(EmailVerificationRouter.self) private var emailVerification
 
     init(service: any PersonalInfoService, contactsService: (any ContactDetailsService)? = nil) {
         self.contactsService = contactsService
@@ -39,6 +40,9 @@ struct PersonalInfoView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { BrandNavigationLogo() }
         .task { await model.load() }
+        .onChange(of: emailVerification.completedCount) { _, _ in
+            Task { await model.load() }
+        }
     }
 
     @ViewBuilder private func addContact(_ kind: ContactDetailKind) -> some View {
