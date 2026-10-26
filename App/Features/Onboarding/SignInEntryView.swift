@@ -10,11 +10,11 @@ struct SignInEntryView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            Text("Your next friend\nstarts here.").font(.system(.largeTitle, design: .serif))
+            Text("Let's get you connected.").font(.system(.largeTitle, design: .serif))
             Text(
                 usesEmail
                     ? "Sign in to your existing email account."
-                    : "Create an account or sign in with a text message code."
+                    : "We'll text you a code to sign in or create an account."
             )
             .foregroundStyle(BrandTheme.secondaryInk)
             if usesEmail {
@@ -26,11 +26,8 @@ struct SignInEntryView: View {
                 TextField("Phone number", text: $phone)
                     .keyboardType(.phonePad).textContentType(.telephoneNumber)
                     .textFieldStyle(BrandTextFieldStyle()).accessibilityIdentifier("signup.phone")
-                Text(
-                    "US numbers can be entered without +1. For other countries, include + and the country code."
-                )
-                .font(.caption).foregroundStyle(BrandTheme.secondaryInk)
-                Text("We’ll text you a sign-in code. Message and data rates may apply.")
+                
+                Text("Message and data rates may apply.")
                     .font(.caption).foregroundStyle(BrandTheme.secondaryInk)
             }
             Button {
@@ -42,13 +39,13 @@ struct SignInEntryView: View {
                     }
                 }
             } label: {
-                Text("Send sign-in code").font(.body.weight(.semibold))
+                Text("Send a code").font(.body.weight(.semibold))
                     .frame(maxWidth: .infinity).padding(18)
                     .foregroundStyle(BrandTheme.background)
                     .background(BrandTheme.ink, in: RoundedRectangle(cornerRadius: 18))
             }
             .accessibilityIdentifier("signup.sendCode")
-            Button(usesEmail ? "Use phone sign-in" : "Already joined with email? Sign in with email") {
+            Button(usesEmail ? "Use phone sign-in" : "Already joined with email? Sign in here.") {
                 model.restartSignIn()
                 phone = ""
                 email = ""

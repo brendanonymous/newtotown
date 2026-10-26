@@ -66,10 +66,7 @@ struct ContactDetailsView: View {
                         .textContentType(model.kind == .email ? .emailAddress : .telephoneNumber)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                         .accessibilityIdentifier("contact.input")
-                    if model.kind == .phone {
-                        Text("US numbers can use ten digits. Include the country code for other countries.")
-                            .font(.callout).foregroundStyle(BrandTheme.secondaryInk)
-                    }
+                    
                     Button(model.kind == .email ? "Send verification email" : "Send code") {
                         Task { await model.requestCode() }
                     }

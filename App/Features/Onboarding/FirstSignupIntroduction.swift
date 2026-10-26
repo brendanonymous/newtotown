@@ -8,9 +8,9 @@ struct FirstSignupIntroduction: View {
     @ScaledMetric(relativeTo: .body) private var slideHeight: CGFloat = 340
 
     private let slides: [(symbol: String, title: String, message: String)] = [
-        ("person.2", "Friends. Simply.", "newtotown is for platonic friendship. No dating or sexual solicitation."),
-        ("hand.raised", "Keep it respectful.", "Treat people with care. No harassment. You can block anyone or delete your account and all your data at any time."),
-        ("lock", "Your profile on your terms.", "We store your account details and photos. Joining discovery shares your first name, job, bio, and profile photo. You can remove your photos or hide your profile at any time.")
+        ("person.2", "Friends. Simply.", "NewToTown is for platonic friendship.\nNo dating or sexual solicitation."),
+        ("hand.raised", "Keep it respectful.", "Good friendships start with kindness. \nTreat others with respect, and report behavior that crosses the line."),
+        ("lock", "Your profile on your terms.", "When you join Discovery, others can see your name, job, bio, interests, and photos. \nYou're always in control. Remove photos or hide your profile whenever you want.")
     ]
 
     var body: some View {
@@ -43,11 +43,8 @@ struct FirstSignupIntroduction: View {
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Introduction page \(page + 1) of \(slides.count)")
             if page == slides.count - 1 {
-                Text("By tapping below, I agree to the storage and safety terms above, confirm I’m at least 18 years old, and commit to using newtotown only for platonic friendship.")
-                    .font(.footnote)
-                    .foregroundStyle(BrandTheme.secondaryInk)
-                    .multilineTextAlignment(.center)
-                Button("I agree — keep it platonic") { Task { await accept() } }
+                
+                Button("I agree") { Task { await accept() } }
                     .accessibilityIdentifier("signup.acceptAgreement")
                     .buttonStyle(.borderedProminent)
                     .foregroundStyle(BrandTheme.background)

@@ -72,7 +72,7 @@ private struct OnboardingContent: View {
                 case .code:
                     title(
                         model.signInIdentifier?.isPhone == true ? "Check your texts." : "Check your inbox.",
-                        subtitle: "Enter the code sent to \(model.signInIdentifier?.value ?? "").")
+                        subtitle: "Enter the code below.")
                     TextField("Sign-in code", text: $code)
                         .keyboardType(.numberPad)
                         .textContentType(.oneTimeCode)
@@ -99,13 +99,11 @@ private struct OnboardingContent: View {
                     FirstSignupIntroduction(isBusy: model.isBusy) {
                         await model.acceptIntroduction()
                     }
-                    accountActions
                 case .profile:
                     title("A little about you.", subtitle: "Give a future friend something to connect with.")
                     ProfileForm(draft: $model.draft)
                         .disabled(model.isBusy)
                     primary("Save my profile") { await model.saveProfile() }
-                    accountActions
                 case .saved:
                     EmptyView()  // AppEntryView routes saved accounts into SignedInView.
                 case .restoreFailed:

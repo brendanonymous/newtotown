@@ -94,7 +94,7 @@ struct ProfileHomeView: View {
                     } else {
                         ProfilePhotoFrame {
                             if photoIsMissing {
-                                Button("Add a profile photo", systemImage: "person.crop.rectangle") {
+                                Button("Add a photo", systemImage: "person.crop.rectangle") {
                                     photoNeedsReload = true
                                     editor = .photos
                                 }.foregroundStyle(BrandTheme.secondaryInk)

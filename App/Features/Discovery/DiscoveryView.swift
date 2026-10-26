@@ -102,7 +102,7 @@ struct DiscoveryView: View {
         switch status {
         case .hidden: ""
         case .needsProfile: "Save your profile details first."
-        case .needsPhoto: "Add your profile photo under My photos, then pull down to refresh."
+        case .needsPhoto: "Add a profile photo to join Discovery."
         case .needsReview: "Your photos need approval before you can use discovery."
         case .restricted: "Discovery isn’t available for your account."
         case .ready: ""
