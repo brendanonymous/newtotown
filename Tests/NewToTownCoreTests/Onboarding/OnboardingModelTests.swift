@@ -18,6 +18,7 @@ private final class TestOnboardingService: OnboardingService {
     var failLoad = false
     var failSave = false
     var saves = 0
+    var onSave: (@MainActor (Profile) async throws -> Void)?
     var failDelete = false
     var deletions = 0
 
@@ -45,6 +46,7 @@ private final class TestOnboardingService: OnboardingService {
         acceptances += 1
     }
     func save(_ profile: Profile) async throws {
+        if let onSave { try await onSave(profile) }
         if failSave { throw Failure.unavailable }
         saves += 1
         storedProfile = profile
@@ -181,7 +183,7 @@ private final class TestOnboardingService: OnboardingService {
     #expect(service.deletions == 1)
 }
 
-@Test @MainActor func firstSignupRequiresPersistedAgreementBeforeProfileAndNeverRepeatsIt() async {
+@Test @MainActor func firstSignupRequiresPersistedAgreementBeforeProfileAndNeverRepeatsIt() async throws {
     let service = TestOnboardingService()
     service.acceptedAgreement = false
     let model = OnboardingModel(service: service)
@@ -207,8 +209,8 @@ private final class TestOnboardingService: OnboardingService {
     #expect(service.acceptances == 1)
     resumed.draft = validDraft()
     await resumed.saveProfile()
-    resumed.editProfile()
-    #expect(resumed.step == .profile)
+    try await resumed.updateProfile(resumed.draft)
+    #expect(resumed.step == .saved)
     await resumed.signOut()
     await resumed.requestCode(email: "alex@example.com")
     await resumed.verify(code: "123456")
@@ -261,7 +263,7 @@ private final class TestOnboardingService: OnboardingService {
     #expect(!model.isSignedIn)
     #expect(!model.canDeleteAccount)
     #expect(model.draft == ProfileDraft())
-    model.editProfile()
+    await #expect(throws: ProfileUpdateError.unavailable) { try await model.updateProfile(validDraft()) }
     #expect(model.step == .signIn)
 }
 
@@ -300,4 +302,68 @@ private final class TestOnboardingService: OnboardingService {
     service.failSend = true
     await model.requestCode(phone: "4805550142")
     #expect(model.signInIdentifier == nil && model.step == .signIn)
+}
+
+@Test @MainActor func updatingSavedProfileKeepsShellAndCommitsOnlyAfterSuccess() async throws {
+    let service = TestOnboardingService()
+    service.signedIn = true
+    service.storedProfile = try Profile(id: service.id, draft: validDraft())
+    let model = OnboardingModel(service: service)
+    await model.restore()
+    let previous = model.draft
+    var edited = previous
+    edited.firstName = "  Taylor  "
+    #expect(model.draft == previous)
+    service.failSave = true
+    await #expect(throws: TestOnboardingService.Failure.unavailable) {
+        try await model.updateProfile(edited)
+    }
+    #expect(model.draft == previous && model.step == .saved && !model.isBusy)
+    service.failSave = false
+    try await model.updateProfile(edited)
+    #expect(model.draft.firstName == "Taylor" && model.step == .saved)
+    #expect(service.storedProfile?.firstName == "Taylor")
+    #expect(service.acceptances == 0)
+}
+
+@Test @MainActor func invalidProfileEditNeverWritesOrChangesSavedDetails() async throws {
+    let service = TestOnboardingService()
+    service.signedIn = true
+    service.storedProfile = try Profile(id: service.id, draft: validDraft())
+    let model = OnboardingModel(service: service)
+    await model.restore()
+    let previous = model.draft
+    var edited = previous
+    edited.firstName = ""
+    await #expect(throws: ProfileValidationError.self) { try await model.updateProfile(edited) }
+    #expect(service.saves == 0 && model.draft == previous && model.step == .saved)
+}
+
+@Test @MainActor func cancelledProfileEditDoesNotPublishLateSaveAsSuccess() async throws {
+    let service = TestOnboardingService()
+    service.signedIn = true
+    service.storedProfile = try Profile(id: service.id, draft: validDraft())
+    let model = OnboardingModel(service: service)
+    await model.restore()
+    let previous = model.draft
+    var edited = previous
+    edited.firstName = "Taylor"
+    let started = AsyncStream<Void>.makeStream()
+    var events = started.stream.makeAsyncIterator()
+    var pending: CheckedContinuation<Void, any Error>?
+    service.onSave = { _ in
+        try await withCheckedThrowingContinuation {
+            pending = $0
+            started.continuation.yield(())
+        }
+    }
+    let update = Task { try await model.updateProfile(edited) }
+    await events.next()
+    #expect(model.isBusy && model.step == .saved && model.draft == previous)
+    await #expect(throws: ProfileUpdateError.unavailable) { try await model.updateProfile(previous) }
+    update.cancel()
+    pending?.resume()
+    await #expect(throws: CancellationError.self) { try await update.value }
+    #expect(model.draft == previous && model.step == .saved && !model.isBusy)
+    started.continuation.finish()
 }

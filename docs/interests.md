@@ -44,3 +44,22 @@ Profile → Edit interests edits public profile choices. Profile → Preferences
 Core owns catalog validation and selection state; the Supabase adapter owns authenticated transport. The SwiftUI editor renders the catalog without duplicating its options. Shared profile cards show the public interest tags in Profile, Discovery, and conversation profiles. Responses after an account reset are discarded.
 
 Validation: 106 Swift package tests pass, including selection limits, clearing, failed-save retry, account isolation, wire requests, and legacy card decoding. The simulator journey verifies profile persistence, separate filters, the three-choice limit, and clearing filters. Fifty internal demo accounts are now seeded in the isolated project; hosted authenticated catalog/filter/photo acceptance also passed.
+
+## Catalog updates and future experiments
+
+The catalog is server data, not a Swift list. Add or reorder options with a new versioned migration; never edit an already deployed migration. Keep stable option IDs when changing display labels. The expanded catalog migration adds Gun Range, Combat Sports, TSL's, Dive Bars, DIY, Mogging, and Poker in the owner's proposed order. It keeps existing IDs, selections, retirement flags, categories, and the three-per-category selection limit. All seven additions start active, for 37 available options across five categories. The offline iPhone fixture mirrors these choices but never supplies the live catalog.
+
+`active = false` retains an option and its selection rows in the backend while excluding it from the editor, public profile tags, and Discovery matching. It also prevents new saves of that option. Reactivation restores retained selections unless the member has since replaced their complete choice set. This is a global retirement/staging switch, not an A/B assignment system.
+
+For future A/B tests, keep catalog IDs and saved choices stable, and add separate server-controlled exposure rules, persistent cohort assignment, and event tracking. Hiding an experimental choice from a new-selection picker should not erase existing profile tags or silently change matching. No experiment tables, cohorts, analytics SDK, or random client-side catalog slicing are introduced in this migration.
+
+For this rollout, apply `20261025204822_expand_interest_catalog.sql` to the isolated test project. The app fetches the updated list when the interests editor is reopened; no app rebuild or Edge Function redeployment is needed. `supabase/tests/interest_catalog.sql` verifies new choices through the existing RPCs, category limits, matching, inactive-option exclusion, and preservation/reactivation of saved choices.
+
+
+The October 25 deployment to `newtotown-test` applied this migration through the CLI with the repository timestamp recorded in migration history. Authenticated hosted acceptance returned all 37 active options, including the seven new labels, across five categories; Discovery and a signed private photo download also passed. Counts and digests of the existing 150 profile-interest rows and 60 filter rows were unchanged. All ten SQL suites passed after replaying all thirteen migrations into a fresh local database. The original app project was not modified.
+
+
+The next social-catalog migration adds `chess` first and `sports_betting` last, and retires `board_games` without changing its ID or stored selections. The resulting catalog has 39 stored options and 38 active choices. New seed inputs use Chess; existing seeded accounts are not rewritten. See [the catalog migration guide](catalog-migrations.md) for copyable CLI steps, ordering rules, test/deployment checks, and the distinction between migration timestamp order and UI display order.
+
+
+Hosted verification of `20261025210222_chess_and_sports_betting.sql` returned 38 selectable options across five categories, with Chess first and Sports betting last in Social & hobbies. Board games remains inactive at position 10. Existing selection counts and digests were unchanged. All fourteen migrations replayed successfully, all ten SQL suites and six seed tests passed, and all fifty future seed profiles validated against the active catalog. Authenticated Discovery/catalog/private-photo checks also passed; only the isolated test project was updated.

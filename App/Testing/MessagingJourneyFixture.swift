@@ -60,6 +60,12 @@
             return ProfileImageStore(loader: AuthorizedPhotoLoader(download: { _ in data }))
         }
 
+        static func urlForSlot(_ slot: Int) -> URL {
+            URL(
+                string: url.absoluteString.replacingOccurrences(
+                    of: "profile.jpg", with: "profile-\(slot).jpg"))!
+        }
+
         static var url: URL {
             let expiry = Int(Date().addingTimeInterval(60).timeIntervalSince1970)
             let claims = Data("{\"exp\":\(expiry)}".utf8).base64EncodedString()
@@ -106,6 +112,7 @@
 
     private actor JourneyAccountService: OnboardingService {
         private var owner: UUID? = JourneyIDs.first
+        private var savedProfiles: [UUID: Profile] = [:]
         func currentUserID() async throws -> UUID? {
             if ProcessInfo.processInfo.arguments.contains("--ui-test-loading") {
                 try await Task.sleep(for: .seconds(30))
@@ -119,8 +126,9 @@
         }
         func hasAcceptedAgreement(for userID: UUID) -> Bool { true }
         func acceptAgreement(for userID: UUID) {}
-        func save(_ profile: Profile) {}
+        func save(_ profile: Profile) { savedProfiles[profile.id] = profile }
         func profile(for userID: UUID) throws -> Profile? {
+            if let profile = savedProfiles[userID] { return profile }
             var draft = ProfileDraft()
             draft.firstName = "Fixture member"
             draft.jobTitle = "Designer"
@@ -153,7 +161,9 @@
                     ? "Find friends for coffee, hiking, professional networking, local volunteering and relaxed weekend dinners."
                     : "Find a hiking buddy.", city: "Scottsdale",
                 photoURL: ProcessInfo.processInfo.arguments.contains("--ui-test-profile-images")
-                    ? JourneyPhoto.url : URL(fileURLWithPath: "/uitest-photo-placeholder"))
+                    ? JourneyPhoto.url : URL(fileURLWithPath: "/uitest-photo-placeholder"),
+                photoURLs: ProcessInfo.processInfo.arguments.contains("--ui-test-photo-gallery")
+                    ? [JourneyPhoto.url, JourneyPhoto.urlForSlot(2), JourneyPhoto.urlForSlot(3)] : nil)
             thread = Conversation(
                 id: JourneyIDs.thread, participant: peer, createdAt: JourneyIDs.time,
                 lastActivityAt: JourneyIDs.time, lastMessage: nil)

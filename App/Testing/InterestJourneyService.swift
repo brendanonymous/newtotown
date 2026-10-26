@@ -8,12 +8,15 @@
         private let categories: [InterestCategory] = [
             (
                 "sports_fitness", "Sports & fitness",
-                ["Golf", "Pickleball", "Gym", "Running", "Basketball", "Tennis"]
+                [
+                    "Golf", "Pickleball", "Gun Range", "Gym", "Running", "Combat Sports", "Basketball",
+                    "Tennis",
+                ]
             ),
             ("outdoors", "Outdoors", ["Hiking", "Camping", "Cycling", "Fishing", "Kayaking", "Dog walks"]),
             (
                 "food_drinks", "Food & drinks",
-                ["Coffee", "Craft beer", "Dining out", "Cooking", "Barbecue", "Wine"]
+                ["Coffee", "Craft beer", "Dining out", "TSL's", "Cooking", "Barbecue", "Dive Bars", "Wine"]
             ),
             (
                 "arts_entertainment", "Arts & entertainment",
@@ -21,18 +24,26 @@
             ),
             (
                 "social_hobbies", "Social & hobbies",
-                ["Board games", "Video games", "Volunteering", "Professional networking", "Reading", "Cars"]
+                [
+                    "Chess", "Video games", "Volunteering", "Professional networking", "Reading",
+                    "Cars", "DIY", "Mogging", "Poker", "Sports betting",
+                ]
             ),
         ].map { id, title, options in
             InterestCategory(
                 id: id, title: title,
                 options: options.map {
-                    InterestOption(id: $0.lowercased().replacingOccurrences(of: " ", with: "_"), title: $0)
+                    InterestOption(
+                        id: $0.lowercased().replacingOccurrences(of: " ", with: "_")
+                            .replacingOccurrences(of: "[^a-z0-9_]", with: "", options: .regularExpression),
+                        title: $0)
                 })
         }
+
         func load() -> InterestsSnapshot {
             InterestsSnapshot(categories: categories, profileOptionIDs: profile, filterOptionIDs: filters)
         }
+
         func save(_ optionIDs: [String], for kind: InterestSelectionKind) -> InterestsSnapshot {
             if kind == .profile { profile = optionIDs } else { filters = optionIDs }
             return load()
