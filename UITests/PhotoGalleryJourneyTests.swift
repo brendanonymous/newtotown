@@ -43,6 +43,7 @@ final class PhotoGalleryJourneyTests: XCTestCase {
         XCTAssertLessThan(remove.frame.midY, editorGallery.frame.midY)
         remove.tap()
         XCTAssertTrue(app.buttons["photos.choose"].exists)
+        capture(app, name: "Compact photo action buttons")
         app.buttons["photos.save"].tap()
         XCTAssertTrue(app.buttons["My photos"].waitForExistence(timeout: 5))
         XCTAssertEqual(gallery.value as? String, "1 of 2")
