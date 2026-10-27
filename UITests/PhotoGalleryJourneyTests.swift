@@ -5,6 +5,7 @@ final class PhotoGalleryJourneyTests: XCTestCase {
     @MainActor func testOwnerCanCycleThreePhotosAndSaveRemovingOne() {
         let app = launch([
             "--ui-test-messaging", "--ui-test-photos", "--ui-test-saved-photo", "--ui-test-photo-gallery",
+            "--ui-test-slow-photo-reload",
         ])
         let gallery = app.buttons["photos.gallery"]
         XCTAssertTrue(gallery.waitForExistence(timeout: 10))

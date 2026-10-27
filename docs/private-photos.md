@@ -57,6 +57,15 @@ Security advisors report the pre-existing RLS helper execution-grant findings ([
 
 Migration `20261025232255` and version 3 of `discovery`, `messaging`, and `delete-account` are deployed to `newtotown-test` (`acmrnolvakubxnaxwpzt`), with JWT verification enabled. Production was not changed. Authenticated acceptance with disposable test accounts verified three ordered, downloadable private JPEGs in Discovery and conversation profiles; missing slots reduce the gallery on refresh. Cross-account selfie reads, client metadata-RPC access, and a fourth profile upload were rejected. The deployed deletion function removed all four paths and Auth accounts; admin folder listings were empty afterward. No email/SMS was sent and existing seed accounts were unchanged.
 
-The photo editor's Save photos action spans the content width with a large
-control size and the shared 16-point text-control corner radius. Visibility,
+The photo editor's Save photos action uses the compact shared
+`BrandActionButtonStyle`: content-sized width, a minimum 44-point touch height,
+and a continuous rounded rectangle with a 16-point corner radius. Visibility,
 disabled state, upload behavior, and successful-save dismissal stay unchanged.
+
+After a successful save or final-photo removal, the editor sends the persisted
+profile-photo bytes to `ProfileHomeView`. The parent decodes them off the main
+actor and updates its gallery before the sheet dismisses, without another
+Storage download. Advancing the load generation prevents an older read from
+overwriting the new photos. Cancelled drafts and failed writes never publish.
+Initial loads and pull-to-refresh still read Storage; a local decode failure
+falls back to a fresh read on dismissal.

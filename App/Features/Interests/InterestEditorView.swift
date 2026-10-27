@@ -46,7 +46,7 @@ struct InterestEditorView: View {
                     if model.snapshot == nil { Button("Try again") { Task { await model.load() } } }
                 }
                 Button(submitTitle) { Task { await submit() } }
-                    .buttonStyle(.borderedProminent).tint(BrandTheme.ink)
+                    .buttonStyle(BrandActionButtonStyle()).tint(BrandTheme.ink)
                     .foregroundStyle(BrandTheme.background)
                     .disabled(!canSubmit)
                     .accessibilityIdentifier("interests.save")
@@ -115,7 +115,7 @@ private struct InterestCategorySection: View {
                 .padding(16)
                 .background(
                     BrandTheme.sage.opacity(0.15),
-                    in: RoundedRectangle(cornerRadius: BrandTheme.textCornerRadius)
+                    in: RoundedRectangle(cornerRadius: BrandTheme.buttonCornerRadius, style: .continuous)
                 )
                 .contentShape(Rectangle())
             }
@@ -145,7 +145,8 @@ private struct InterestCategorySection: View {
                             .background(
                                 BrandTheme.sage.opacity(
                                     model.selected.contains(option.id) ? 0.3 : 0.1),
-                                in: RoundedRectangle(cornerRadius: BrandTheme.textCornerRadius))
+                                in: RoundedRectangle(
+                                    cornerRadius: BrandTheme.buttonCornerRadius, style: .continuous))
                         }
                         .buttonStyle(.plain)
                         .disabled(!model.canToggle(option.id))

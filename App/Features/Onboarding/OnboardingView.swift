@@ -182,12 +182,8 @@ private struct OnboardingContent: View {
             Task { await action() }
         } label: {
             Text(title)
-                .font(.body.weight(.semibold))
-                .frame(maxWidth: .infinity)
-                .padding(18)
-                .foregroundStyle(BrandTheme.background)
-                .background(BrandTheme.ink, in: RoundedRectangle(cornerRadius: 18))
         }
+        .buttonStyle(BrandActionButtonStyle(expands: true))
         .disabled(model.isBusy)
         .opacity(model.isBusy ? 0.6 : 1)
     }

@@ -94,7 +94,7 @@ struct DiscoveryView: View {
             Text("Joining shows your profile and photo to others. You can hide it at any time.")
                 .foregroundStyle(BrandTheme.secondaryInk)
             Button("Join discovery") { Task { await model.setVisible(true) } }
-                .buttonStyle(.borderedProminent).foregroundStyle(BrandTheme.background)
+                .buttonStyle(BrandActionButtonStyle()).foregroundStyle(BrandTheme.background)
         }
     }
 

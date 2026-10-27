@@ -26,7 +26,7 @@ struct SignInEntryView: View {
                 TextField("Phone number", text: $phone)
                     .keyboardType(.phonePad).textContentType(.telephoneNumber)
                     .textFieldStyle(BrandTextFieldStyle()).accessibilityIdentifier("signup.phone")
-                
+
                 Text("Message and data rates may apply.")
                     .font(.caption).foregroundStyle(BrandTheme.secondaryInk)
             }
@@ -39,11 +39,9 @@ struct SignInEntryView: View {
                     }
                 }
             } label: {
-                Text("Send a code").font(.body.weight(.semibold))
-                    .frame(maxWidth: .infinity).padding(18)
-                    .foregroundStyle(BrandTheme.background)
-                    .background(BrandTheme.ink, in: RoundedRectangle(cornerRadius: 18))
+                Text("Send a code")
             }
+            .buttonStyle(BrandActionButtonStyle(expands: true))
             .accessibilityIdentifier("signup.sendCode")
             Button(usesEmail ? "Use phone sign-in" : "Already joined with email? Sign in here.") {
                 model.restartSignIn()

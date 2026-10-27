@@ -36,7 +36,9 @@ struct ProfileHomeView: View {
             .sheet(item: $editor) { destination in
                 switch destination {
                 case .photos:
-                    if let photoService { PhotoSubmissionView(service: photoService) }
+                    if let photoService {
+                        PhotoSubmissionView(service: photoService, onPhotosSaved: showSavedPhotos)
+                    }
                 case .interests:
                     if let interestsService {
                         InterestEditorView(service: interestsService, kind: .profile, presentation: .sheet) {}
@@ -79,6 +81,28 @@ struct ProfileHomeView: View {
         }
     }
 
+    /// The editor already owns the uploaded bytes. Publish them before dismissal
+    /// and invalidate older reads instead of downloading the same photos again.
+    @MainActor private func showSavedPhotos(_ photos: [Data]) async {
+        photoLoadGeneration += 1
+        let generation = photoLoadGeneration
+        do {
+            let decoded = try await Task.detached(priority: .userInitiated) {
+                try photos.map { try ProfileImageDecoder.decode($0, pixels: 1200) }
+            }.value
+            guard !Task.isCancelled, generation == photoLoadGeneration else { return }
+            profilePhotos = decoded.map { UIImage(cgImage: $0.cgImage) }
+            photoIsMissing = decoded.isEmpty
+            photoFailed = false
+            photoNeedsReload = false
+        } catch {
+            guard !Task.isCancelled, generation == photoLoadGeneration else { return }
+            // A successful upload is retained. Fall back to a fresh read on dismissal.
+            photoNeedsReload = true
+            photoFailed = true
+        }
+    }
+
     private var profile: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -95,7 +119,6 @@ struct ProfileHomeView: View {
                         ProfilePhotoFrame {
                             if photoIsMissing {
                                 Button("Add a photo", systemImage: "person.crop.rectangle") {
-                                    photoNeedsReload = true
                                     editor = .photos
                                 }.foregroundStyle(BrandTheme.secondaryInk)
                             } else if photoFailed {
@@ -109,17 +132,17 @@ struct ProfileHomeView: View {
                 }
 
                 if photoService != nil {
-                    Button("My photos") {
-                        photoNeedsReload = true
-                        editor = .photos
-                    }
+                    Button("My photos") { editor = .photos }
+                        .buttonStyle(BrandActionButtonStyle(tone: .secondary))
                 }
 
                 if interestsService != nil {
                     Button("Edit interests") { editor = .interests }
+                        .buttonStyle(BrandActionButtonStyle(tone: .secondary))
                         .accessibilityIdentifier("profile.interests")
                 }
                 Button("Edit profile") { editor = .profile }
+                    .buttonStyle(BrandActionButtonStyle(tone: .secondary))
                     .accessibilityIdentifier("profile.edit")
             }
             .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)

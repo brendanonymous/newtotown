@@ -20,7 +20,7 @@ struct ProfileEditorView: View {
                     Text("Edit profile").font(.system(.largeTitle, design: .serif))
                     ProfileForm(draft: $draft)
                     Button("Save profile") { Task { await save() } }
-                        .buttonStyle(.borderedProminent).tint(BrandTheme.ink)
+                        .buttonStyle(BrandActionButtonStyle()).tint(BrandTheme.ink)
                         .foregroundStyle(BrandTheme.background)
                         .accessibilityIdentifier("profile.save")
                     if account.isBusy { ProgressView() }

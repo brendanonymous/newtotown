@@ -24,7 +24,7 @@ final class ProfileLayoutTests: XCTestCase {
 
     @MainActor
     func testStoredPhotoCanBeRemovedWithoutShowingUnneededSave() {
-        let app = launch(["--ui-test-photos", "--ui-test-saved-photo"])
+        let app = launch(["--ui-test-photos", "--ui-test-saved-photo", "--ui-test-slow-photo-reload"])
         XCTAssertTrue(app.buttons["My photos"].waitForExistence(timeout: 10))
         app.buttons["My photos"].tap()
         XCTAssertTrue(app.buttons["photos.removeOne"].waitForExistence(timeout: 10))
@@ -34,6 +34,9 @@ final class ProfileLayoutTests: XCTestCase {
         XCTAssertFalse(app.alerts.firstMatch.exists)
         XCTAssertFalse(app.buttons["photos.removeOne"].exists)
         XCTAssertFalse(app.buttons["photos.remove"].exists)
+        app.buttons["editor.close"].tap()
+        XCTAssertTrue(app.buttons["Add a photo"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["photos.gallery"].exists)
     }
 
     @MainActor

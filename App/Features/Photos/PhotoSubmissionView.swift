@@ -5,6 +5,7 @@ import SwiftUI
 
 struct PhotoSubmissionView: View {
     @State private var model: PhotoSubmissionModel
+    private let onPhotosSaved: @MainActor ([Data]) async -> Void
     @State private var selection: PhotosPickerItem?
     @State private var isPreparingImage = false
     @State private var showsPhotoPicker = false
@@ -15,8 +16,9 @@ struct PhotoSubmissionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
 
-    init(service: any PhotoService) {
+    init(service: any PhotoService, onPhotosSaved: @escaping @MainActor ([Data]) async -> Void = { _ in }) {
         _model = State(initialValue: PhotoSubmissionModel(service: service))
+        self.onPhotosSaved = onPhotosSaved
     }
 
     private var isBusy: Bool { model.isBusy || isPreparingImage }
@@ -89,7 +91,7 @@ struct PhotoSubmissionView: View {
                 onReplace: { choosePhoto(replacing: $0) },
                 onRemove: { index in
                     if photos.count == 1 && model.hasStoredPhotos {
-                        Task { await model.remove() }
+                        Task { await removePhotos() }
                     } else {
                         model.removeProfile(at: index)
                         previewIndex = 0
@@ -109,6 +111,7 @@ struct PhotoSubmissionView: View {
             } label: {
                 Label(photos.isEmpty ? "Upload" : "Add a photo", systemImage: "photo.on.rectangle")
             }
+            .buttonStyle(BrandActionButtonStyle(tone: .secondary))
             .disabled(isBusy).accessibilityIdentifier("photos.choose")
         }
     }
@@ -119,7 +122,8 @@ struct PhotoSubmissionView: View {
                 Text("Private selfie").font(.headline)
                 Image(uiImage: image).resizable().scaledToFit().brandPhotoStyle().frame(maxHeight: 220)
             }
-            Button("Take selfie", systemImage: "camera") { Task { await startCamera() } }.disabled(isBusy)
+            Button("Take selfie", systemImage: "camera") { Task { await startCamera() } }
+                .buttonStyle(BrandActionButtonStyle(tone: .secondary)).disabled(isBusy)
             Text("Face the camera in good light. Your selfie won’t appear on your profile.")
                 .font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
         }
@@ -130,20 +134,27 @@ struct PhotoSubmissionView: View {
             Button {
                 Task {
                     await model.save()
-                    if model.isSaved && model.errorMessage == nil { dismiss() }
+                    if model.isSaved && model.errorMessage == nil {
+                        await onPhotosSaved(model.photos.profilePhotos)
+                        dismiss()
+                    }
                 }
             } label: {
-                Text("Save photos").font(.headline)
-                    .frame(maxWidth: .infinity, minHeight: 32)
+                Text("Save photos")
             }
-            .buttonStyle(.borderedProminent).controlSize(.large)
-            .buttonBorderShape(.roundedRectangle(radius: BrandTheme.textCornerRadius))
-            .foregroundStyle(BrandTheme.background)
+            .buttonStyle(BrandActionButtonStyle())
             .disabled(!model.canSave || isPreparingImage).accessibilityIdentifier("photos.save")
         }
         if model.hasStoredPhotos && model.photos.profilePhotos.isEmpty {
-            Button("Remove my photos", role: .destructive) { Task { await model.remove() } }
+            Button("Remove my photos", role: .destructive) { Task { await removePhotos() } }
                 .disabled(isBusy).accessibilityIdentifier("photos.remove")
+        }
+    }
+
+    @MainActor private func removePhotos() async {
+        await model.remove()
+        if !model.hasStoredPhotos && model.errorMessage == nil {
+            await onPhotosSaved([])
         }
     }
 

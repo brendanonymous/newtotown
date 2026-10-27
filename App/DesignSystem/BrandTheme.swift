@@ -3,6 +3,7 @@ import UIKit
 
 enum BrandTheme {
     static let textCornerRadius: CGFloat = 16
+    static let buttonCornerRadius: CGFloat = 16
     // Ivory and sage follow the supplied asset pack; ink remains the legible action color.
     static let background = adaptive(light: 0xFAF5EF, dark: 0x1B251E)
     static let inputSurface = adaptive(light: 0xFFFFFF, dark: 0x293B30)

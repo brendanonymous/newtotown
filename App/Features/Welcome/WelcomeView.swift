@@ -33,12 +33,8 @@ struct WelcomeView: View {
                         onJoin?()
                     } label: {
                         Text("Join or sign in")
-                            .font(.body.weight(.semibold))
-                            .frame(maxWidth: .infinity)
-                            .padding(20)
-                            .foregroundStyle(BrandTheme.background)
-                            .background(BrandTheme.ink, in: RoundedRectangle(cornerRadius: 18))
                     }
+                    .buttonStyle(BrandActionButtonStyle(expands: true))
                     .disabled(onJoin == nil)
                     NavigationLink {
                         PilotOverviewView()
@@ -48,11 +44,8 @@ struct WelcomeView: View {
                             Spacer()
                             Image(systemName: "arrow.right")
                         }
-                        .font(.body.weight(.medium))
-                        .padding(20)
-                        .foregroundStyle(BrandTheme.ink)
-                        .background(BrandTheme.sage.opacity(0.22), in: RoundedRectangle(cornerRadius: 18))
                     }
+                    .buttonStyle(BrandActionButtonStyle(tone: .secondary, expands: true))
 
                     Text("Scottsdale, Arizona")
                         .font(.footnote)
