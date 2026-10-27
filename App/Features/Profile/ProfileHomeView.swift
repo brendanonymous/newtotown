@@ -9,11 +9,7 @@ struct ProfileHomeView: View {
     let isSelected: Bool
     private let interestsService: (any InterestsService)?
     @State private var interests: InterestsModel?
-    private enum Editor: String, Identifiable {
-        case photos, interests, profile
-        var id: String { rawValue }
-    }
-    @State private var editor: Editor?
+    @State private var showsEditor = false
     @State private var profilePhotos: [UIImage] = []
     @State private var photoIsMissing = false
     @State private var photoFailed = false
@@ -33,24 +29,18 @@ struct ProfileHomeView: View {
 
     var body: some View {
         profile
-            .sheet(item: $editor) { destination in
-                switch destination {
-                case .photos:
-                    if let photoService { PhotoSubmissionView(service: photoService) }
-                case .interests:
-                    if let interestsService {
-                        InterestEditorView(service: interestsService, kind: .profile, presentation: .sheet) {}
-                    }
-                case .profile:
-                    ProfileEditorView(account: model)
-                }
+            .sheet(isPresented: $showsEditor) {
+                ProfileEditorMenuView(
+                    account: model, photoService: photoService, interestsService: interestsService,
+                    onPhotosSaved: showSavedPhotos
+                )
             }
-            .task(id: isSelected && editor == nil) {
-                guard isSelected, editor == nil, photoNeedsReload else { return }
+            .task(id: isSelected && !showsEditor) {
+                guard isSelected, !showsEditor, photoNeedsReload else { return }
                 await loadPhoto()
             }
-            .task(id: isSelected && editor == nil) {
-                if isSelected, editor == nil { await interests?.load() }
+            .task(id: isSelected && !showsEditor) {
+                if isSelected, !showsEditor { await interests?.load() }
             }
             .refreshable {
                 await loadPhoto()
@@ -79,6 +69,28 @@ struct ProfileHomeView: View {
         }
     }
 
+    /// The editor already owns the uploaded bytes. Publish them before dismissal
+    /// and invalidate older reads instead of downloading the same photos again.
+    @MainActor private func showSavedPhotos(_ photos: [Data]) async {
+        photoLoadGeneration += 1
+        let generation = photoLoadGeneration
+        do {
+            let decoded = try await Task.detached(priority: .userInitiated) {
+                try photos.map { try ProfileImageDecoder.decode($0, pixels: 1200) }
+            }.value
+            guard !Task.isCancelled, generation == photoLoadGeneration else { return }
+            profilePhotos = decoded.map { UIImage(cgImage: $0.cgImage) }
+            photoIsMissing = decoded.isEmpty
+            photoFailed = false
+            photoNeedsReload = false
+        } catch {
+            guard !Task.isCancelled, generation == photoLoadGeneration else { return }
+            // A successful upload is retained. Fall back to a fresh read on dismissal.
+            photoNeedsReload = true
+            photoFailed = true
+        }
+    }
+
     private var profile: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -94,13 +106,14 @@ struct ProfileHomeView: View {
                     } else {
                         ProfilePhotoFrame {
                             if photoIsMissing {
-                                Button("Add a photo", systemImage: "person.crop.rectangle") {
-                                    photoNeedsReload = true
-                                    editor = .photos
-                                }.foregroundStyle(BrandTheme.secondaryInk)
+                                Label("Add a photo", systemImage: "person.crop.rectangle")
+                                    .foregroundStyle(BrandTheme.secondaryInk)
                             } else if photoFailed {
-                                Label("Photo unavailable. Open My photos to try again.", systemImage: "photo")
-                                    .font(.callout).padding()
+                                Label(
+                                    "Photo unavailable. Open Photos in Edit Profile to try again.",
+                                    systemImage: "photo"
+                                )
+                                .font(.callout).padding()
                             } else {
                                 ProgressView()
                             }
@@ -108,18 +121,7 @@ struct ProfileHomeView: View {
                     }
                 }
 
-                if photoService != nil {
-                    Button("My photos") {
-                        photoNeedsReload = true
-                        editor = .photos
-                    }
-                }
-
-                if interestsService != nil {
-                    Button("Edit interests") { editor = .interests }
-                        .accessibilityIdentifier("profile.interests")
-                }
-                Button("Edit profile") { editor = .profile }
+                Button("Edit Profile") { showsEditor = true }
                     .accessibilityIdentifier("profile.edit")
             }
             .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)

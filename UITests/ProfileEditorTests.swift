@@ -1,40 +1,54 @@
 import XCTest
 
 final class ProfileEditorTests: XCTestCase {
-    @MainActor func testAllProfileEditorsCloseBackToTheProfileTab() {
+    @MainActor func testSingleProfileEditorMenuOpensAndClosesEverySection() {
         let app = launch()
-        app.buttons["My photos"].tap()
+        XCTAssertEqual(app.buttons["profile.edit"].label, "Edit Profile")
+        XCTAssertFalse(app.buttons["My photos"].exists)
+        XCTAssertFalse(app.buttons["profile.interests"].exists)
+        app.buttons["profile.edit"].tap()
+        XCTAssertTrue(app.buttons["profile.editor.aboutMe"].waitForExistence(timeout: 5))
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = "Profile editor menu"
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
+        ProfileEditorNavigation.open(.photos, in: app)
         XCTAssertTrue(app.buttons["photos.choose"].waitForExistence(timeout: 5))
-        closeEditor(in: app)
+        ProfileEditorNavigation.closeSection(in: app)
 
-        let interests = app.buttons["profile.interests"]
-        XCTAssertEqual(interests.label, "Edit interests")
-        interests.tap()
+        ProfileEditorNavigation.open(.interests, in: app)
+        let sports = app.buttons["interests.category.sports_fitness"]
+        XCTAssertTrue(sports.waitForExistence(timeout: 5))
+        sports.tap()
         let golf = app.buttons["interest.golf"]
         XCTAssertTrue(golf.waitForExistence(timeout: 5))
         golf.tap()
-        closeEditor(in: app)
-        interests.tap()
+        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.open(.interests, in: app)
+        XCTAssertTrue(sports.waitForExistence(timeout: 5))
+        sports.tap()
         XCTAssertTrue(golf.waitForExistence(timeout: 5))
         XCTAssertEqual(golf.value as? String, "Not selected")
-        closeEditor(in: app)
+        ProfileEditorNavigation.closeSection(in: app)
 
-        app.buttons["profile.edit"].tap()
+        ProfileEditorNavigation.open(.aboutMe, in: app)
         let name = app.textFields["profile.firstName"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         name.tap()
         name.typeText(" unsaved")
-        closeEditor(in: app)
+        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.closeMenu(in: app)
         XCTAssertTrue(app.staticTexts["Fixture member"].exists)
-        app.buttons["profile.edit"].tap()
+        ProfileEditorNavigation.open(.aboutMe, in: app)
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         XCTAssertEqual(name.value as? String, "Fixture member")
-        closeEditor(in: app)
+        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.closeMenu(in: app)
     }
 
     @MainActor func testSavingProfileReturnsToItsUpdatedCard() {
         let app = launch()
-        app.buttons["profile.edit"].tap()
+        ProfileEditorNavigation.open(.aboutMe, in: app)
         let name = app.textFields["profile.firstName"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         name.tap()
@@ -46,18 +60,13 @@ final class ProfileEditorTests: XCTestCase {
             app.swipeUp()
         }
         save.tap()
-        XCTAssertTrue(app.buttons["profile.edit"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["profile.editor.aboutMe"].waitForExistence(timeout: 5))
+        ProfileEditorNavigation.closeMenu(in: app)
         XCTAssertTrue(app.staticTexts["Taylor"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.tabBars.buttons["Profile"].isSelected)
-        app.buttons["profile.edit"].tap()
+        ProfileEditorNavigation.open(.aboutMe, in: app)
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         XCTAssertEqual(name.value as? String, "Taylor")
-    }
-
-    @MainActor private func closeEditor(in app: XCUIApplication) {
-        app.buttons["editor.close"].tap()
-        XCTAssertTrue(app.buttons["profile.edit"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.tabBars.buttons["Profile"].isSelected)
     }
 
     @MainActor private func launch() -> XCUIApplication {

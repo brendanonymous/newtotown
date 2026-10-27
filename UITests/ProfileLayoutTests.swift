@@ -13,8 +13,7 @@ final class ProfileLayoutTests: XCTestCase {
     @MainActor
     func testEmptyPhotoSheetShowsOnlyChooseAction() {
         let app = launch(["--ui-test-photos"])
-        XCTAssertTrue(app.buttons["My photos"].waitForExistence(timeout: 10))
-        app.buttons["My photos"].tap()
+        ProfileEditorNavigation.open(.photos, in: app)
         XCTAssertTrue(app.buttons["photos.choose"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["photos.save"].exists)
         XCTAssertFalse(app.buttons["photos.remove"].exists)
@@ -24,9 +23,8 @@ final class ProfileLayoutTests: XCTestCase {
 
     @MainActor
     func testStoredPhotoCanBeRemovedWithoutShowingUnneededSave() {
-        let app = launch(["--ui-test-photos", "--ui-test-saved-photo"])
-        XCTAssertTrue(app.buttons["My photos"].waitForExistence(timeout: 10))
-        app.buttons["My photos"].tap()
+        let app = launch(["--ui-test-photos", "--ui-test-saved-photo", "--ui-test-slow-photo-reload"])
+        ProfileEditorNavigation.open(.photos, in: app)
         XCTAssertTrue(app.buttons["photos.removeOne"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["photos.save"].exists)
         app.buttons["photos.removeOne"].tap()
@@ -34,6 +32,10 @@ final class ProfileLayoutTests: XCTestCase {
         XCTAssertFalse(app.alerts.firstMatch.exists)
         XCTAssertFalse(app.buttons["photos.removeOne"].exists)
         XCTAssertFalse(app.buttons["photos.remove"].exists)
+        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.closeMenu(in: app)
+        XCTAssertTrue(app.staticTexts["Add a photo"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["photos.gallery"].exists)
     }
 
     @MainActor

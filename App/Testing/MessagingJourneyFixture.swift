@@ -43,6 +43,17 @@
                 makeInterestsService: { id in id == JourneyIDs.second ? secondInterests : firstInterests },
                 makeContactsService: { id in id == JourneyIDs.second ? secondContacts : firstContacts }
             )
+            .onChange(of: account.step) { _, step in
+                if step == .profile && ProcessInfo.processInfo.arguments.contains("--ui-test-new-profile") {
+                    var draft = ProfileDraft()
+                    draft.firstName = "New member"
+                    draft.jobTitle = "Designer"
+                    draft.goal = "Find a hiking buddy."
+                    draft.dateOfBirth = "1990-01-01"
+                    draft.platonicAgreement = true
+                    account.draft = draft
+                }
+            }
             .environment(
                 \.profileImages,
                 ProcessInfo.processInfo.arguments.contains("--ui-test-profile-images")
@@ -129,6 +140,7 @@
         func save(_ profile: Profile) { savedProfiles[profile.id] = profile }
         func profile(for userID: UUID) throws -> Profile? {
             if let profile = savedProfiles[userID] { return profile }
+            if ProcessInfo.processInfo.arguments.contains("--ui-test-new-profile") { return nil }
             var draft = ProfileDraft()
             draft.firstName = "Fixture member"
             draft.jobTitle = "Designer"

@@ -39,7 +39,7 @@ struct ContactDetailsView: View {
                             }
                         }
                     }
-                    .buttonStyle(.borderedProminent).tint(BrandTheme.ink)
+                    .buttonStyle(BrandActionButtonStyle()).tint(BrandTheme.ink)
                     .foregroundStyle(BrandTheme.background)
                     .accessibilityIdentifier("contact.verify")
                     TimelineView(.periodic(from: .now, by: 1)) { context in
@@ -66,11 +66,11 @@ struct ContactDetailsView: View {
                         .textContentType(model.kind == .email ? .emailAddress : .telephoneNumber)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                         .accessibilityIdentifier("contact.input")
-                    
+
                     Button(model.kind == .email ? "Send verification email" : "Send code") {
                         Task { await model.requestCode() }
                     }
-                    .buttonStyle(.borderedProminent).tint(BrandTheme.ink)
+                    .buttonStyle(BrandActionButtonStyle()).tint(BrandTheme.ink)
                     .foregroundStyle(BrandTheme.background)
                     .accessibilityIdentifier("contact.send")
                 }

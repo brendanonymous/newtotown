@@ -75,6 +75,8 @@ private final class TestOnboardingService: OnboardingService {
     #expect(model.isSignedIn)
     model.draft = validDraft()
     await model.saveProfile()
+    #expect(model.step == .interests)
+    model.finishInterestPrompt()
     #expect(model.step == .saved)
     #expect(service.storedProfile?.id == service.id)
     let restored = OnboardingModel(service: service)
@@ -209,6 +211,8 @@ private final class TestOnboardingService: OnboardingService {
     #expect(service.acceptances == 1)
     resumed.draft = validDraft()
     await resumed.saveProfile()
+    #expect(resumed.step == .interests)
+    resumed.finishInterestPrompt()
     try await resumed.updateProfile(resumed.draft)
     #expect(resumed.step == .saved)
     await resumed.signOut()
@@ -366,4 +370,32 @@ private final class TestOnboardingService: OnboardingService {
     await #expect(throws: CancellationError.self) { try await update.value }
     #expect(model.draft == previous && model.step == .saved && !model.isBusy)
     started.continuation.finish()
+}
+
+@Test @MainActor func interestPromptOnlyFollowsSuccessfulNewProfileSave() async throws {
+    let service = TestOnboardingService()
+    service.signedIn = true
+    let model = OnboardingModel(service: service)
+    model.finishInterestPrompt()
+    #expect(model.step == .loading)
+    await model.restore()
+    model.finishInterestPrompt()
+    #expect(model.step == .profile)
+    model.draft = validDraft()
+    service.failSave = true
+    await model.saveProfile()
+    #expect(model.step == .profile)
+    service.failSave = false
+    await model.saveProfile()
+    #expect(model.step == .interests && service.saves == 1)
+    await #expect(throws: ProfileUpdateError.unavailable) { try await model.updateProfile(validDraft()) }
+    // A restored saved account is not forced through optional setup again.
+    let restored = OnboardingModel(service: service)
+    await restored.restore()
+    #expect(restored.step == .saved)
+    model.finishInterestPrompt()
+    #expect(model.step == .saved && service.saves == 1)
+    await model.signOut()
+    model.finishInterestPrompt()
+    #expect(model.step == .signIn && !model.isSignedIn)
 }

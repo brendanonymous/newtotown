@@ -33,7 +33,8 @@ struct AppEntryView: View {
                 || model.step == .restoreFailed
             {
                 OnboardingView(
-                    model: model
+                    model: model,
+                    interestsService: model.accountID.flatMap { makeInterestsService?($0) }
                 ) {
                     model.restartSignIn()
                     showsSignup = false
@@ -48,7 +49,7 @@ struct AppEntryView: View {
             }
         }
         .onChange(of: model.step) { old, new in
-            if new == .signIn && [.saved, .profile, .introduction, .restoreFailed].contains(old) {
+            if new == .signIn && [.saved, .profile, .interests, .introduction, .restoreFailed].contains(old) {
                 showsSignup = false
             }
         }

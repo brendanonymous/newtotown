@@ -46,11 +46,11 @@ struct FirstSignupIntroduction: View {
                 
                 Button("I agree") { Task { await accept() } }
                     .accessibilityIdentifier("signup.acceptAgreement")
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(BrandActionButtonStyle())
                     .foregroundStyle(BrandTheme.background)
             } else {
                 Button("Continue") { withAnimation { page += 1 } }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(BrandActionButtonStyle())
                     .foregroundStyle(BrandTheme.background)
             }
         }

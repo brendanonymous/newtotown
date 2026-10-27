@@ -2,7 +2,7 @@
 
 ## Behavior
 
-Open **Profile → My photos** to add up to three profile photos. The first is the main photo used by avatars and discovery eligibility. Tap a public profile photo to cycle; compact dots below the frame show the count and current position. In **My photos**, tap the image to open replacement, swipe horizontally to browse, and use the small top-right × to remove the current photo. Removing the first promotes the next. Removing the final saved photo immediately deletes it and any private selfie, without a confirmation alert; removing a photo that was never saved only clears the draft. Closing or swiping down with unsaved edits asks **Leave without saving?**, with **Keep editing** and **Discard changes**. Unchanged drafts and successful saves close without a warning.
+Open **Profile → Edit Profile → Photos** to add up to three profile photos. The first is the main photo used by avatars and discovery eligibility. Tap a public profile photo to cycle; compact dots below the frame show the count and current position. In **Photos**, tap the image to open replacement, swipe horizontally to browse, and use the small top-right × to remove the current photo. Removing the first promotes the next. Removing the final saved photo immediately deletes it and any private selfie, without a confirmation alert; removing a photo that was never saved only clears the draft. Closing or swiping down with unsaved edits asks **Leave without saving?**, with **Keep editing** and **Discard changes**. Unchanged drafts and successful saves close without a warning.
 
 Unsaved state compares the ordered photos and private selfie against the last successful load/save/removal snapshot, independently of whether the draft meets photo requirements. Reverting edits clears the warning; failed writes preserve it. `EditorSheet` owns the shared close confirmation, enabled only by the photo editor. A small UIKit [dismiss-attempt observer](https://developer.apple.com/documentation/uikit/uiadaptivepresentationcontrollerdelegate/presentationcontrollerdidattempttodismiss(_:)) handles swipe-down attempts and restores the existing presentation delegate when the draft becomes clean.
 
@@ -56,3 +56,16 @@ Security advisors report the pre-existing RLS helper execution-grant findings ([
 ## Test gallery deployment — October 25, 2026
 
 Migration `20261025232255` and version 3 of `discovery`, `messaging`, and `delete-account` are deployed to `newtotown-test` (`acmrnolvakubxnaxwpzt`), with JWT verification enabled. Production was not changed. Authenticated acceptance with disposable test accounts verified three ordered, downloadable private JPEGs in Discovery and conversation profiles; missing slots reduce the gallery on refresh. Cross-account selfie reads, client metadata-RPC access, and a fourth profile upload were rejected. The deployed deletion function removed all four paths and Auth accounts; admin folder listings were empty afterward. No email/SMS was sent and existing seed accounts were unchanged.
+
+The photo editor's Save photos action uses the compact shared
+`BrandActionButtonStyle`: content-sized width, a minimum 44-point touch height,
+and a continuous rounded rectangle with a 16-point corner radius. Visibility,
+disabled state, upload behavior, and successful-save dismissal stay unchanged.
+
+After a successful save or final-photo removal, the editor sends the persisted
+profile-photo bytes to `ProfileHomeView`. The parent decodes them off the main
+actor and updates its gallery before the sheet dismisses, without another
+Storage download. Advancing the load generation prevents an older read from
+overwriting the new photos. Cancelled drafts and failed writes never publish.
+Initial loads and pull-to-refresh still read Storage; a local decode failure
+falls back to a fresh read on dismissal.

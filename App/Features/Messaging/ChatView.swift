@@ -196,8 +196,9 @@ struct ChatView: View {
                 Button {
                     Task { await model.send() }
                 } label: {
-                    Image(systemName: "arrow.up.circle.fill").font(.title)
+                    Image(systemName: "arrow.up").font(.body.weight(.semibold))
                 }
+                .buttonStyle(BrandActionButtonStyle())
                 .accessibilityLabel("Send message").accessibilityIdentifier("chat.send")
                 .disabled(!model.canSend)
                 .opacity(model.canSend ? 1 : 0.4)

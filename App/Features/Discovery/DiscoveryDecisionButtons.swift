@@ -29,7 +29,9 @@ struct DiscoveryDecisionButtons: View {
             }
             .frame(width: 56, height: 44)
             .foregroundStyle(choice == .connect ? BrandTheme.background : BrandTheme.ink)
-            .background(choice == .connect ? BrandTheme.ink : BrandTheme.sage.opacity(0.3), in: RoundedRectangle(cornerRadius: 12)
+            .background(
+                choice == .connect ? BrandTheme.ink : BrandTheme.sage.opacity(0.3),
+                in: RoundedRectangle(cornerRadius: BrandTheme.buttonCornerRadius, style: .continuous)
             )
         }
         .accessibilityLabel(choice == .connect ? "Connect with \(name)" : "Pass on \(name)")

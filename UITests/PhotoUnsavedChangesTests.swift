@@ -3,8 +3,8 @@ import XCTest
 final class PhotoUnsavedChangesTests: XCTestCase {
     @MainActor func testUnchangedPhotoSheetClosesWithoutPrompt() {
         let app = launch()
-        app.buttons["editor.close"].tap()
-        XCTAssertTrue(app.buttons["My photos"].waitForExistence(timeout: 5))
+        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.closeMenu(in: app)
         XCTAssertFalse(app.alerts.firstMatch.exists)
     }
 
@@ -20,13 +20,13 @@ final class PhotoUnsavedChangesTests: XCTestCase {
         app.buttons["editor.close"].tap()
         XCTAssertTrue(alert.waitForExistence(timeout: 5))
         alert.buttons["Discard changes"].tap()
-        XCTAssertTrue(app.buttons["My photos"].waitForExistence(timeout: 5))
+        ProfileEditorNavigation.closeMenu(in: app)
         XCTAssertEqual(app.buttons["photos.gallery"].value as? String, "1 of 3")
-        app.buttons["My photos"].tap()
+        ProfileEditorNavigation.open(.photos, in: app)
         XCTAssertTrue(app.buttons["photos.editorGallery"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.buttons["photos.editorGallery"].value as? String, "1 of 3")
-        app.buttons["editor.close"].tap()
-        XCTAssertTrue(app.buttons["My photos"].waitForExistence(timeout: 5))
+        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.closeMenu(in: app)
         XCTAssertFalse(app.alerts.firstMatch.exists)
     }
 
@@ -49,8 +49,7 @@ final class PhotoUnsavedChangesTests: XCTestCase {
             "--ui-test-messaging", "--ui-test-photos", "--ui-test-saved-photo", "--ui-test-photo-gallery",
         ]
         app.launch()
-        XCTAssertTrue(app.buttons["My photos"].waitForExistence(timeout: 10))
-        app.buttons["My photos"].tap()
+        ProfileEditorNavigation.open(.photos, in: app)
         XCTAssertTrue(app.buttons["photos.editorGallery"].waitForExistence(timeout: 5))
         return app
     }

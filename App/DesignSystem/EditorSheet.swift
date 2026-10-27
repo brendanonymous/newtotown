@@ -4,6 +4,7 @@ import SwiftUI
 struct EditorSheet<Content: View>: View {
     var isBusy = false
     var hasUnsavedChanges = false
+    var closeIdentifier = "editor.close"
     @ViewBuilder var content: () -> Content
     @Environment(\.dismiss) private var dismiss
     @State private var confirmsDiscard = false
@@ -15,7 +16,7 @@ struct EditorSheet<Content: View>: View {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Close") { requestClose() }
                             .disabled(isBusy)
-                            .accessibilityIdentifier("editor.close")
+                            .accessibilityIdentifier(closeIdentifier)
                     }
                 }
                 .interactiveDismissDisabled(isBusy || hasUnsavedChanges)

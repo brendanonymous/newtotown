@@ -72,7 +72,7 @@ struct DiscoveryPreferencesView: View {
                         }
                     }
                 }
-                .buttonStyle(.borderedProminent).tint(BrandTheme.ink)
+                .buttonStyle(BrandActionButtonStyle()).tint(BrandTheme.ink)
                 .foregroundStyle(model.canSave ? BrandTheme.background : BrandTheme.secondaryInk)
                 .disabled(!model.canSave).opacity(model.canSave ? 1 : 0.75)
                 .accessibilityIdentifier("preferences.save")

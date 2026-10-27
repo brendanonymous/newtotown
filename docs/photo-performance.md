@@ -10,7 +10,7 @@ The first phase was approved October 24, 2026: in-memory reuse and display-sized
 
 `SignedInView` owns the store under its existing account-UUID identity. Leaving that scope clears both caches and invalidates pending results. Reporting evicts the affected peer and rejects late results without removing unrelated photos. Cancelling one consumer does not cancel a shared request needed by another. Avatars and public profile cards share `RemoteProfilePhoto`; rounding and shadows remain with their existing presentation components. Connections and Messages use lazy stacks to defer offscreen image views.
 
-The owner's profile retains its already loaded image across tab switches. My photos invalidates it before editing; closing the sheet reloads it. Pull-to-refresh also reloads it. Decoding runs off the main actor, and generation/cancellation checks reject late results. A photo changed on another device may remain visible until this refresh or a new sign-in.
+The owner's profile retains its loaded images across tab switches and while Edit Profile is open. Photos publishes successfully saved images directly to the profile before closing its section; returning through the editor menu does not download them again. Pull-to-refresh remains an authoritative remote read. Decoding runs off the main actor, and generation/cancellation checks reject late results. A photo changed on another device may remain visible until refresh or a new sign-in.
 
 ## Benefits and tradeoffs
 
@@ -39,3 +39,13 @@ While Discovery is selected and the feed is ready, `DiscoveryPhotoPreloader` war
 The chosen decision button shows progress and both decisions remain disabled until the server responds. The existing card remains visible until success. The next card slides/fades for 350 ms, with a 48-point entrance and 72-point departure; Reduce Motion disables that animation. Failed or cancelled decisions retain the existing reconciliation behavior: discard uncertain feed state and offer refresh/retry. Callbacks include the displayed profile ID, so a tap from an outgoing card cannot decide on its replacement.
 
 Preloading spends bandwidth on one main photo that may never be viewed. It helps when the user pauses on a card; rapid decisions, slow connections, expired links, or cache eviction can still show loading. No latency percentage is claimed without device measurements. The raw-byte cache still uses full signed URLs; decoded reuse is sufficient for the matching preload/display size.
+
+## Refreshing the owner's photos after edits
+
+Saving no longer forces an owner gallery re-download. After Storage confirms a
+save/removal, the editor passes its persisted bytes to the profile view, which
+decodes them off the main actor before dismissal. A generation check rejects any
+older in-flight read. Discarded drafts and failed saves keep the previous gallery.
+Initial loads and pull-to-refresh remain authoritative remote reads. The
+simulator save/removal journeys inject a 30-second second read to verify that
+returning to Profile does not depend on that request.

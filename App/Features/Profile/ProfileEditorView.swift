@@ -17,10 +17,10 @@ struct ProfileEditorView: View {
         EditorSheet(isBusy: account.isBusy) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    Text("Edit profile").font(.system(.largeTitle, design: .serif))
+                    Text("About Me").font(.system(.largeTitle, design: .serif))
                     ProfileForm(draft: $draft)
                     Button("Save profile") { Task { await save() } }
-                        .buttonStyle(.borderedProminent).tint(BrandTheme.ink)
+                        .buttonStyle(BrandActionButtonStyle()).tint(BrandTheme.ink)
                         .foregroundStyle(BrandTheme.background)
                         .accessibilityIdentifier("profile.save")
                     if account.isBusy { ProgressView() }

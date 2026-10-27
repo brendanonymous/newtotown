@@ -51,7 +51,7 @@ Existing selfies remain private until users remove photos or delete their accoun
 
 Swift tests cover both modes, profile-only restore, missing/invalid/oversized photos, unavailable flags, and requirement refresh when enabling or disabling review during a session. PostgreSQL tests cover client-write denial, anonymous/cross-user isolation, eligibility in both modes, suspension/rejection, stale approvals for either image, recreated objects, missing configuration, and deleted accounts.
 
-Phone checks: with review off, open **My photos**, confirm there is no selfie control, save only a profile photo, and reopen to restore it. Remove photos and confirm an old selfie is also removed. In a development project, enable review while the screen is open, press save, and confirm the updated requirements require a selfie without another agreement. No successful upload should display a verified badge.
+Phone checks: with review off, open **Edit Profile → Photos**, confirm there is no selfie control, save only a profile photo, and reopen to restore it. Remove photos and confirm an old selfie is also removed. In a development project, enable review while the screen is open, press save, and confirm the updated requirements require a selfie without another agreement. No successful upload should display a verified badge.
 
 ## Hosted status — October 8, 2026 (Arizona)
 
