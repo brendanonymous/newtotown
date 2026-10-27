@@ -133,16 +133,13 @@ struct ProfileHomeView: View {
 
                 if photoService != nil {
                     Button("My photos") { editor = .photos }
-                        .buttonStyle(BrandActionButtonStyle(tone: .secondary))
                 }
 
                 if interestsService != nil {
                     Button("Edit interests") { editor = .interests }
-                        .buttonStyle(BrandActionButtonStyle(tone: .secondary))
                         .accessibilityIdentifier("profile.interests")
                 }
                 Button("Edit profile") { editor = .profile }
-                    .buttonStyle(BrandActionButtonStyle(tone: .secondary))
                     .accessibilityIdentifier("profile.edit")
             }
             .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)
