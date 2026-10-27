@@ -6,10 +6,7 @@ final class InterestJourneyTests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test-messaging"]
         app.launch()
-        let edit = app.buttons["profile.interests"]
-        XCTAssertTrue(edit.waitForExistence(timeout: 10))
-        reach(edit, in: app)
-        edit.tap()
+        ProfileEditorNavigation.open(.interests, in: app)
         let sports = app.buttons["interests.category.sports_fitness"]
         XCTAssertTrue(sports.waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["interest.golf"].exists)
@@ -27,7 +24,8 @@ final class InterestJourneyTests: XCTestCase {
         let save = app.buttons["interests.save"]
         reach(save, in: app)
         save.tap()
-        XCTAssertTrue(app.buttons["profile.interests"].waitForExistence(timeout: 10))
+        ProfileEditorNavigation.closeMenu(in: app)
+        XCTAssertTrue(app.buttons["profile.edit"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["Golf"].waitForExistence(timeout: 5))
         app.buttons["profile.preferences"].tap()
         app.buttons["preferences.interests"].tap()
@@ -57,7 +55,7 @@ final class InterestJourneyTests: XCTestCase {
         app.buttons["Save my profile"].tap()
         let sports = app.buttons["interests.category.sports_fitness"]
         XCTAssertTrue(sports.waitForExistence(timeout: 10))
-        XCTAssertFalse(app.buttons["profile.interests"].exists)
+        XCTAssertFalse(app.buttons["profile.edit"].exists)
         sports.tap()
         let swimming = app.buttons["interest.swimming"]
         reach(swimming, in: app)
@@ -70,7 +68,7 @@ final class InterestJourneyTests: XCTestCase {
         let next = app.buttons["interests.save"]
         reach(next, in: app)
         next.tap()
-        XCTAssertTrue(app.buttons["profile.interests"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["profile.edit"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["Swimming"].exists)
     }
 
@@ -82,7 +80,7 @@ final class InterestJourneyTests: XCTestCase {
         XCTAssertTrue(skip.waitForExistence(timeout: 10))
         reach(skip, in: app)
         skip.tap()
-        XCTAssertTrue(app.buttons["profile.interests"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["profile.edit"].waitForExistence(timeout: 10))
     }
 
     @MainActor
@@ -100,13 +98,13 @@ final class InterestJourneyTests: XCTestCase {
         XCTAssertTrue(
             app.staticTexts["We couldn’t load or save your interests. Please try again."].waitForExistence(
                 timeout: 5))
-        XCTAssertFalse(app.buttons["profile.interests"].exists)
+        XCTAssertFalse(app.buttons["profile.edit"].exists)
         sports.tap()
         XCTAssertEqual(app.buttons["interest.golf"].value as? String, "Selected")
         sports.tap()
         reach(next, in: app)
         next.tap()
-        XCTAssertTrue(app.buttons["profile.interests"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["profile.edit"].waitForExistence(timeout: 10))
     }
 
     @MainActor private func newProfileApp(arguments: [String] = []) -> XCUIApplication {

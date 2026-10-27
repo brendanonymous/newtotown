@@ -10,7 +10,7 @@ The first phase was approved October 24, 2026: in-memory reuse and display-sized
 
 `SignedInView` owns the store under its existing account-UUID identity. Leaving that scope clears both caches and invalidates pending results. Reporting evicts the affected peer and rejects late results without removing unrelated photos. Cancelling one consumer does not cancel a shared request needed by another. Avatars and public profile cards share `RemoteProfilePhoto`; rounding and shadows remain with their existing presentation components. Connections and Messages use lazy stacks to defer offscreen image views.
 
-The owner's profile retains its already loaded image across tab switches. My photos invalidates it before editing; closing the sheet reloads it. Pull-to-refresh also reloads it. Decoding runs off the main actor, and generation/cancellation checks reject late results. A photo changed on another device may remain visible until this refresh or a new sign-in.
+The owner's profile retains its loaded images across tab switches and while Edit Profile is open. Photos publishes successfully saved images directly to the profile before closing its section; returning through the editor menu does not download them again. Pull-to-refresh remains an authoritative remote read. Decoding runs off the main actor, and generation/cancellation checks reject late results. A photo changed on another device may remain visible until refresh or a new sign-in.
 
 ## Benefits and tradeoffs
 

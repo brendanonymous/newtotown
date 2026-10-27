@@ -86,7 +86,7 @@ supabase migration list --linked
 supabase db push --linked --dry-run
 ```
 
-The final dry run should report up to date. Re-run the catalog query and reopen Profile → Edit interests and Preferences → Interests. Confirm labels/order, selection limits, and saving. A Git merge and a database deployment are separate operations; merging this repository does not automatically deploy migrations.
+The final dry run should report up to date. Re-run the catalog query and reopen Profile → Edit Profile → Interests and Preferences → Interests. Confirm labels/order, selection limits, and saving. A Git merge and a database deployment are separate operations; merging this repository does not automatically deploy migrations.
 
 Production is a separate, deliberate rollout after review and test acceptance. Check its migration history and prerequisites before linking or pushing; the original project has not received these test catalog deployments.
 

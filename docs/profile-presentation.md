@@ -10,7 +10,9 @@ The photo model owns `canSave` and `hasStoredPhotos`, with lifecycle tests cover
 
 ## Profile editor sheets
 
-My photos, Edit interests, and Edit profile are plain text actions in Profile. All three open modal sheets with a shared `EditorSheet` navigation container and a Close button. The container disables Close and swipe dismissal while saving or preparing a photo. Saving successfully closes the editor; closing an unsaved profile or interest editor discards its local draft.
+Profile has one text-only **Edit Profile** action. It opens `ProfileEditorMenuView`, a modal menu with **Photos**, **About Me**, and **Interests**. Each section opens its existing modal editor using the shared `EditorSheet` navigation container. Closing or successfully saving a section returns to the menu; closing the menu returns to the profile tab. The About Me form contains name, job title, bio, birthday, and city. The menu and section Close controls have distinct accessibility identifiers to avoid ambiguous actions when sheets are stacked.
+
+The container disables Close and swipe dismissal while saving or preparing a photo. Closing an unsaved About Me or Interests editor discards its local draft; Photos retains its explicit discard warning. Successful photo saves/removals publish the persisted images to the profile before returning to the menu, without a second download.
 
 `ProfileHomeView` owns a single optional editor destination, so it cannot present competing sheets. Returning reloads public interests and refreshes photos when needed. Discovery filter editing still uses Preferences navigation; the interest form supports both presentations without duplicating selection rules.
 

@@ -39,7 +39,7 @@ Performance review added `20261025044701_interest_selection_indexes.sql` to cove
 
 ## iPhone controls
 
-Profile → Edit interests edits public profile choices. Profile → Preferences → Interests edits private Discovery filters. Both show the five catalog categories and allow zero to three choices per category. At three selections, other choices in that category are disabled; selected choices can still be removed. Save replaces only the edited set, and clearing all choices is supported. Saving filters refreshes Discovery without changing existing connections or conversations.
+Profile → Edit Profile → Interests edits public profile choices. Profile → Preferences → Interests edits private Discovery filters. Both show the five catalog categories and allow zero to three choices per category. At three selections, other choices in that category are disabled; selected choices can still be removed. Save replaces only the edited set, and clearing all choices is supported. Saving filters refreshes Discovery without changing existing connections or conversations.
 
 Core owns catalog validation and selection state; the Supabase adapter owns authenticated transport. The SwiftUI editor renders the catalog without duplicating its options. Shared profile cards show the public interest tags in Profile, Discovery, and conversation profiles. Responses after an account reset are discarded.
 

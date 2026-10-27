@@ -21,7 +21,7 @@ final class PhotoGalleryJourneyTests: XCTestCase {
                 pixels, previousPixels, "Tapping must change the displayed photo, not only the dots")
             previousPixels = pixels
         }
-        app.buttons["My photos"].tap()
+        ProfileEditorNavigation.open(.photos, in: app)
         let remove = app.buttons["photos.removeOne"]
         XCTAssertTrue(remove.waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["photos.choose"].exists)
@@ -45,7 +45,7 @@ final class PhotoGalleryJourneyTests: XCTestCase {
         XCTAssertTrue(app.buttons["photos.choose"].exists)
         capture(app, name: "Compact photo action buttons")
         app.buttons["photos.save"].tap()
-        XCTAssertTrue(app.buttons["My photos"].waitForExistence(timeout: 5))
+        ProfileEditorNavigation.closeMenu(in: app)
         XCTAssertEqual(gallery.value as? String, "1 of 2")
     }
 
