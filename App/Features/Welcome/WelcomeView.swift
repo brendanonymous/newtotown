@@ -60,7 +60,6 @@ struct WelcomeView: View {
         }
         .foregroundStyle(BrandTheme.ink)
         .background(BrandTheme.background)
-        .toolbar { BrandNavigationLogo() }
     }
 }
 

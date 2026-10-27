@@ -36,6 +36,7 @@ struct PilotOverviewView: View {
         .background(BrandTheme.background)
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar { BrandNavigationLogo() }
     }
 
     private func detail(_ title: String, symbol: String, description: String) -> some View {
