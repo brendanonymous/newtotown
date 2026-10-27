@@ -67,6 +67,7 @@ struct ProfileEditorMenuView: View {
             .padding(.vertical, 12).contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(title)
         .accessibilityIdentifier("profile.editor.\(section.rawValue)")
     }
 }
