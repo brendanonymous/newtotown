@@ -19,8 +19,9 @@ struct InterestEditorView: View {
 
     @ViewBuilder var body: some View {
         switch presentation {
-        case .navigation, .onboarding: editor
-        case .sheet: EditorSheet(isBusy: model.isBusy) { editor }
+        case .onboarding: editor
+        case .navigation: EditorPage(presentation: .navigation, isBusy: model.isBusy) { editor }
+        case .sheet: EditorPage(presentation: .sheet, isBusy: model.isBusy) { editor }
         }
     }
 
