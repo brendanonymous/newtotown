@@ -67,7 +67,9 @@ final class ProfileLayoutTests: XCTestCase {
         XCTAssertFalse(details.isEmpty)
         for detail in details { XCTAssertLessThanOrEqual(detail.frame.maxX, connect.frame.minX) }
         XCTAssertEqual(connect.frame.minX, pass.frame.minX, accuracy: 1)
-        XCTAssertGreaterThan(pass.frame.minY, connect.frame.maxY)
+        XCTAssertEqual(connect.frame.width, 64, accuracy: 1)
+        XCTAssertEqual(pass.frame.width, 64, accuracy: 1)
+        XCTAssertEqual(pass.frame.minY - connect.frame.maxY, 18, accuracy: 1)
     }
 
     @MainActor private func assertDirectPhotoEditorClosesToHome(in app: XCUIApplication) {

@@ -85,7 +85,9 @@
         func decide(on profileID: UUID, choice: ConnectionChoice) async throws -> DiscoveryFeed {
             isSaving = true
             defer { isSaving = false }
-            await withCheckedContinuation { response = $0 }
+            if !ProcessInfo.processInfo.arguments.contains("--ui-test-fast-decisions") {
+                await withCheckedContinuation { response = $0 }
+            }
             if fails {
                 fails = false
                 throw AuthorizedPhotoError.unavailable
