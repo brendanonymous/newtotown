@@ -1,7 +1,7 @@
 import NewToTownCore
 import SwiftUI
 
-/// Keep unsaved fields local so closing the sheet leaves the saved profile intact.
+/// Keep unsaved fields local so going back leaves the saved profile intact.
 struct ProfileEditorView: View {
     @Bindable var account: OnboardingModel
     @State private var draft: ProfileDraft
@@ -14,7 +14,7 @@ struct ProfileEditorView: View {
     }
 
     var body: some View {
-        EditorSheet(isBusy: account.isBusy) {
+        EditorPage(presentation: .navigation, isBusy: account.isBusy) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     Text("About Me").font(.system(.largeTitle, design: .serif))

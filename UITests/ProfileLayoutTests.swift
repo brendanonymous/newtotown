@@ -11,7 +11,7 @@ final class ProfileLayoutTests: XCTestCase {
     }
 
     @MainActor
-    func testEmptyPhotoSheetShowsOnlyChooseAction() {
+    func testEmptyPhotoEditorShowsOnlyChooseAction() {
         let app = launch(["--ui-test-photos"])
         ProfileEditorNavigation.open(.photos, in: app)
         XCTAssertTrue(app.buttons["photos.choose"].waitForExistence(timeout: 10))
@@ -27,11 +27,11 @@ final class ProfileLayoutTests: XCTestCase {
         let addPhoto = app.buttons["profile.addPhoto"]
         XCTAssertTrue(addPhoto.waitForExistence(timeout: 10))
         addPhoto.tap()
-        assertDirectPhotoEditorClosesToHome(in: app)
+        assertDirectPhotoEditorGoesBackHome(in: app)
 
         // The empty frame around the label is also a generous tap target.
         addPhoto.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.1)).tap()
-        assertDirectPhotoEditorClosesToHome(in: app)
+        assertDirectPhotoEditorGoesBackHome(in: app)
     }
 
     @MainActor
@@ -47,12 +47,12 @@ final class ProfileLayoutTests: XCTestCase {
         XCTAssertFalse(app.alerts.firstMatch.exists)
         XCTAssertFalse(app.buttons["photos.removeOne"].exists)
         XCTAssertFalse(app.buttons["photos.remove"].exists)
-        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.backToMenu(in: app)
         ProfileEditorNavigation.closeMenu(in: app)
         XCTAssertTrue(app.buttons["profile.addPhoto"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["photos.gallery"].exists)
         app.buttons["profile.addPhoto"].tap()
-        assertDirectPhotoEditorClosesToHome(in: app)
+        assertDirectPhotoEditorGoesBackHome(in: app)
     }
 
     @MainActor
@@ -72,9 +72,10 @@ final class ProfileLayoutTests: XCTestCase {
         XCTAssertEqual(pass.frame.minY - connect.frame.maxY, 18, accuracy: 1)
     }
 
-    @MainActor private func assertDirectPhotoEditorClosesToHome(in app: XCUIApplication) {
+    @MainActor private func assertDirectPhotoEditorGoesBackHome(in app: XCUIApplication) {
+        XCTAssertFalse(app.sheets.firstMatch.exists, "The shortcut should push Photos onto the profile stack")
         XCTAssertTrue(app.buttons["photos.choose"].waitForExistence(timeout: 5))
-        app.buttons["editor.close"].tap()
+        app.buttons["editor.back"].tap()
         XCTAssertTrue(app.buttons["profile.addPhoto"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["profile.editor.close"].exists)
     }

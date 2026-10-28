@@ -19,8 +19,12 @@ import XCTest
         row.tap()
     }
 
-    static func closeSection(in app: XCUIApplication) {
-        app.buttons["editor.close"].tap()
+    static func backToMenu(in app: XCUIApplication) {
+        let back = app.buttons["editor.back"]
+        XCTAssertTrue(back.waitForExistence(timeout: 5))
+        XCTAssertEqual(back.label, "Back")
+        XCTAssertFalse(app.buttons["editor.close"].exists)
+        back.tap()
         XCTAssertTrue(app.buttons["profile.editor.aboutMe"].waitForExistence(timeout: 5))
     }
 

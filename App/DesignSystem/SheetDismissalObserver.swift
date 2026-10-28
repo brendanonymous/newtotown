@@ -2,8 +2,8 @@ import SwiftUI
 import UIKit
 
 /// SwiftUI blocks a dirty sheet's swipe, but does not expose the attempted
-/// dismissal. Observe UIKit's attempt callback so Close and swipe share a warning.
-/// Installed only while dirty; restore SwiftUI's delegate when the guard leaves.
+/// dismissal. Observe UIKit's attempt callback so Back, Close, and swipe share a warning.
+/// Installed while exit is guarded; restore SwiftUI's delegate when the guard leaves.
 struct SheetDismissalObserver: UIViewControllerRepresentable {
     var onAttempt: () -> Void
 
