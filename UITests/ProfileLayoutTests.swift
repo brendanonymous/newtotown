@@ -22,8 +22,23 @@ final class ProfileLayoutTests: XCTestCase {
     }
 
     @MainActor
+    func testEmptyPhotoFrameOpensPhotosDirectlyAndReturnsHome() {
+        let app = launch(["--ui-test-photos"])
+        let addPhoto = app.buttons["profile.addPhoto"]
+        XCTAssertTrue(addPhoto.waitForExistence(timeout: 10))
+        addPhoto.tap()
+        assertDirectPhotoEditorClosesToHome(in: app)
+
+        // The empty frame around the label is also a generous tap target.
+        addPhoto.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.1)).tap()
+        assertDirectPhotoEditorClosesToHome(in: app)
+    }
+
+    @MainActor
     func testStoredPhotoCanBeRemovedWithoutShowingUnneededSave() {
         let app = launch(["--ui-test-photos", "--ui-test-saved-photo", "--ui-test-slow-photo-reload"])
+        XCTAssertTrue(app.buttons["photos.gallery"].waitForExistence(timeout: 10))
+        XCTAssertFalse(app.buttons["profile.addPhoto"].exists)
         ProfileEditorNavigation.open(.photos, in: app)
         XCTAssertTrue(app.buttons["photos.removeOne"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["photos.save"].exists)
@@ -34,8 +49,10 @@ final class ProfileLayoutTests: XCTestCase {
         XCTAssertFalse(app.buttons["photos.remove"].exists)
         ProfileEditorNavigation.closeSection(in: app)
         ProfileEditorNavigation.closeMenu(in: app)
-        XCTAssertTrue(app.staticTexts["Add a photo"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["profile.addPhoto"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["photos.gallery"].exists)
+        app.buttons["profile.addPhoto"].tap()
+        assertDirectPhotoEditorClosesToHome(in: app)
     }
 
     @MainActor
@@ -51,6 +68,13 @@ final class ProfileLayoutTests: XCTestCase {
         for detail in details { XCTAssertLessThanOrEqual(detail.frame.maxX, connect.frame.minX) }
         XCTAssertEqual(connect.frame.minX, pass.frame.minX, accuracy: 1)
         XCTAssertGreaterThan(pass.frame.minY, connect.frame.maxY)
+    }
+
+    @MainActor private func assertDirectPhotoEditorClosesToHome(in app: XCUIApplication) {
+        XCTAssertTrue(app.buttons["photos.choose"].waitForExistence(timeout: 5))
+        app.buttons["editor.close"].tap()
+        XCTAssertTrue(app.buttons["profile.addPhoto"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["profile.editor.close"].exists)
     }
 
     @MainActor private func launch(_ flags: [String]) -> XCUIApplication {
