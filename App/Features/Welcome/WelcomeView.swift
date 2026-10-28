@@ -15,7 +15,7 @@ struct WelcomeView: View {
                         .font(.system(.largeTitle, design: .serif))
                         .multilineTextAlignment(.center)
 
-                    Text("Meet local friends.")
+                    Text("No awkward swiping. Only quality connections.")
                         .font(.body)
                         .foregroundStyle(BrandTheme.secondaryInk)
                         .multilineTextAlignment(.center)

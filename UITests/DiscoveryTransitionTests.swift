@@ -1,3 +1,4 @@
+import UIKit
 import XCTest
 
 final class DiscoveryTransitionTests: XCTestCase {
@@ -46,6 +47,49 @@ final class DiscoveryTransitionTests: XCTestCase {
         attachment.name = "Next card after decision"
         attachment.lifetime = .keepAlways
         add(attachment)
+    }
+
+    @MainActor func testConsecutiveConnectAndPassKeepTheCardAndControlsStable() {
+        let app = launch(["--ui-test-fast-decisions"])
+        XCTAssertTrue(app.staticTexts["Alex"].waitForExistence(timeout: 8))
+        let gallery = app.buttons["photos.gallery"]
+        let originalFrame = gallery.frame
+        for (choice, nextName, previousName) in [("connect", "Sam", "Alex"), ("pass", "Taylor", "Sam")] {
+            app.buttons["discovery.\(choice)"].tap()
+            XCTAssertTrue(app.staticTexts[nextName].waitForExistence(timeout: 5))
+            XCTAssertFalse(app.staticTexts[previousName].exists)
+            XCTAssertEqual(app.buttons.matching(identifier: "discovery.connect").count, 1)
+            XCTAssertEqual(gallery.frame.minY, originalFrame.minY, accuracy: 1)
+            XCTAssertEqual(gallery.frame.width, originalFrame.width, accuracy: 1)
+            XCTAssertEqual(gallery.frame.height, originalFrame.height, accuracy: 1)
+            assertBlueFixturePhoto(in: gallery)
+            XCTAssertTrue(app.buttons["discovery.connect"].isEnabled)
+            XCTAssertTrue(app.buttons["discovery.pass"].isEnabled)
+        }
+        app.buttons["discovery.pass"].tap()
+        XCTAssertTrue(app.staticTexts["You’re caught up."].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["discovery.connect"].exists)
+    }
+
+    @MainActor private func assertBlueFixturePhoto(in gallery: XCUIElement) {
+        guard let image = gallery.screenshot().image.cgImage,
+            let center = image.cropping(
+                to: CGRect(x: image.width / 2, y: image.height / 2, width: 1, height: 1))
+        else {
+            XCTFail("Photo pixels unavailable")
+            return
+        }
+        var pixel = [UInt8](repeating: 0, count: 4)
+        pixel.withUnsafeMutableBytes { buffer in
+            let context = CGContext(
+                data: buffer.baseAddress, width: 1, height: 1, bitsPerComponent: 8, bytesPerRow: 4,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue
+            )
+            context?.draw(center, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+        }
+        XCTAssertGreaterThan(
+            Int(pixel[2]) - Int(pixel[0]), 100, "The next photo must render, not a blank frame")
     }
 
     @MainActor private func waitForLabel(_ label: String, element: XCUIElement) {

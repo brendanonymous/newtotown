@@ -31,6 +31,16 @@ import UIKit
 
     init(loader: AuthorizedPhotoLoader = AuthorizedPhotoLoader()) { self.loader = loader }
 
+    /// A read-only lookup lets an entering card render its preload on the first frame.
+    /// The normal async request still records usage and handles a cache miss.
+    func cachedImage(for url: URL, pixels: Int) -> UIImage? {
+        guard !isExcluded(url), let resource = try? AuthorizedPhotoLoader.resourceURL(for: url),
+            let entry = cache[Key(url: resource, pixels: max(1, min(1200, pixels)))],
+            entry.photo.expiresAt > Date()
+        else { return nil }
+        return UIImage(cgImage: entry.photo.image.cgImage)
+    }
+
     func image(for url: URL, pixels: Int) async throws -> UIImage {
         try Task.checkCancellation()
         guard !isExcluded(url) else { throw AuthorizedPhotoError.unavailable }
