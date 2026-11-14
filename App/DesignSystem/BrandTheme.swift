@@ -4,12 +4,12 @@ import UIKit
 enum BrandTheme {
     static let textCornerRadius: CGFloat = 16
     static let buttonCornerRadius: CGFloat = 16
-    // Ivory and sage follow the supplied asset pack; ink remains the legible action color.
-    static let background = adaptive(light: 0xFAF5EF, dark: 0x1B251E)
+    // Corrected pack: warm white #FBF8F4 and the sage gradient midpoint #B5BEA6.
+    static let background = adaptive(light: 0xFBF8F4, dark: 0x1B251E)
     static let inputSurface = adaptive(light: 0xFFFFFF, dark: 0x293B30)
-    static let sage = Color(red: 168 / 255, green: 173 / 255, blue: 143 / 255)
-    static let ink = adaptive(light: 0x293B30, dark: 0xFAF5EF)
-    static let secondaryInk = adaptive(light: 0x596653, dark: 0xB9BDA9)
+    static let sage = Color(red: 181 / 255, green: 190 / 255, blue: 166 / 255)
+    static let ink = adaptive(light: 0x293B30, dark: 0xFBF8F4)
+    static let secondaryInk = adaptive(light: 0x596653, dark: 0xBEC5AC)
 
     private static func adaptive(light: Int, dark: Int) -> Color {
         Color(
