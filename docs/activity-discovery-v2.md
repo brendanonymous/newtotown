@@ -12,7 +12,7 @@ Discovery honors reciprocal saved age ranges, private interest filters and exist
 
 ## Data model for approval
 
-Existing Auth, profiles, agreements, photos, visibility, decisions, reports and conversations remain authoritative. Do not replace the existing photo slots with a new photo table. All new tables below live in `private`, enable RLS, and revoke all access from `public`, `anon` and `authenticated`. Only narrowly scoped service-role RPCs access them after the Edge Function resolves the live Auth caller. No caller-selected owner IDs reach those RPCs from a client body.
+Existing Auth, profiles, agreements, photos, visibility, decisions, reports and conversations remain authoritative. Do not replace the existing photo slots with a new photo table. All new tables below live in `private`, enable RLS, and revoke all access from `public`, `anon` and `authenticated`. Only narrowly scoped service-role RPCs access them after the Edge Function resolves the live Auth caller. No caller-selected owner IDs reach those RPCs from a client body. RPCs use SECURITY INVOKER with an empty search_path, explicit service-role-only EXECUTE grants, and fully qualified table/function names.
 
 | Table | Columns and constraints |
 | --- | --- |
@@ -62,9 +62,9 @@ Authenticated POST commands:
 | `save_looking_for` | `category_ids`, ordered `priority_ids` | Atomic 1–5 selections and zero to two unique priorities; updated owner state. |
 | `save_interests` | Unique `interest_ids`, `complete_setup boolean` | Atomic profile selection save. Completion validates the earlier setup requirements; empty is valid. |
 | `save_filters` | Unique `interest_ids` | Atomic private filter save, clears `filters_need_review`, increments selection revision. |
-| `peer` | Exactly one of `conversation_id` or `connection_id` | Fresh v2 public activity metadata, only after the existing conversation/connection authorization succeeds. New Discovery filters must not revoke that existing relationship. |
+| `peer` | Exactly one of `conversation_id` or `target_id` | Fresh v2 public activity metadata, only after the existing conversation/connection authorization succeeds. New Discovery filters must not revoke that existing relationship. |
 
-`connection_id` is the peer's existing profile UUID for an established mutual connection, not a new connection table. Neither context permits arbitrary profile browsing. Existing report/hide/suspension rules still apply.
+`target_id` is the peer's existing profile UUID for an established mutual connection; no new connection table is introduced. Neither context permits arbitrary profile browsing. Existing report/hide/suspension rules still apply.
 
 ### `activity-catalog-v2`
 
@@ -80,7 +80,7 @@ A candidate includes existing public name/age/job/bio/city/photo fields plus `lo
 
 Owner preview receives the same published selection labels but no shared-match treatment. Public responses exclude score/breakdown, private birthdays/contacts/preferences, unpublished tags, coordinates and moderation state. Profile photo URLs remain short-lived; only returned authorized profile slots are signed.
 
-Use existing HTTP semantics (401 signed out, 400 invalid input, 404 unavailable peer, 503 sanitized upstream failure). Add 409 `stale_selection`/`feed_expired` with no sensitive payload; the client reloads the appropriate owner state/feed instead of guessing defaults. Save commands carry the owner state's selection revision to prevent a stale editor from silently overwriting newer changes. Successful writes increment it.
+Use existing HTTP semantics (401 signed out, 400 invalid input, 404 unavailable peer, 503 sanitized upstream failure). Add 409 `stale_selection`/`feed_expired` with no sensitive payload; the client offers to reload newer owner state without silently discarding an editor draft, or refreshes an expired feed instead of guessing defaults. Save commands carry the owner state's selection revision to prevent a stale editor from silently overwriting newer changes. Successful writes increment it.
 
 ## Ranking, pagination and explanations
 
