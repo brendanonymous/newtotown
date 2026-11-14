@@ -9,7 +9,12 @@ struct ProfileHomeView: View {
     let isSelected: Bool
     private let interestsService: (any InterestsService)?
     @State private var interests: InterestsModel?
-    @State private var showsEditor = false
+    private enum Editor: String, Identifiable {
+        case menu, photos
+        var id: String { rawValue }
+    }
+
+    @State private var editor: Editor?
     @State private var profilePhotos: [UIImage] = []
     @State private var photoIsMissing = false
     @State private var photoFailed = false
@@ -29,18 +34,25 @@ struct ProfileHomeView: View {
 
     var body: some View {
         profile
-            .sheet(isPresented: $showsEditor) {
-                ProfileEditorMenuView(
-                    account: model, photoService: photoService, interestsService: interestsService,
-                    onPhotosSaved: showSavedPhotos
-                )
+            .sheet(item: $editor) { destination in
+                switch destination {
+                case .menu:
+                    ProfileEditorMenuView(
+                        account: model, photoService: photoService, interestsService: interestsService,
+                        onPhotosSaved: showSavedPhotos
+                    )
+                case .photos:
+                    if let photoService {
+                        PhotoSubmissionView(service: photoService, onPhotosSaved: showSavedPhotos)
+                    }
+                }
             }
-            .task(id: isSelected && !showsEditor) {
-                guard isSelected, !showsEditor, photoNeedsReload else { return }
+            .task(id: isSelected && editor == nil) {
+                guard isSelected, editor == nil, photoNeedsReload else { return }
                 await loadPhoto()
             }
-            .task(id: isSelected && !showsEditor) {
-                if isSelected, !showsEditor { await interests?.load() }
+            .task(id: isSelected && editor == nil) {
+                if isSelected, editor == nil { await interests?.load() }
             }
             .refreshable {
                 await loadPhoto()
@@ -106,8 +118,16 @@ struct ProfileHomeView: View {
                     } else {
                         ProfilePhotoFrame {
                             if photoIsMissing {
-                                Label("Add a photo", systemImage: "person.crop.rectangle")
-                                    .foregroundStyle(BrandTheme.secondaryInk)
+                                Button {
+                                    editor = .photos
+                                } label: {
+                                    Label("Add a photo", systemImage: "person.crop.rectangle")
+                                        .foregroundStyle(BrandTheme.secondaryInk)
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityIdentifier("profile.addPhoto")
                             } else if photoFailed {
                                 Label(
                                     "Photo unavailable. Open Photos in Edit Profile to try again.",
@@ -121,7 +141,7 @@ struct ProfileHomeView: View {
                     }
                 }
 
-                Button("Edit Profile") { showsEditor = true }
+                Button("Edit Profile") { editor = .menu }
                     .accessibilityIdentifier("profile.edit")
             }
             .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)
