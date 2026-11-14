@@ -20,6 +20,14 @@ final class ContactJourneyTests: XCTestCase {
         try verifyExpiredCallback(in: app)
     }
 
+    @MainActor func testExpiredEmailCallbackCanBePresentedAgainAfterClosing() throws {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.buttons["Join or sign in"].waitForExistence(timeout: 10))
+        try verifyExpiredCallback(in: app)
+        try verifyExpiredCallback(in: app)
+    }
+
     @MainActor private func verifyExpiredCallback(in app: XCUIApplication) throws {
         let identifier = try XCTUnwrap(Bundle(for: Self.self).bundleIdentifier)
         XCTAssertTrue(identifier.hasSuffix(".UITests"))

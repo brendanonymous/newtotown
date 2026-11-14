@@ -82,19 +82,9 @@ struct NewToTownApp: App {
                 #endif
             }
             .tint(BrandTheme.ink)
-            .environment(emailVerification)
-            .onOpenURL { url in
-                emailVerification.receive(url, scheme: Bundle.main.bundleIdentifier ?? "com.newtotown.ios")
-            }
-            .sheet(item: $emailVerification.callback) { callback in
-                EmailVerificationResultView(
-                    callback: callback, accountID: onboardingModel?.accountID,
-                    isRestoring: onboardingModel?.step == .loading,
-                    makeService: makeContactsService,
-                    onVerified: { emailVerification.completedCount += 1 }
-                )
-                .id(callback.id)
-            }
+            .modifier(
+                EmailVerificationPresentation(
+                    router: emailVerification, account: onboardingModel, makeService: makeContactsService))
         }
     }
 
