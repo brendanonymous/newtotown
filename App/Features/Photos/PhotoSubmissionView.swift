@@ -5,6 +5,7 @@ import SwiftUI
 
 struct PhotoSubmissionView: View {
     @State private var model: PhotoSubmissionModel
+    private let presentation: EditorPresentation
     private let onPhotosSaved: @MainActor ([Data]) async -> Void
     @State private var selection: PhotosPickerItem?
     @State private var isPreparingImage = false
@@ -16,8 +17,12 @@ struct PhotoSubmissionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
 
-    init(service: any PhotoService, onPhotosSaved: @escaping @MainActor ([Data]) async -> Void = { _ in }) {
+    init(
+        service: any PhotoService, presentation: EditorPresentation = .sheet,
+        onPhotosSaved: @escaping @MainActor ([Data]) async -> Void = { _ in }
+    ) {
         _model = State(initialValue: PhotoSubmissionModel(service: service))
+        self.presentation = presentation
         self.onPhotosSaved = onPhotosSaved
     }
 
@@ -25,7 +30,7 @@ struct PhotoSubmissionView: View {
     private var reviewRequired: Bool { model.requirements?.reviewRequired ?? true }
 
     var body: some View {
-        EditorSheet(isBusy: isBusy, hasUnsavedChanges: model.hasUnsavedChanges) {
+        EditorPage(presentation: presentation, isBusy: isBusy, hasUnsavedChanges: model.hasUnsavedChanges) {
             ScrollView {
                 VStack(spacing: 24) {
                     Text("Show up as yourself.").font(.system(.largeTitle, design: .serif))

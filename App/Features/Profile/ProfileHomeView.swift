@@ -9,12 +9,8 @@ struct ProfileHomeView: View {
     let isSelected: Bool
     private let interestsService: (any InterestsService)?
     @State private var interests: InterestsModel?
-    private enum Editor: String, Identifiable {
-        case menu, photos
-        var id: String { rawValue }
-    }
-
-    @State private var editor: Editor?
+    @State private var showsEditor = false
+    @State private var showsPhotos = false
     @State private var profilePhotos: [UIImage] = []
     @State private var photoIsMissing = false
     @State private var photoFailed = false
@@ -34,25 +30,24 @@ struct ProfileHomeView: View {
 
     var body: some View {
         profile
-            .sheet(item: $editor) { destination in
-                switch destination {
-                case .menu:
-                    ProfileEditorMenuView(
-                        account: model, photoService: photoService, interestsService: interestsService,
-                        onPhotosSaved: showSavedPhotos
-                    )
-                case .photos:
-                    if let photoService {
-                        PhotoSubmissionView(service: photoService, onPhotosSaved: showSavedPhotos)
-                    }
+            .sheet(isPresented: $showsEditor) {
+                ProfileEditorMenuView(
+                    account: model, photoService: photoService, interestsService: interestsService,
+                    onPhotosSaved: showSavedPhotos
+                )
+            }
+            .navigationDestination(isPresented: $showsPhotos) {
+                if let photoService {
+                    PhotoSubmissionView(
+                        service: photoService, presentation: .navigation, onPhotosSaved: showSavedPhotos)
                 }
             }
-            .task(id: isSelected && editor == nil) {
-                guard isSelected, editor == nil, photoNeedsReload else { return }
+            .task(id: isSelected && !showsEditor && !showsPhotos) {
+                guard isSelected, !showsEditor && !showsPhotos, photoNeedsReload else { return }
                 await loadPhoto()
             }
-            .task(id: isSelected && editor == nil) {
-                if isSelected, editor == nil { await interests?.load() }
+            .task(id: isSelected && !showsEditor && !showsPhotos) {
+                if isSelected, !showsEditor && !showsPhotos { await interests?.load() }
             }
             .refreshable {
                 await loadPhoto()
@@ -119,7 +114,7 @@ struct ProfileHomeView: View {
                         ProfilePhotoFrame {
                             if photoIsMissing {
                                 Button {
-                                    editor = .photos
+                                    showsPhotos = true
                                 } label: {
                                     Label("Add a photo", systemImage: "person.crop.rectangle")
                                         .foregroundStyle(BrandTheme.secondaryInk)
@@ -141,7 +136,7 @@ struct ProfileHomeView: View {
                     }
                 }
 
-                Button("Edit Profile") { editor = .menu }
+                Button("Edit Profile") { showsEditor = true }
                     .accessibilityIdentifier("profile.edit")
             }
             .padding(28).frame(maxWidth: 520, alignment: .leading).frame(maxWidth: .infinity)

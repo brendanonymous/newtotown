@@ -1,18 +1,15 @@
 import NewToTownCore
 import SwiftUI
 
-/// One entry point for profile editing. Each section keeps its existing modal
-/// lifecycle, so closing a section returns here without losing the profile tab.
+/// The editor stays in one sheet; its sections use the sheet's navigation stack.
 struct ProfileEditorMenuView: View {
     @Bindable var account: OnboardingModel
     let photoService: (any PhotoService)?
     let interestsService: (any InterestsService)?
     let onPhotosSaved: @MainActor ([Data]) async -> Void
-    private enum Section: String, Identifiable {
+    private enum Section: String, Hashable {
         case photos, aboutMe, interests
-        var id: String { rawValue }
     }
-    @State private var section: Section?
 
     var body: some View {
         EditorSheet(isBusy: account.isBusy, closeIdentifier: "profile.editor.close") {
@@ -36,27 +33,28 @@ struct ProfileEditorMenuView: View {
             .foregroundStyle(BrandTheme.ink).background(BrandTheme.background)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { BrandNavigationLogo() }
+            .navigationDestination(for: Section.self) { destination($0) }
         }
-        .sheet(item: $section) { destination in
-            switch destination {
-            case .photos:
-                if let photoService {
-                    PhotoSubmissionView(service: photoService, onPhotosSaved: onPhotosSaved)
-                }
-            case .aboutMe:
-                ProfileEditorView(account: account)
-            case .interests:
-                if let interestsService {
-                    InterestEditorView(service: interestsService, kind: .profile, presentation: .sheet) {}
-                }
+    }
+
+    @ViewBuilder private func destination(_ section: Section) -> some View {
+        switch section {
+        case .photos:
+            if let photoService {
+                PhotoSubmissionView(
+                    service: photoService, presentation: .navigation, onPhotosSaved: onPhotosSaved)
+            }
+        case .aboutMe:
+            ProfileEditorView(account: account)
+        case .interests:
+            if let interestsService {
+                InterestEditorView(service: interestsService, kind: .profile, presentation: .navigation) {}
             }
         }
     }
 
     private func row(_ title: String, symbol: String, section: Section) -> some View {
-        Button {
-            self.section = section
-        } label: {
+        NavigationLink(value: section) {
             HStack(spacing: 16) {
                 Label(title, systemImage: symbol)
                 Spacer()

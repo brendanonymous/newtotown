@@ -1,7 +1,7 @@
 import XCTest
 
 final class ProfileEditorTests: XCTestCase {
-    @MainActor func testSingleProfileEditorMenuOpensAndClosesEverySection() {
+    @MainActor func testProfileEditorPushesEverySectionAndBackReturnsToMenu() {
         let app = launch()
         XCTAssertEqual(app.buttons["profile.edit"].label, "Edit Profile")
         XCTAssertFalse(app.buttons["My photos"].exists)
@@ -14,7 +14,8 @@ final class ProfileEditorTests: XCTestCase {
         add(screenshot)
         ProfileEditorNavigation.open(.photos, in: app)
         XCTAssertTrue(app.buttons["photos.choose"].waitForExistence(timeout: 5))
-        ProfileEditorNavigation.closeSection(in: app)
+        XCTAssertFalse(app.buttons["profile.editor.close"].exists, "A pushed section uses Back, not Close")
+        ProfileEditorNavigation.backToMenu(in: app)
 
         ProfileEditorNavigation.open(.interests, in: app)
         let sports = app.buttons["interests.category.sports_fitness"]
@@ -23,26 +24,26 @@ final class ProfileEditorTests: XCTestCase {
         let golf = app.buttons["interest.golf"]
         XCTAssertTrue(golf.waitForExistence(timeout: 5))
         golf.tap()
-        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.backToMenu(in: app)
         ProfileEditorNavigation.open(.interests, in: app)
         XCTAssertTrue(sports.waitForExistence(timeout: 5))
         sports.tap()
         XCTAssertTrue(golf.waitForExistence(timeout: 5))
         XCTAssertEqual(golf.value as? String, "Not selected")
-        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.backToMenu(in: app)
 
         ProfileEditorNavigation.open(.aboutMe, in: app)
         let name = app.textFields["profile.firstName"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         name.tap()
         name.typeText(" unsaved")
-        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.backToMenu(in: app)
         ProfileEditorNavigation.closeMenu(in: app)
         XCTAssertTrue(app.staticTexts["Fixture member"].exists)
         ProfileEditorNavigation.open(.aboutMe, in: app)
         XCTAssertTrue(name.waitForExistence(timeout: 5))
         XCTAssertEqual(name.value as? String, "Fixture member")
-        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.backToMenu(in: app)
         ProfileEditorNavigation.closeMenu(in: app)
     }
 

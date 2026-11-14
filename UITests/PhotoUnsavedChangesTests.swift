@@ -1,23 +1,23 @@
 import XCTest
 
 final class PhotoUnsavedChangesTests: XCTestCase {
-    @MainActor func testUnchangedPhotoSheetClosesWithoutPrompt() {
+    @MainActor func testUnchangedPhotoEditorGoesBackWithoutPrompt() {
         let app = launch()
-        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.backToMenu(in: app)
         ProfileEditorNavigation.closeMenu(in: app)
         XCTAssertFalse(app.alerts.firstMatch.exists)
     }
 
-    @MainActor func testCloseCanKeepEditingOrDiscardPhotoChanges() {
+    @MainActor func testBackCanKeepEditingOrDiscardPhotoChanges() {
         let app = launch()
         app.buttons["photos.removeOne"].tap()
-        app.buttons["editor.close"].tap()
+        app.buttons["editor.back"].tap()
         let alert = app.alerts["Leave without saving?"]
         XCTAssertTrue(alert.waitForExistence(timeout: 5))
         alert.buttons["Keep editing"].tap()
         XCTAssertEqual(app.buttons["photos.editorGallery"].value as? String, "1 of 2")
         XCTAssertTrue(app.buttons["photos.save"].exists)
-        app.buttons["editor.close"].tap()
+        app.buttons["editor.back"].tap()
         XCTAssertTrue(alert.waitForExistence(timeout: 5))
         alert.buttons["Discard changes"].tap()
         ProfileEditorNavigation.closeMenu(in: app)
@@ -25,7 +25,7 @@ final class PhotoUnsavedChangesTests: XCTestCase {
         ProfileEditorNavigation.open(.photos, in: app)
         XCTAssertTrue(app.buttons["photos.editorGallery"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.buttons["photos.editorGallery"].value as? String, "1 of 3")
-        ProfileEditorNavigation.closeSection(in: app)
+        ProfileEditorNavigation.backToMenu(in: app)
         ProfileEditorNavigation.closeMenu(in: app)
         XCTAssertFalse(app.alerts.firstMatch.exists)
     }
