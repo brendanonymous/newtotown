@@ -8,7 +8,7 @@ struct DiscoveryDecisionButtons: View {
     let onDecision: (ConnectionChoice) -> Void
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 18) {
             decision(.connect, symbol: "checkmark")
             decision(.pass, symbol: "xmark")
         }
@@ -27,7 +27,7 @@ struct DiscoveryDecisionButtons: View {
                     Image(systemName: symbol).font(.title2.weight(.semibold))
                 }
             }
-            .frame(width: 56, height: 44)
+            .frame(width: 64, height: 44)
             .foregroundStyle(choice == .connect ? BrandTheme.background : BrandTheme.ink)
             .background(
                 choice == .connect ? BrandTheme.ink : BrandTheme.sage.opacity(0.3),

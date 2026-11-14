@@ -28,7 +28,7 @@ struct RemoteProfilePhoto: View {
         GeometryReader { geometry in
             let pixels = ProfileImageDecoder.pixels(for: geometry.size, scale: displayScale)
             Group {
-                if let image {
+                if let image = image ?? images?.cachedImage(for: url, pixels: pixels) {
                     Image(uiImage: image).resizable().scaledToFill()
                         .accessibilityLabel("Profile photo").accessibilityIdentifier("photo.loaded")
                 } else if isAvatar {
