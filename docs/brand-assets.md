@@ -1,12 +1,23 @@
 # Brand assets and appearance
 
-`Design/Brand` retains the owner's supplied developer pack: the full-bleed 4096-pixel PNG and editable SVG masters, transparent lettermark, and rounded presentation versions. The pack's README describes its provenance as a vector recreation of the selected design. These supplied assets supersede the earlier low-resolution screenshot; no glyph is redrawn by our export script.
+`Design/Brand` contains the corrected developer package's highest-resolution PNG masters: the square and transparent rounded versions at 8192 × 8192 pixels. Their bytes are preserved exactly. The package README notes these are upscales of a 1254-pixel original, rather than additional native detail. The supplied SVG tracings are retained for editing, with malformed duplicate `rect` tokens repaired; their approximated shading differs from the PNG, so the PNGs are the production source.
 
-Run `swift scripts/render-brand-assets.swift` from the repository root on macOS. It exports opaque 1024 × 1024 default, dark and tinted app icons. The default uses the full-bleed master; dark uses the supplied transparent lettermark over brand ink; tinted uses that same mark on a grayscale background. Rounded presentation files are retained as design sources, not baked into the iOS icon. iOS supplies the icon mask.
+Run `swift scripts/render-brand-assets.swift` from the repository root on macOS. It downsamples the masters into two 1024 × 1024 sRGB assets: an opaque `AppIcon` from the square master and a transparent `BrandLogo` from the rounded master. Only these exports enter the app bundle. iOS applies its home-screen icon mask; `BrandMark` displays the rounded logo with aspect fit and no additional corner clipping.
 
-The same default/dark exports supply `BrandLogo`, used by welcome artwork and signed-in navigation. The landing page omits the centered navigation logo; the pilot overview keeps it. `BrandTheme` follows the pack's ivory `#FAF5EF` and sage `#A8AD8F`, with semantic foreground/background colors for dark appearance. The app follows the device appearance; iOS versions without alternate icon appearances use the default icon. No extra image dependency is introduced.
+The package supplies one logo appearance. The app uses that corrected artwork in both light and dark mode; previous dark/tinted artwork has been removed. iOS handles its tinted-icon appearance from the current default icon. Install a new build to see the updated home-screen icon.
 
-Commit source assets, export script and generated assets together. Keep only render-ready images in the asset catalog; editable source artwork stays in `Design/Brand`. The normal app's display name is **NewToTown** and the separate test app is **NewToTown Test**. Install a new build to see updated icon/name artwork. App Store Connect's listing name is separate.
+The supplied SVG defines the palette:
+
+| Color | Hex | App use |
+| --- | --- | --- |
+| Light sage | `#BEC5AC` | Gradient reference and dark-mode secondary text |
+| Mid sage | `#B5BEA6` | Shared accent and translucent control surfaces |
+| Deep sage | `#A7AF98` | Gradient reference; retained in the supplied artwork |
+| Warm white | `#FBF8F4` | Light background and dark-mode primary text |
+
+`BrandTheme` retains contrasting ink (`#293B30`), secondary ink (`#596653`), and dark surfaces. The app follows the device appearance. `BrandMark` draws the shared image, `BrandNavigationLogo` positions it in the navigation bar, and each screen or its parent adds `.toolbar { BrandNavigationLogo() }`. The welcome screen places a larger `BrandMark` directly in its content.
+
+Commit the masters, export script, and generated assets together. The normal app's display name is **NewToTown** and the separate test app is **NewToTown Test**. App Store Connect's listing name is separate.
 
 ## Action buttons
 
