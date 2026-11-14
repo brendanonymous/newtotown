@@ -8,8 +8,12 @@ struct DiscoveryProfileCard: View {
 
     var body: some View {
         ProfileCard(
-            firstName: profile.firstName, jobTitle: profile.jobTitle,
-            goal: profile.goal, city: profile.city, interests: profile.interests
+            firstName: profile.firstName,
+            age: profile.age,
+            jobTitle: profile.jobTitle,
+            goal: profile.goal,
+            city: profile.city,
+            interests: profile.interests
         ) {
             ProfilePhotoGallery(count: profile.photoURLs.count) { index in
                 RemoteProfilePhoto(url: profile.photoURLs[index])

@@ -168,7 +168,7 @@
             self.marker = marker
             self.startsEmpty = startsEmpty
             let peer = DiscoveryProfile(
-                id: JourneyIDs.peer, firstName: name, jobTitle: "Designer",
+                id: JourneyIDs.peer, firstName: name, age: 32, jobTitle: "Designer",
                 goal: ProcessInfo.processInfo.arguments.contains("--ui-test-discovery-layout")
                     ? "Find friends for coffee, hiking, professional networking, local volunteering and relaxed weekend dinners."
                     : "Find a hiking buddy.", city: "Scottsdale",

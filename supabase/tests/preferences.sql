@@ -16,7 +16,12 @@ begin
     if public.pilot_discovery_preferences(b) <> '{"minimum_age":18,"maximum_age":null}'::jsonb then raise exception 'Preferences affected peer'; end if;
     perform public.pilot_discovery_visibility(a, true); perform public.pilot_discovery_visibility(b, true); perform public.pilot_discovery_visibility(c, true);
     if jsonb_array_length(public.pilot_discovery_feed(a)->'candidates') <> 2 then raise exception 'Age bounds excluded exact birthday'; end if;
+    if (public.pilot_discovery_feed(a)->'candidates'->0->>'age')::integer is distinct from 30 then raise exception 'Candidate age missing or incorrect'; end if;
+    if public.pilot_discovery_feed(a)->'candidates'->0 ? 'date_of_birth' then raise exception 'Candidate birthday exposed'; end if;
     perform public.pilot_discovery_decide(a, b, 'connect'); perform public.pilot_discovery_decide(b, a, 'connect');
+    if (public.pilot_discovery_feed(a)->'matches'->0->>'age')::integer is distinct from 30 then raise exception 'Connection age missing'; end if;
+    if (public.pilot_messaging_open(a,b)->'participant'->>'age')::integer is distinct from 30 then raise exception 'Conversation age missing'; end if;
+    if public.pilot_messaging_open(a,b)->'participant' ? 'date_of_birth' then raise exception 'Conversation birthday exposed'; end if;
     thread := (public.pilot_messaging_open(a,b)->>'id')::uuid;
     perform public.pilot_discovery_save_preferences(a, 40, 50);
     if jsonb_array_length(public.pilot_discovery_feed(a)->'candidates') <> 0 then raise exception 'Outside ages appeared'; end if;
@@ -38,6 +43,7 @@ update public.profiles set date_of_birth = (((current_timestamp at time zone 'UT
 where id = '30000000-0000-0000-0000-000000000003';
 set local role service_role;
 do $$ begin
+    if (public.pilot_discovery_feed('30000000-0000-0000-0000-000000000001')->'candidates'->0->>'age')::integer is distinct from 29 then raise exception 'Birthday advanced too early'; end if;
     perform public.pilot_discovery_save_preferences('30000000-0000-0000-0000-000000000001',30,30);
     if private.discovery_age_allowed('30000000-0000-0000-0000-000000000001','30000000-0000-0000-0000-000000000003') then raise exception 'Tomorrow birthday included early'; end if;
 end $$;

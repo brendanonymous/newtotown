@@ -6,6 +6,7 @@ import SwiftUI
 /// and an optional dedicated action column.
 struct ProfileCard<Photo: View, Actions: View>: View {
     let firstName: String
+    var age: Int? = nil
     let jobTitle: String
     let goal: String
     let city: String
@@ -15,8 +16,17 @@ struct ProfileCard<Photo: View, Actions: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text(firstName).font(.system(.title, design: .serif))
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(firstName).font(.system(.title, design: .serif))
+                if let age {
+                    Text(age, format: .number)
+                        .font(.system(.title, design: .serif))
+                        .accessibilityLabel("Age: \(age)")
+                        .accessibilityIdentifier("profile.age")
+                }
+            }
             photo()
+            Label(city, systemImage: "mappin").font(.footnote).foregroundStyle(BrandTheme.secondaryInk)
             HStack(alignment: .top, spacing: 16) {
                 VStack(alignment: .leading, spacing: 14) {
                     Label {
@@ -33,8 +43,6 @@ struct ProfileCard<Photo: View, Actions: View>: View {
                             .foregroundStyle(BrandTheme.secondaryInk)
                     }
                     .accessibilityLabel("About me: \(goal)")
-                    Label(city, systemImage: "mappin").font(.footnote)
-                        .foregroundStyle(BrandTheme.secondaryInk)
                     if !interests.isEmpty { InterestTags(interests: interests) }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -48,11 +56,17 @@ struct ProfileCard<Photo: View, Actions: View>: View {
 
 extension ProfileCard where Actions == EmptyView {
     init(
-        firstName: String, jobTitle: String, goal: String, city: String, interests: [ProfileInterest] = [],
-        @ViewBuilder photo: @escaping () -> Photo
+        firstName: String, age: Int? = nil, jobTitle: String, goal: String, city: String,
+        interests: [ProfileInterest] = [], @ViewBuilder photo: @escaping () -> Photo
     ) {
         self.init(
-            firstName: firstName, jobTitle: jobTitle, goal: goal, city: city, interests: interests,
-            photo: photo, actions: { EmptyView() })
+            firstName: firstName,
+            age: age,
+            jobTitle: jobTitle,
+            goal: goal,
+            city: city,
+            interests: interests,
+            photo: photo,
+            actions: { EmptyView() })
     }
 }

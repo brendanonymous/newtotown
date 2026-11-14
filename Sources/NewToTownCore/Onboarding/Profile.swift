@@ -90,6 +90,19 @@ public enum BirthDate {
         return date
     }
 
+    /// Completed years as of the UTC calendar date, matching the public server projection.
+    public static func age(on today: Date = .now, for value: String) -> Int? {
+        guard let birthday = parse(value), birthday <= today else { return nil }
+        let birth = calendar.dateComponents([.year, .month, .day], from: birthday)
+        let current = calendar.dateComponents([.year, .month, .day], from: today)
+        guard let birthYear = birth.year, let birthMonth = birth.month, let birthDay = birth.day,
+            let year = current.year, let month = current.month, let day = current.day
+        else { return nil }
+        // PostgreSQL age() treats a Feb 29 birthday as March 1 in non-leap years.
+        let birthdayPending = month < birthMonth || (month == birthMonth && day < birthDay)
+        return year - birthYear - (birthdayPending ? 1 : 0)
+    }
+
     public static func string(from date: Date) -> String { formatter().string(from: date) }
 
     private static func formatter() -> DateFormatter {

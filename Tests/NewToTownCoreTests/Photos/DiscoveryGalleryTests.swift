@@ -11,6 +11,9 @@ import Testing
     func decode() throws -> DiscoveryProfile {
         try JSONDecoder().decode(DiscoveryProfile.self, from: JSONSerialization.data(withJSONObject: object))
     }
+    #expect(try decode().age == nil)  // Older servers remain readable during rollout.
+    object["age"] = 36
+    #expect(try decode().age == 36)
     #expect(try decode().photoURLs.map(\.absoluteString) == ["https://test/photo1.jpg"])
     object["photo_urls"] = ["https://test/photo1.jpg", "https://test/photo2.jpg", "https://test/photo3.jpg"]
     #expect(try decode().photoURLs.count == 3)

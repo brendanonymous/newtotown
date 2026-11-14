@@ -4,6 +4,7 @@ import Foundation
 public struct DiscoveryProfile: Decodable, Equatable, Identifiable, Sendable {
     public let id: UUID
     public let firstName: String
+    public let age: Int?
     public let jobTitle: String
     public let goal: String
     public let city: String
@@ -12,11 +13,13 @@ public struct DiscoveryProfile: Decodable, Equatable, Identifiable, Sendable {
     public let interests: [ProfileInterest]
 
     public init(
-        id: UUID, firstName: String, jobTitle: String, goal: String, city: String, photoURL: URL,
+        id: UUID, firstName: String, age: Int? = nil, jobTitle: String, goal: String, city: String,
+        photoURL: URL,
         interests: [ProfileInterest] = [], photoURLs: [URL]? = nil
     ) {
         self.id = id
         self.firstName = firstName
+        self.age = age
         self.jobTitle = jobTitle
         self.goal = goal
         self.city = city
@@ -37,6 +40,7 @@ public struct DiscoveryProfile: Decodable, Equatable, Identifiable, Sendable {
         self.init(
             id: try values.decode(UUID.self, forKey: .id),
             firstName: try values.decode(String.self, forKey: .firstName),
+            age: try values.decodeIfPresent(Int.self, forKey: .age),
             jobTitle: try values.decode(String.self, forKey: .jobTitle),
             goal: try values.decode(String.self, forKey: .goal),
             city: try values.decode(String.self, forKey: .city),
@@ -45,7 +49,7 @@ public struct DiscoveryProfile: Decodable, Equatable, Identifiable, Sendable {
             photoURLs: gallery)
     }
     enum CodingKeys: String, CodingKey {
-        case id, goal, city, interests
+        case id, age, goal, city, interests
         case firstName = "first_name"
         case jobTitle = "job_title"
         case photoURL = "photo_url"

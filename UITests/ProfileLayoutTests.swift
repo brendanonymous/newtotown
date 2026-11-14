@@ -2,6 +2,24 @@ import XCTest
 
 final class ProfileLayoutTests: XCTestCase {
     @MainActor
+    func testAgeAppearsBesideNameOnOwnerAndDiscoveryCards() {
+        let app = launch(["--ui-test-photos", "--ui-test-saved-photo", "--ui-test-discovery-layout", "--ui-test-profile-images"])
+        let ownerName = app.staticTexts["Fixture member"]
+        let ownerAge = app.staticTexts["profile.age"]
+        XCTAssertTrue(ownerName.waitForExistence(timeout: 10))
+        XCTAssertTrue(ownerAge.exists)
+        XCTAssertGreaterThan(ownerAge.frame.minX, ownerName.frame.maxX)
+        XCTAssertEqual(ownerAge.frame.midY, ownerName.frame.midY, accuracy: 2)
+        app.tabBars.buttons["Discovery"].tap()
+        let peerName = app.staticTexts["Alex"]
+        let peerAge = app.staticTexts["profile.age"]
+        XCTAssertTrue(peerName.waitForExistence(timeout: 10))
+        XCTAssertEqual(peerAge.label, "Age: 32")
+        XCTAssertGreaterThan(peerAge.frame.minX, peerName.frame.maxX)
+        XCTAssertEqual(peerAge.frame.midY, peerName.frame.midY, accuracy: 2)
+    }
+
+    @MainActor
     func testStartupHasOneLoadingIndicator() {
         let app = launch(["--ui-test-loading"])
         XCTAssertTrue(app.activityIndicators.firstMatch.waitForExistence(timeout: 5))
