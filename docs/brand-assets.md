@@ -29,3 +29,7 @@ use `BrandTheme.buttonCornerRadius` (16 points), a continuous rounded rectangle,
 and shared pressed/disabled feedback. Discovery's fixed-size decision controls
 use the same corner radius. Native navigation, alerts, menus, and photo controls
 keep their specialized behavior.
+
+## Connections icon
+
+`Handshake.imageset` uses the supplied Font Awesome Free 7.3.1 solid handshake SVG. Its original paths and embedded copyright/license notice are preserved; only a 30-point intrinsic canvas size is added to balance its padded artwork with the adjacent system symbols. The asset keeps vector representation and template rendering, so the tab bar supplies its selected/unselected tint in light and dark appearance. No icon package is required. Source: [Font Awesome Handshake Solid](https://fontawesome.com/icons/classic/solid/handshake?style=solid); [Font Awesome Free license](https://fontawesome.com/license/free).
