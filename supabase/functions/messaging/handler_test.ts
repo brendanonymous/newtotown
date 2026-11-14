@@ -29,6 +29,7 @@ const conversation = {
     job_title: "Designer",
     goal: "Find a hiking buddy.",
     city: "Scottsdale",
+    age: 36,
     date_of_birth: "1990-01-01",
     selfie: "private",
   },
@@ -128,6 +129,7 @@ Deno.test("inbox, open, and history explicitly project fields and sign only auth
         !text.includes("private_field") && !text.includes('"secret"'),
     );
     assert(text.includes("photo_url"));
+    assert(text.includes('"age":36'));
     assert(
       JSON.stringify(calls[3].body.paths) ===
         JSON.stringify([`${peer}/profile.jpg`]),

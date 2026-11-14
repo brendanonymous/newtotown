@@ -3,6 +3,7 @@ import { type PublicInterest, readInterests } from "./interests.ts";
 export type Card = {
   id: string;
   first_name: string;
+  age?: number;
   job_title: string;
   goal: string;
   city: string;
@@ -86,10 +87,16 @@ export function readCards(value: unknown, maximum: number): Card[] {
         typeof field === "string"
       )
     ) throw new Error("Invalid card");
+    if (
+      card.age !== undefined && (!Number.isInteger(card.age) || card.age < 18)
+    ) {
+      throw new Error("Invalid card age");
+    }
     // Explicit projection prevents future RPC fields from accidentally exposing private data.
     return {
       id: card.id.toLowerCase(),
       first_name: card.first_name,
+      ...(card.age === undefined ? {} : { age: card.age }),
       job_title: card.job_title,
       goal: card.goal,
       city: card.city,

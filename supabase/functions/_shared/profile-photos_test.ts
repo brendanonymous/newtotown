@@ -1,4 +1,8 @@
-import { profilePhotoURLs, signProfilePhotos } from "./profile-photos.ts";
+import {
+  profilePhotoURLs,
+  readCards,
+  signProfilePhotos,
+} from "./profile-photos.ts";
 const id = "00000000-0000-0000-0000-000000000041";
 const card = {
   id,
@@ -87,4 +91,26 @@ Deno.test("gallery rejects selfies, other owners, duplicate paths, missing main 
     rejected = true;
   }
   assert(rejected);
+});
+
+Deno.test("public cards expose age while excluding private profile data", () => {
+  const result = readCards([{
+    ...card,
+    age: 36,
+    date_of_birth: "1990-01-01",
+    email: "private@example.test",
+  }], 1)[0];
+  assert(result.age === 36);
+  assert(!JSON.stringify(result).includes("date_of_birth"));
+  assert(!JSON.stringify(result).includes("private@example.test"));
+  assert(readCards([card], 1)[0].age === undefined);
+  for (const age of [null, "36", 17, 36.5]) {
+    let rejected = false;
+    try {
+      readCards([{ ...card, age }], 1);
+    } catch {
+      rejected = true;
+    }
+    assert(rejected);
+  }
 });

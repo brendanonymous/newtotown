@@ -60,7 +60,7 @@
                 )!
             }
             return DiscoveryProfile(
-                id: id, firstName: name, jobTitle: "Designer",
+                id: id, firstName: name, age: 32, jobTitle: "Designer",
                 goal: "Find a hiking buddy.", city: "Scottsdale", photoURL: photos[0], photoURLs: photos)
         }
     }

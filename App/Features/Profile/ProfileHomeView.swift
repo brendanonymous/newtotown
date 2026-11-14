@@ -102,7 +102,9 @@ struct ProfileHomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 ProfileCard(
-                    firstName: model.draft.firstName, jobTitle: model.draft.jobTitle,
+                    firstName: model.draft.firstName,
+                    age: BirthDate.age(for: model.draft.dateOfBirth),
+                    jobTitle: model.draft.jobTitle,
                     goal: model.draft.goal, city: "Scottsdale",
                     interests: interests?.snapshot?.profileInterests ?? []
                 ) {

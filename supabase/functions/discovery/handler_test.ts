@@ -12,6 +12,7 @@ const profile = {
   job_title: "Designer",
   goal: "Find a hiking buddy",
   city: "Scottsdale",
+  age: 36,
   date_of_birth: "1990-01-01",
 };
 function assert(value: unknown, message = "Assertion failed"): asserts value {
@@ -89,6 +90,7 @@ Deno.test("feed projects public fields and signs profile-only paths for sixty se
   assert(response.status === 200);
   const feed = await response.json();
   assert(feed.candidates[0].date_of_birth === undefined);
+  assert(feed.candidates[0].age === 36);
   assert(feed.candidates[0].photo_url.startsWith(config.projectURL));
   assert(calls[1].body.person === person);
   assert(calls[3].body.expiresIn === 60);

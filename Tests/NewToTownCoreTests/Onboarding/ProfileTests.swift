@@ -48,7 +48,18 @@ func rejectsUnderageOrMalformedBirthday(_ birthday: String) {
     #expect(profile.firstName == "Alex")
     #expect(profile.jobTitle == "Designer")
     #expect(profile.city == "Scottsdale")
-    let json = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(profile)) as? [String: Any])
+    let json = try #require(
+        JSONSerialization.jsonObject(with: JSONEncoder().encode(profile)) as? [String: Any])
     #expect(json["verification_status"] == nil)
     #expect(json["date_of_birth"] as? String == "1990-01-01")
+}
+
+@Test func displayedAgeChangesOnlyOnBirthday() {
+    #expect(BirthDate.age(on: BirthDate.parse("2026-11-13")!, for: "1990-11-14") == 35)
+    #expect(BirthDate.age(on: BirthDate.parse("2026-11-14")!, for: "1990-11-14") == 36)
+    #expect(BirthDate.age(on: BirthDate.parse("2026-11-15")!, for: "1990-11-14") == 36)
+    #expect(BirthDate.age(on: BirthDate.parse("2026-02-28")!, for: "2000-02-29") == 25)
+    #expect(BirthDate.age(on: BirthDate.parse("2026-03-01")!, for: "2000-02-29") == 26)
+    #expect(BirthDate.age(for: "not-a-date") == nil)
+    #expect(BirthDate.age(on: today, for: "2027-01-01") == nil)
 }
