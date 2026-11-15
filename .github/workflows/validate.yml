@@ -98,6 +98,8 @@ jobs:
           deno lint supabase/functions/_shared supabase/functions/messaging supabase/functions/reports supabase/functions/interests
           deno check supabase/functions/delete-account/index.ts supabase/functions/discovery/index.ts supabase/functions/messaging/index.ts supabase/functions/reports/index.ts supabase/functions/interests/index.ts
           deno test supabase/functions
+          deno fmt --check supabase/catalog/*.ts
+          deno test --allow-read=supabase/catalog supabase/catalog
           deno fmt --check scripts/seed-demo
           deno lint scripts/seed-demo
           deno check scripts/seed-demo/seed.ts

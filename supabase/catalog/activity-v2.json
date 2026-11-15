@@ -1,0 +1,5787 @@
+{
+  "version": "2.0-draft",
+  "categories": [
+    {
+      "id": "gym",
+      "label": "Gym Buddy",
+      "description": "Train together at a gym or fitness facility.",
+      "groups": [
+        {
+          "name": "Strength Training",
+          "interest_ids": [
+            "weightlifting",
+            "powerlifting",
+            "bodybuilding",
+            "olympic_lifting",
+            "strongman"
+          ]
+        },
+        {
+          "name": "Functional Fitness",
+          "interest_ids": [
+            "crossfit",
+            "hyrox",
+            "hiit",
+            "calisthenics",
+            "functional_training"
+          ]
+        },
+        {
+          "name": "Cardio",
+          "interest_ids": [
+            "treadmill_running",
+            "indoor_cycling",
+            "rowing_machine",
+            "stair_climber",
+            "assault_bike"
+          ]
+        },
+        {
+          "name": "Classes",
+          "interest_ids": [
+            "bootcamp_classes",
+            "boxing_fitness",
+            "pilates",
+            "yoga",
+            "circuit_training"
+          ]
+        },
+        {
+          "name": "Fitness Goals",
+          "interest_ids": [
+            "muscle_gain",
+            "fat_loss",
+            "endurance_training",
+            "athletic_performance",
+            "mobility_training"
+          ]
+        },
+        {
+          "name": "Training Together",
+          "interest_ids": [
+            "spotting_partners",
+            "partner_workouts",
+            "fitness_challenges",
+            "competition_preparation",
+            "stretching_and_recovery"
+          ]
+        }
+      ],
+      "interest_placements": 30
+    },
+    {
+      "id": "sports",
+      "label": "Sports Buddy",
+      "description": "Play sports together, from popular leagues to niche sports.",
+      "groups": [
+        {
+          "name": "Racket Sports",
+          "interest_ids": [
+            "tennis",
+            "pickleball",
+            "badminton",
+            "racquetball",
+            "squash"
+          ]
+        },
+        {
+          "name": "Court Sports",
+          "interest_ids": [
+            "basketball",
+            "indoor_volleyball",
+            "beach_volleyball",
+            "handball",
+            "dodgeball"
+          ]
+        },
+        {
+          "name": "Field Sports",
+          "interest_ids": [
+            "soccer",
+            "flag_football",
+            "rugby",
+            "lacrosse",
+            "ultimate_frisbee"
+          ]
+        },
+        {
+          "name": "Bat & Ball Sports",
+          "interest_ids": [
+            "baseball",
+            "softball",
+            "cricket",
+            "kickball",
+            "wiffle_ball"
+          ]
+        },
+        {
+          "name": "Golf & Related",
+          "interest_ids": [
+            "golf",
+            "driving_range",
+            "disc_golf",
+            "footgolf",
+            "mini_golf"
+          ]
+        },
+        {
+          "name": "Rowing & Aquatic Sports",
+          "interest_ids": [
+            "rowing",
+            "sculling",
+            "dragon_boat_racing",
+            "water_polo",
+            "swimming"
+          ]
+        },
+        {
+          "name": "Board & Water Sports",
+          "interest_ids": [
+            "surfing",
+            "wakeboarding",
+            "wakesurfing",
+            "paddleboard_racing",
+            "windsurfing"
+          ]
+        },
+        {
+          "name": "Combat Sports",
+          "interest_ids": [
+            "boxing",
+            "brazilian_jiu_jitsu",
+            "muay_thai",
+            "wrestling",
+            "judo"
+          ]
+        },
+        {
+          "name": "Martial Arts",
+          "interest_ids": [
+            "kickboxing",
+            "mixed_martial_arts",
+            "karate",
+            "taekwondo",
+            "fencing"
+          ]
+        },
+        {
+          "name": "Winter Sports",
+          "interest_ids": [
+            "skiing",
+            "snowboarding",
+            "ice_hockey",
+            "curling",
+            "ice_skating"
+          ]
+        },
+        {
+          "name": "Endurance Sports",
+          "interest_ids": [
+            "running",
+            "trail_running",
+            "triathlons",
+            "road_cycling",
+            "track_and_field"
+          ]
+        },
+        {
+          "name": "Action & Wheeled Sports",
+          "interest_ids": [
+            "bmx",
+            "skateboarding",
+            "rollerblading",
+            "longboarding",
+            "mountain_biking"
+          ]
+        },
+        {
+          "name": "Precision Sports",
+          "interest_ids": [
+            "darts",
+            "billiards",
+            "bowling",
+            "archery",
+            "table_tennis"
+          ]
+        },
+        {
+          "name": "Other Athletic Sports",
+          "interest_ids": [
+            "rock_climbing",
+            "bouldering",
+            "orienteering",
+            "equestrian_riding",
+            "parkour"
+          ]
+        },
+        {
+          "name": "Recreational Sports",
+          "interest_ids": [
+            "padel",
+            "spikeball",
+            "paintball",
+            "airsoft",
+            "floor_hockey"
+          ]
+        },
+        {
+          "name": "Sports Participation",
+          "interest_ids": [
+            "pickup_games",
+            "recreational_leagues",
+            "competitive_leagues",
+            "intramural_teams",
+            "local_tournaments"
+          ]
+        }
+      ],
+      "interest_placements": 80
+    },
+    {
+      "id": "wingman",
+      "label": "Wingman",
+      "description": "Go out with another guy to meet people and socialize, including dating-oriented nightlife without being a dating app.",
+      "groups": [
+        {
+          "name": "Social Intentions",
+          "interest_ids": [
+            "meeting_women",
+            "picking_up_women",
+            "making_homies",
+            "two_man",
+            "going_out_as_a_duo"
+          ]
+        },
+        {
+          "name": "Bars & Lounges",
+          "interest_ids": [
+            "bars",
+            "country_bars",
+            "cocktail_lounges",
+            "cigar_lounges",
+            "whiskey_bars"
+          ]
+        },
+        {
+          "name": "Other Venues",
+          "interest_ids": [
+            "sports_bars",
+            "rooftop_bars",
+            "hotel_lounges",
+            "nightclubs",
+            "beach_clubs"
+          ]
+        },
+        {
+          "name": "Social Scenes",
+          "interest_ids": [
+            "club_nights",
+            "day_parties",
+            "pool_parties",
+            "house_parties",
+            "pregames"
+          ]
+        },
+        {
+          "name": "Nightlife Preferences",
+          "interest_ids": [
+            "live_music_bars",
+            "college_bars",
+            "dance_floors",
+            "vip_tables",
+            "bottle_service"
+          ]
+        },
+        {
+          "name": "Social Gatherings",
+          "interest_ids": [
+            "group_nights_out",
+            "friend_of_friend_introductions",
+            "birthday_parties",
+            "young_professional_mixers",
+            "social_club_events"
+          ]
+        },
+        {
+          "name": "Going Out Together",
+          "interest_ids": [
+            "happy_hours",
+            "bar_crawls",
+            "concert_afterparties",
+            "country_dancing",
+            "festival_nights"
+          ]
+        }
+      ],
+      "interest_placements": 35
+    },
+    {
+      "id": "going_out",
+      "label": "Going-Out Buddy",
+      "description": "Enjoy bars, nightlife, drinking venues, and social entertainment.",
+      "groups": [
+        {
+          "name": "Bars & Lounges",
+          "interest_ids": [
+            "cocktail_bars",
+            "sports_bars",
+            "dive_bars",
+            "rooftop_bars",
+            "hotel_bars"
+          ]
+        },
+        {
+          "name": "Nightlife",
+          "interest_ids": [
+            "nightclubs",
+            "dance_clubs",
+            "dj_sets",
+            "late_night_lounges",
+            "after_hours_spots"
+          ]
+        },
+        {
+          "name": "Drinking Venues",
+          "interest_ids": [
+            "craft_breweries",
+            "whiskey_bars",
+            "tequila_bars",
+            "wine_bars",
+            "tiki_bars"
+          ]
+        },
+        {
+          "name": "Bar Activities",
+          "interest_ids": [
+            "bar_crawls",
+            "karaoke_nights",
+            "pool_halls",
+            "arcade_bars",
+            "pub_games"
+          ]
+        },
+        {
+          "name": "Atmospheres",
+          "interest_ids": [
+            "upscale_nightlife",
+            "laid_back_bars",
+            "live_music_bars",
+            "outdoor_patios",
+            "speakeasies"
+          ]
+        },
+        {
+          "name": "Country & Western",
+          "interest_ids": [
+            "country_bars",
+            "honky_tonks",
+            "line_dancing",
+            "two_stepping",
+            "country_music_nights"
+          ]
+        },
+        {
+          "name": "Music & Dancing",
+          "interest_ids": [
+            "house_music_nights",
+            "edm_clubs",
+            "hip_hop_clubs",
+            "latin_clubs",
+            "live_djs"
+          ]
+        },
+        {
+          "name": "Social Events",
+          "interest_ids": [
+            "happy_hours",
+            "day_parties",
+            "pool_parties",
+            "themed_parties",
+            "rooftop_parties"
+          ]
+        },
+        {
+          "name": "Other Nightlife",
+          "interest_ids": [
+            "cigar_lounges",
+            "hookah_lounges",
+            "comedy_clubs",
+            "piano_bars",
+            "gentlemen_s_clubs"
+          ]
+        }
+      ],
+      "interest_placements": 45
+    },
+    {
+      "id": "outdoor",
+      "label": "Outdoor Buddy",
+      "description": "Get outside for recreation and adventures.",
+      "groups": [
+        {
+          "name": "Hiking",
+          "interest_ids": [
+            "desert_hiking",
+            "mountain_hiking",
+            "waterfall_hikes",
+            "trail_running",
+            "nature_walks"
+          ]
+        },
+        {
+          "name": "Hiking Adventures",
+          "interest_ids": [
+            "summit_hikes",
+            "sunrise_hikes",
+            "sunset_hikes",
+            "canyon_hiking",
+            "national_park_hiking"
+          ]
+        },
+        {
+          "name": "Camping",
+          "interest_ids": [
+            "tent_camping",
+            "car_camping",
+            "backpacking",
+            "dispersed_camping",
+            "glamping"
+          ]
+        },
+        {
+          "name": "Camping Activities",
+          "interest_ids": [
+            "campfire_nights",
+            "wilderness_camping",
+            "hammock_camping",
+            "outdoor_cooking",
+            "survival_skills"
+          ]
+        },
+        {
+          "name": "Fishing",
+          "interest_ids": [
+            "freshwater_fishing",
+            "saltwater_fishing",
+            "fly_fishing",
+            "bass_fishing",
+            "deep_sea_fishing"
+          ]
+        },
+        {
+          "name": "Water Recreation",
+          "interest_ids": [
+            "kayaking",
+            "paddleboarding",
+            "canoeing",
+            "tubing",
+            "river_floating"
+          ]
+        },
+        {
+          "name": "Boating",
+          "interest_ids": [
+            "lake_days",
+            "pontoon_boating",
+            "jet_skiing",
+            "sailing",
+            "wakeboarding"
+          ]
+        },
+        {
+          "name": "Cycling",
+          "interest_ids": [
+            "road_cycling",
+            "mountain_biking",
+            "gravel_biking",
+            "e_biking",
+            "scenic_bike_rides"
+          ]
+        },
+        {
+          "name": "Climbing",
+          "interest_ids": [
+            "indoor_to_outdoor_climbing",
+            "outdoor_bouldering",
+            "sport_climbing",
+            "trad_climbing",
+            "via_ferrata"
+          ]
+        },
+        {
+          "name": "Motorsports & Exploration",
+          "interest_ids": [
+            "off_roading",
+            "atv_riding",
+            "dirt_biking",
+            "overlanding",
+            "jeep_trails"
+          ]
+        },
+        {
+          "name": "Nature & Wildlife",
+          "interest_ids": [
+            "birdwatching",
+            "wildlife_photography",
+            "stargazing",
+            "nature_photography",
+            "geocaching"
+          ]
+        },
+        {
+          "name": "Other Outdoor Activities",
+          "interest_ids": [
+            "hunting",
+            "snowshoeing",
+            "cross_country_skiing",
+            "mushroom_foraging",
+            "metal_detecting"
+          ]
+        }
+      ],
+      "interest_placements": 60
+    },
+    {
+      "id": "food_drink",
+      "label": "Food & Drink Buddy",
+      "description": "Try food and drink spots or shared cooking experiences.",
+      "groups": [
+        {
+          "name": "Restaurants",
+          "interest_ids": [
+            "new_restaurant_openings",
+            "hidden_gem_restaurants",
+            "burger_spots",
+            "steakhouses",
+            "fine_dining"
+          ]
+        },
+        {
+          "name": "International Cuisines",
+          "interest_ids": [
+            "sushi",
+            "korean_bbq",
+            "italian_food",
+            "thai_food",
+            "mexican_food"
+          ]
+        },
+        {
+          "name": "More Cuisines",
+          "interest_ids": [
+            "indian_food",
+            "mediterranean_food",
+            "chinese_food",
+            "vietnamese_food",
+            "japanese_ramen"
+          ]
+        },
+        {
+          "name": "Casual Food",
+          "interest_ids": [
+            "pizza_spots",
+            "taco_trucks",
+            "bbq_joints",
+            "food_trucks",
+            "wings"
+          ]
+        },
+        {
+          "name": "Breakfast & Coffee",
+          "interest_ids": [
+            "brunch",
+            "breakfast_diners",
+            "specialty_coffee",
+            "espresso_bars",
+            "coffee_roasters"
+          ]
+        },
+        {
+          "name": "Beer & Spirits",
+          "interest_ids": [
+            "craft_beer",
+            "bourbon",
+            "whiskey_tastings",
+            "tequila_tastings",
+            "scotch"
+          ]
+        },
+        {
+          "name": "Wine & Cocktails",
+          "interest_ids": [
+            "wine_tasting",
+            "cocktail_bars",
+            "mixology",
+            "mocktails",
+            "natural_wine"
+          ]
+        },
+        {
+          "name": "Home Cooking",
+          "interest_ids": [
+            "grilling",
+            "smoking_meats",
+            "cooking_classes",
+            "homemade_pizza",
+            "meal_prep"
+          ]
+        },
+        {
+          "name": "Food Experiences",
+          "interest_ids": [
+            "food_festivals",
+            "farmers_markets",
+            "pop_up_restaurants",
+            "chef_tastings",
+            "food_tours"
+          ]
+        },
+        {
+          "name": "Other Food Interests",
+          "interest_ids": [
+            "hot_sauce",
+            "spicy_food_challenges",
+            "desserts",
+            "international_grocery_stores",
+            "seafood"
+          ]
+        }
+      ],
+      "interest_placements": 50
+    },
+    {
+      "id": "gaming",
+      "label": "Gaming Buddy",
+      "description": "Play video games or tabletop games together.",
+      "groups": [
+        {
+          "name": "Gaming Platforms",
+          "interest_ids": [
+            "pc_gaming",
+            "playstation",
+            "xbox",
+            "nintendo_switch",
+            "vr_gaming"
+          ]
+        },
+        {
+          "name": "Game Genres",
+          "interest_ids": [
+            "first_person_shooters",
+            "sports_games",
+            "racing_games",
+            "rpgs",
+            "survival_games"
+          ]
+        },
+        {
+          "name": "Popular Games",
+          "interest_ids": [
+            "call_of_duty",
+            "fortnite",
+            "ea_sports_fc",
+            "nba_2k",
+            "madden"
+          ]
+        },
+        {
+          "name": "Multiplayer Gaming",
+          "interest_ids": [
+            "co_op_campaigns",
+            "ranked_competitive_gaming",
+            "online_multiplayer",
+            "local_multiplayer",
+            "lan_parties"
+          ]
+        },
+        {
+          "name": "Tabletop Games",
+          "interest_ids": [
+            "poker",
+            "chess",
+            "board_games",
+            "trading_card_games",
+            "dungeons_and_dragons"
+          ]
+        },
+        {
+          "name": "Gaming Culture",
+          "interest_ids": [
+            "arcade_games",
+            "retro_gaming",
+            "mobile_gaming",
+            "gaming_cafes",
+            "esports"
+          ]
+        }
+      ],
+      "interest_placements": 30
+    },
+    {
+      "id": "events",
+      "label": "Events Buddy",
+      "description": "Attend concerts, festivals, live sports, and other events.",
+      "groups": [
+        {
+          "name": "Hip-Hop & Rap",
+          "interest_ids": [
+            "rap_concerts",
+            "hip_hop_festivals",
+            "trap_music_shows",
+            "underground_rap_shows",
+            "r_and_b_concerts"
+          ]
+        },
+        {
+          "name": "Electronic Music",
+          "interest_ids": [
+            "house_music_shows",
+            "edm_shows",
+            "techno_shows",
+            "dubstep_shows",
+            "drum_and_bass_shows"
+          ]
+        },
+        {
+          "name": "Other Music Genres",
+          "interest_ids": [
+            "country_concerts",
+            "rock_concerts",
+            "indie_concerts",
+            "pop_concerts",
+            "latin_music_concerts"
+          ]
+        },
+        {
+          "name": "Live Music Experiences",
+          "interest_ids": [
+            "music_festivals",
+            "local_bands",
+            "dj_sets",
+            "jazz_shows",
+            "blues_shows"
+          ]
+        },
+        {
+          "name": "Professional Sports",
+          "interest_ids": [
+            "nfl_games",
+            "nba_games",
+            "mlb_games",
+            "nhl_games",
+            "mls_games"
+          ]
+        },
+        {
+          "name": "Other Live Sports",
+          "interest_ids": [
+            "college_football",
+            "college_basketball",
+            "ufc_events",
+            "boxing_matches",
+            "motorsports_races"
+          ]
+        },
+        {
+          "name": "Entertainment",
+          "interest_ids": [
+            "stand_up_comedy",
+            "improv_shows",
+            "theater_performances",
+            "magic_shows",
+            "live_podcast_shows"
+          ]
+        },
+        {
+          "name": "Festivals",
+          "interest_ids": [
+            "food_festivals",
+            "beer_festivals",
+            "street_festivals",
+            "cultural_festivals",
+            "art_festivals"
+          ]
+        },
+        {
+          "name": "Automotive & Hobby Events",
+          "interest_ids": [
+            "car_shows",
+            "exotic_car_events",
+            "motorcycle_shows",
+            "watch_events",
+            "comic_conventions"
+          ]
+        },
+        {
+          "name": "Business & Social Events",
+          "interest_ids": [
+            "networking_events",
+            "business_conferences",
+            "startup_events",
+            "charity_galas",
+            "young_professional_events"
+          ]
+        },
+        {
+          "name": "Outdoor Events",
+          "interest_ids": [
+            "outdoor_concerts",
+            "outdoor_sporting_events",
+            "music_in_the_park",
+            "air_shows",
+            "boat_shows"
+          ]
+        },
+        {
+          "name": "Unique Experiences",
+          "interest_ids": [
+            "pop_up_events",
+            "grand_openings",
+            "local_competitions",
+            "fashion_shows",
+            "fan_conventions"
+          ]
+        }
+      ],
+      "interest_placements": 60
+    },
+    {
+      "id": "explore_city",
+      "label": "Explore the City Buddy",
+      "description": "Discover neighborhoods, attractions, and local culture.",
+      "groups": [
+        {
+          "name": "Neighborhoods",
+          "interest_ids": [
+            "downtown_exploring",
+            "historic_districts",
+            "arts_districts",
+            "new_developments",
+            "neighborhood_hopping"
+          ]
+        },
+        {
+          "name": "Landmarks",
+          "interest_ids": [
+            "famous_landmarks",
+            "observation_decks",
+            "architecture_tours",
+            "historical_sites",
+            "city_parks"
+          ]
+        },
+        {
+          "name": "Arts & Culture",
+          "interest_ids": [
+            "art_museums",
+            "history_museums",
+            "art_galleries",
+            "street_art",
+            "public_art"
+          ]
+        },
+        {
+          "name": "Local Food Discoveries",
+          "interest_ids": [
+            "hidden_coffee_shops",
+            "local_bakeries",
+            "food_halls",
+            "farmers_markets",
+            "neighborhood_restaurants"
+          ]
+        },
+        {
+          "name": "Shopping & Exploring",
+          "interest_ids": [
+            "vintage_stores",
+            "thrift_shops",
+            "record_stores",
+            "bookstores",
+            "local_boutiques"
+          ]
+        },
+        {
+          "name": "Local Experiences",
+          "interest_ids": [
+            "walking_tours",
+            "brewery_tours",
+            "distillery_tours",
+            "local_history_tours",
+            "factory_tours"
+          ]
+        },
+        {
+          "name": "Entertainment Districts",
+          "interest_ids": [
+            "downtown_nightlife_districts",
+            "restaurant_districts",
+            "entertainment_complexes",
+            "local_markets",
+            "public_squares"
+          ]
+        },
+        {
+          "name": "Unique City Experiences",
+          "interest_ids": [
+            "scenic_overlooks",
+            "hidden_gems",
+            "local_festivals",
+            "neighborhood_events",
+            "new_business_openings"
+          ]
+        }
+      ],
+      "interest_placements": 40
+    },
+    {
+      "id": "hobby",
+      "label": "Hobby Buddy",
+      "description": "Connect through dedicated hobbies and enthusiast communities.",
+      "groups": [
+        {
+          "name": "Cars",
+          "interest_ids": [
+            "car_meets",
+            "car_detailing",
+            "classic_cars",
+            "jdm_cars",
+            "exotic_cars"
+          ]
+        },
+        {
+          "name": "Automotive Hobbies",
+          "interest_ids": [
+            "track_days",
+            "motorcycles",
+            "off_road_builds",
+            "car_restoration",
+            "sim_racing"
+          ]
+        },
+        {
+          "name": "Collecting",
+          "interest_ids": [
+            "watches",
+            "sneakers",
+            "vintage_clothing",
+            "trading_cards",
+            "vinyl_records"
+          ]
+        },
+        {
+          "name": "Other Collectibles",
+          "interest_ids": [
+            "coin_collecting",
+            "sports_memorabilia",
+            "comic_books",
+            "action_figures",
+            "antiques"
+          ]
+        },
+        {
+          "name": "Visual Arts",
+          "interest_ids": [
+            "photography",
+            "videography",
+            "filmmaking",
+            "painting",
+            "drawing"
+          ]
+        },
+        {
+          "name": "Crafts & Making",
+          "interest_ids": [
+            "woodworking",
+            "leatherworking",
+            "pottery",
+            "3d_printing",
+            "model_building"
+          ]
+        },
+        {
+          "name": "Playing Music",
+          "interest_ids": [
+            "guitar",
+            "piano",
+            "drums",
+            "djing",
+            "music_production"
+          ]
+        },
+        {
+          "name": "Music Creation",
+          "interest_ids": [
+            "songwriting",
+            "music_gear",
+            "vinyl_djing",
+            "home_recording",
+            "beat_making"
+          ]
+        },
+        {
+          "name": "Technology",
+          "interest_ids": [
+            "pc_building",
+            "coding",
+            "ai_tools",
+            "robotics",
+            "home_automation"
+          ]
+        },
+        {
+          "name": "Tech Hobbies",
+          "interest_ids": [
+            "drones",
+            "rc_cars",
+            "mechanical_keyboards",
+            "3d_modeling",
+            "electronics_projects"
+          ]
+        },
+        {
+          "name": "DIY & Home",
+          "interest_ids": [
+            "home_improvement",
+            "furniture_restoration",
+            "automotive_diy",
+            "home_audio_systems",
+            "gardening"
+          ]
+        },
+        {
+          "name": "Learning & Knowledge",
+          "interest_ids": [
+            "astronomy",
+            "language_learning",
+            "history",
+            "philosophy",
+            "geography"
+          ]
+        },
+        {
+          "name": "Lifestyle Hobbies",
+          "interest_ids": [
+            "fashion_and_style",
+            "fragrances",
+            "tattoo_art",
+            "bartending",
+            "aquariums"
+          ]
+        },
+        {
+          "name": "Business & Finance",
+          "interest_ids": [
+            "entrepreneurship",
+            "startup_building",
+            "stock_investing",
+            "real_estate_investing",
+            "personal_finance"
+          ]
+        }
+      ],
+      "interest_placements": 70
+    },
+    {
+      "id": "weekend",
+      "label": "Weekend Plans Buddy",
+      "description": "Make low-pressure plans for days off and weekends.",
+      "groups": [
+        {
+          "name": "Easy Outings",
+          "interest_ids": [
+            "driving_range",
+            "go_karting",
+            "mini_golf",
+            "batting_cages",
+            "bowling"
+          ]
+        },
+        {
+          "name": "Beach & Water",
+          "interest_ids": [
+            "beach_days",
+            "beach_volleyball",
+            "pool_days",
+            "lake_days",
+            "paddleboarding"
+          ]
+        },
+        {
+          "name": "Watching Sports",
+          "interest_ids": [
+            "nfl_watch_parties",
+            "college_football_saturdays",
+            "nba_watch_parties",
+            "ufc_fight_nights",
+            "mlb_watch_parties"
+          ]
+        },
+        {
+          "name": "More Sports Watching",
+          "interest_ids": [
+            "f1_watch_parties",
+            "nhl_games_on_tv",
+            "soccer_watch_parties",
+            "march_madness",
+            "fantasy_football_drafts"
+          ]
+        },
+        {
+          "name": "Social Gatherings",
+          "interest_ids": [
+            "backyard_bbqs",
+            "house_parties",
+            "cornhole",
+            "grilling",
+            "game_nights"
+          ]
+        },
+        {
+          "name": "Local Activities",
+          "interest_ids": [
+            "food_truck_rallies",
+            "street_fairs",
+            "farmers_markets",
+            "car_shows",
+            "pop_up_events"
+          ]
+        },
+        {
+          "name": "Active Weekends",
+          "interest_ids": [
+            "hiking",
+            "pickleball",
+            "bike_rides",
+            "disc_golf",
+            "shooting_hoops"
+          ]
+        },
+        {
+          "name": "Group Entertainment",
+          "interest_ids": [
+            "tailgating",
+            "brewery_hopping",
+            "escape_rooms",
+            "axe_throwing",
+            "paintball"
+          ]
+        },
+        {
+          "name": "Weekend Adventures",
+          "interest_ids": [
+            "day_trips",
+            "beach_trips",
+            "water_parks",
+            "amusement_parks",
+            "flea_markets"
+          ]
+        }
+      ],
+      "interest_placements": 45
+    },
+    {
+      "id": "casual_hang",
+      "label": "Casual Hang Buddy",
+      "description": "Hang out without needing a formal activity.",
+      "groups": [
+        {
+          "name": "Smoking & Adult Interests",
+          "interest_ids": [
+            "smoking_cigars",
+            "smoking_cigarettes",
+            "hookah",
+            "cannabis_friendly_hangouts",
+            "pipe_tobacco"
+          ]
+        },
+        {
+          "name": "Smoking-Related Hangouts",
+          "interest_ids": [
+            "cigar_lounges",
+            "backyard_cigar_nights",
+            "hookah_lounges",
+            "smoke_breaks",
+            "cannabis_hangouts"
+          ]
+        },
+        {
+          "name": "Casual Drinks",
+          "interest_ids": [
+            "backyard_beers",
+            "whiskey_nights",
+            "bourbon_sipping",
+            "nonalcoholic_drinks",
+            "coffee_at_home"
+          ]
+        },
+        {
+          "name": "Sports Watching",
+          "interest_ids": [
+            "football_games_on_tv",
+            "ufc_fights",
+            "basketball_games_on_tv",
+            "baseball_games_on_tv",
+            "f1_races"
+          ]
+        },
+        {
+          "name": "Sports Conversations",
+          "interest_ids": [
+            "nhl_watch_parties",
+            "soccer_matches_on_tv",
+            "fantasy_football_talk",
+            "sports_highlights",
+            "postgame_recaps"
+          ]
+        },
+        {
+          "name": "Hanging Out",
+          "interest_ids": [
+            "backyard_fire_pits",
+            "porch_hangouts",
+            "garage_hangouts",
+            "grilling_and_chilling",
+            "hanging_by_the_pool"
+          ]
+        },
+        {
+          "name": "Casual Games",
+          "interest_ids": [
+            "poker_nights",
+            "card_games",
+            "dominoes",
+            "cornhole",
+            "darts"
+          ]
+        },
+        {
+          "name": "Entertainment",
+          "interest_ids": [
+            "listening_to_music",
+            "album_listening_sessions",
+            "youtube_videos",
+            "comedy_specials",
+            "podcasts"
+          ]
+        },
+        {
+          "name": "Conversation Topics",
+          "interest_ids": [
+            "sports_talk",
+            "cars",
+            "current_events",
+            "politics",
+            "investing"
+          ]
+        },
+        {
+          "name": "Other Chill Activities",
+          "interest_ids": [
+            "philosophy",
+            "business_ideas",
+            "tech_talk",
+            "conspiracy_theories",
+            "watching_documentaries"
+          ]
+        }
+      ],
+      "interest_placements": 50
+    }
+  ],
+  "interests": [
+    {
+      "id": "weightlifting",
+      "label": "Weightlifting",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "powerlifting",
+      "label": "Powerlifting",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bodybuilding",
+      "label": "Bodybuilding",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "olympic_lifting",
+      "label": "Olympic Lifting",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "strongman",
+      "label": "Strongman",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "crossfit",
+      "label": "CrossFit",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hyrox",
+      "label": "HYROX",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hiit",
+      "label": "HIIT",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "calisthenics",
+      "label": "Calisthenics",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "functional_training",
+      "label": "Functional Training",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "treadmill_running",
+      "label": "Treadmill Running",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "indoor_cycling",
+      "label": "Indoor Cycling",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "rowing_machine",
+      "label": "Rowing Machine",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "stair_climber",
+      "label": "Stair Climber",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "assault_bike",
+      "label": "Assault Bike",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bootcamp_classes",
+      "label": "Bootcamp Classes",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "boxing_fitness",
+      "label": "Boxing Fitness",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pilates",
+      "label": "Pilates",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "yoga",
+      "label": "Yoga",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "circuit_training",
+      "label": "Circuit Training",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "muscle_gain",
+      "label": "Muscle Gain",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fat_loss",
+      "label": "Fat Loss",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "endurance_training",
+      "label": "Endurance Training",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "athletic_performance",
+      "label": "Athletic Performance",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mobility_training",
+      "label": "Mobility Training",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "spotting_partners",
+      "label": "Spotting Partners",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "partner_workouts",
+      "label": "Partner Workouts",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fitness_challenges",
+      "label": "Fitness Challenges",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "competition_preparation",
+      "label": "Competition Preparation",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "stretching_and_recovery",
+      "label": "Stretching & Recovery",
+      "category_ids": [
+        "gym"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "tennis",
+      "label": "Tennis",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pickleball",
+      "label": "Pickleball",
+      "category_ids": [
+        "sports",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "badminton",
+      "label": "Badminton",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "racquetball",
+      "label": "Racquetball",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "squash",
+      "label": "Squash",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "basketball",
+      "label": "Basketball",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "indoor_volleyball",
+      "label": "Indoor Volleyball",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "beach_volleyball",
+      "label": "Beach Volleyball",
+      "category_ids": [
+        "sports",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "handball",
+      "label": "Handball",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "dodgeball",
+      "label": "Dodgeball",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "soccer",
+      "label": "Soccer",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "flag_football",
+      "label": "Flag Football",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "rugby",
+      "label": "Rugby",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "lacrosse",
+      "label": "Lacrosse",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "ultimate_frisbee",
+      "label": "Ultimate Frisbee",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "baseball",
+      "label": "Baseball",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "softball",
+      "label": "Softball",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "cricket",
+      "label": "Cricket",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "kickball",
+      "label": "Kickball",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "wiffle_ball",
+      "label": "Wiffle Ball",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "golf",
+      "label": "Golf",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "driving_range",
+      "label": "Driving Range",
+      "category_ids": [
+        "sports",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "disc_golf",
+      "label": "Disc Golf",
+      "category_ids": [
+        "sports",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "footgolf",
+      "label": "FootGolf",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mini_golf",
+      "label": "Mini Golf",
+      "category_ids": [
+        "sports",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "rowing",
+      "label": "Rowing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sculling",
+      "label": "Sculling",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "dragon_boat_racing",
+      "label": "Dragon Boat Racing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "water_polo",
+      "label": "Water Polo",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "swimming",
+      "label": "Swimming",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "surfing",
+      "label": "Surfing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "wakeboarding",
+      "label": "Wakeboarding",
+      "category_ids": [
+        "sports",
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "wakesurfing",
+      "label": "Wakesurfing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "paddleboard_racing",
+      "label": "Paddleboard Racing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "windsurfing",
+      "label": "Windsurfing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "boxing",
+      "label": "Boxing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "brazilian_jiu_jitsu",
+      "label": "Brazilian Jiu-Jitsu",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "muay_thai",
+      "label": "Muay Thai",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "wrestling",
+      "label": "Wrestling",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "judo",
+      "label": "Judo",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "kickboxing",
+      "label": "Kickboxing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mixed_martial_arts",
+      "label": "Mixed Martial Arts",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "karate",
+      "label": "Karate",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "taekwondo",
+      "label": "Taekwondo",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fencing",
+      "label": "Fencing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "skiing",
+      "label": "Skiing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "snowboarding",
+      "label": "Snowboarding",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "ice_hockey",
+      "label": "Ice Hockey",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "curling",
+      "label": "Curling",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "ice_skating",
+      "label": "Ice Skating",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "running",
+      "label": "Running",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "trail_running",
+      "label": "Trail Running",
+      "category_ids": [
+        "sports",
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "triathlons",
+      "label": "Triathlons",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "road_cycling",
+      "label": "Road Cycling",
+      "category_ids": [
+        "sports",
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "track_and_field",
+      "label": "Track & Field",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bmx",
+      "label": "BMX",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "skateboarding",
+      "label": "Skateboarding",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "rollerblading",
+      "label": "Rollerblading",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "longboarding",
+      "label": "Longboarding",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mountain_biking",
+      "label": "Mountain Biking",
+      "category_ids": [
+        "sports",
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "darts",
+      "label": "Darts",
+      "category_ids": [
+        "sports",
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "billiards",
+      "label": "Billiards",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bowling",
+      "label": "Bowling",
+      "category_ids": [
+        "sports",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "archery",
+      "label": "Archery",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "table_tennis",
+      "label": "Table Tennis",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "rock_climbing",
+      "label": "Rock Climbing",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bouldering",
+      "label": "Bouldering",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "orienteering",
+      "label": "Orienteering",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "equestrian_riding",
+      "label": "Equestrian Riding",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "parkour",
+      "label": "Parkour",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "padel",
+      "label": "Padel",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "spikeball",
+      "label": "Spikeball",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "paintball",
+      "label": "Paintball",
+      "category_ids": [
+        "sports",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "airsoft",
+      "label": "Airsoft",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "floor_hockey",
+      "label": "Floor Hockey",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pickup_games",
+      "label": "Pickup Games",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "recreational_leagues",
+      "label": "Recreational Leagues",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "competitive_leagues",
+      "label": "Competitive Leagues",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "intramural_teams",
+      "label": "Intramural Teams",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "local_tournaments",
+      "label": "Local Tournaments",
+      "category_ids": [
+        "sports"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "meeting_women",
+      "label": "Meeting Women",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "picking_up_women",
+      "label": "Picking Up Women",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "making_homies",
+      "label": "Making Homies",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "two_man",
+      "label": "Two Man",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "going_out_as_a_duo",
+      "label": "Going Out as a Duo",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bars",
+      "label": "Bars",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "country_bars",
+      "label": "Country Bars",
+      "category_ids": [
+        "wingman",
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "cocktail_lounges",
+      "label": "Cocktail Lounges",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "cigar_lounges",
+      "label": "Cigar Lounges",
+      "category_ids": [
+        "wingman",
+        "going_out",
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "whiskey_bars",
+      "label": "Whiskey Bars",
+      "category_ids": [
+        "wingman",
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "sports_bars",
+      "label": "Sports Bars",
+      "category_ids": [
+        "wingman",
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "rooftop_bars",
+      "label": "Rooftop Bars",
+      "category_ids": [
+        "wingman",
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "hotel_lounges",
+      "label": "Hotel Lounges",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nightclubs",
+      "label": "Nightclubs",
+      "category_ids": [
+        "wingman",
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "beach_clubs",
+      "label": "Beach Clubs",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "club_nights",
+      "label": "Club Nights",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "day_parties",
+      "label": "Day Parties",
+      "category_ids": [
+        "wingman",
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pool_parties",
+      "label": "Pool Parties",
+      "category_ids": [
+        "wingman",
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "house_parties",
+      "label": "House Parties",
+      "category_ids": [
+        "wingman",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pregames",
+      "label": "Pregames",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "live_music_bars",
+      "label": "Live-Music Bars",
+      "category_ids": [
+        "wingman",
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "college_bars",
+      "label": "College Bars",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "dance_floors",
+      "label": "Dance Floors",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "vip_tables",
+      "label": "VIP Tables",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "bottle_service",
+      "label": "Bottle Service",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "group_nights_out",
+      "label": "Group Nights Out",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "friend_of_friend_introductions",
+      "label": "Friend-of-Friend Introductions",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "birthday_parties",
+      "label": "Birthday Parties",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "young_professional_mixers",
+      "label": "Young Professional Mixers",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "social_club_events",
+      "label": "Social Club Events",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "happy_hours",
+      "label": "Happy Hours",
+      "category_ids": [
+        "wingman",
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bar_crawls",
+      "label": "Bar Crawls",
+      "category_ids": [
+        "wingman",
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "concert_afterparties",
+      "label": "Concert Afterparties",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "country_dancing",
+      "label": "Country Dancing",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "festival_nights",
+      "label": "Festival Nights",
+      "category_ids": [
+        "wingman"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "cocktail_bars",
+      "label": "Cocktail Bars",
+      "category_ids": [
+        "going_out",
+        "food_drink"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "dive_bars",
+      "label": "Dive Bars",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "hotel_bars",
+      "label": "Hotel Bars",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "dance_clubs",
+      "label": "Dance Clubs",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "dj_sets",
+      "label": "DJ Sets",
+      "category_ids": [
+        "going_out",
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "late_night_lounges",
+      "label": "Late-Night Lounges",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "after_hours_spots",
+      "label": "After-Hours Spots",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "craft_breweries",
+      "label": "Craft Breweries",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "tequila_bars",
+      "label": "Tequila Bars",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "wine_bars",
+      "label": "Wine Bars",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "tiki_bars",
+      "label": "Tiki Bars",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "karaoke_nights",
+      "label": "Karaoke Nights",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pool_halls",
+      "label": "Pool Halls",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "arcade_bars",
+      "label": "Arcade Bars",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "pub_games",
+      "label": "Pub Games",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "upscale_nightlife",
+      "label": "Upscale Nightlife",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "laid_back_bars",
+      "label": "Laid-Back Bars",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "outdoor_patios",
+      "label": "Outdoor Patios",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "speakeasies",
+      "label": "Speakeasies",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "honky_tonks",
+      "label": "Honky-Tonks",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "line_dancing",
+      "label": "Line Dancing",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "two_stepping",
+      "label": "Two-Stepping",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "country_music_nights",
+      "label": "Country Music Nights",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "house_music_nights",
+      "label": "House Music Nights",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "edm_clubs",
+      "label": "EDM Clubs",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hip_hop_clubs",
+      "label": "Hip-Hop Clubs",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "latin_clubs",
+      "label": "Latin Clubs",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "live_djs",
+      "label": "Live DJs",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "themed_parties",
+      "label": "Themed Parties",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "rooftop_parties",
+      "label": "Rooftop Parties",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hookah_lounges",
+      "label": "Hookah Lounges",
+      "category_ids": [
+        "going_out",
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "comedy_clubs",
+      "label": "Comedy Clubs",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "piano_bars",
+      "label": "Piano Bars",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "gentlemen_s_clubs",
+      "label": "Gentlemen's Clubs",
+      "category_ids": [
+        "going_out"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "desert_hiking",
+      "label": "Desert Hiking",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mountain_hiking",
+      "label": "Mountain Hiking",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "waterfall_hikes",
+      "label": "Waterfall Hikes",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nature_walks",
+      "label": "Nature Walks",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "summit_hikes",
+      "label": "Summit Hikes",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sunrise_hikes",
+      "label": "Sunrise Hikes",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sunset_hikes",
+      "label": "Sunset Hikes",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "canyon_hiking",
+      "label": "Canyon Hiking",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "national_park_hiking",
+      "label": "National Park Hiking",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "tent_camping",
+      "label": "Tent Camping",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "car_camping",
+      "label": "Car Camping",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "backpacking",
+      "label": "Backpacking",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "dispersed_camping",
+      "label": "Dispersed Camping",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "glamping",
+      "label": "Glamping",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "campfire_nights",
+      "label": "Campfire Nights",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "wilderness_camping",
+      "label": "Wilderness Camping",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hammock_camping",
+      "label": "Hammock Camping",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "outdoor_cooking",
+      "label": "Outdoor Cooking",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "survival_skills",
+      "label": "Survival Skills",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "freshwater_fishing",
+      "label": "Freshwater Fishing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "saltwater_fishing",
+      "label": "Saltwater Fishing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fly_fishing",
+      "label": "Fly Fishing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bass_fishing",
+      "label": "Bass Fishing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "deep_sea_fishing",
+      "label": "Deep-Sea Fishing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "kayaking",
+      "label": "Kayaking",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "paddleboarding",
+      "label": "Paddleboarding",
+      "category_ids": [
+        "outdoor",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "canoeing",
+      "label": "Canoeing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "tubing",
+      "label": "Tubing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "river_floating",
+      "label": "River Floating",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "lake_days",
+      "label": "Lake Days",
+      "category_ids": [
+        "outdoor",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pontoon_boating",
+      "label": "Pontoon Boating",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "jet_skiing",
+      "label": "Jet Skiing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sailing",
+      "label": "Sailing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "gravel_biking",
+      "label": "Gravel Biking",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "e_biking",
+      "label": "E-Biking",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "scenic_bike_rides",
+      "label": "Scenic Bike Rides",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "indoor_to_outdoor_climbing",
+      "label": "Indoor-to-Outdoor Climbing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "outdoor_bouldering",
+      "label": "Outdoor Bouldering",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sport_climbing",
+      "label": "Sport Climbing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "trad_climbing",
+      "label": "Trad Climbing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "via_ferrata",
+      "label": "Via Ferrata",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "off_roading",
+      "label": "Off-Roading",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "atv_riding",
+      "label": "ATV Riding",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "dirt_biking",
+      "label": "Dirt Biking",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "overlanding",
+      "label": "Overlanding",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "jeep_trails",
+      "label": "Jeep Trails",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "birdwatching",
+      "label": "Birdwatching",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "wildlife_photography",
+      "label": "Wildlife Photography",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "stargazing",
+      "label": "Stargazing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nature_photography",
+      "label": "Nature Photography",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "geocaching",
+      "label": "Geocaching",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hunting",
+      "label": "Hunting",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "snowshoeing",
+      "label": "Snowshoeing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "cross_country_skiing",
+      "label": "Cross-Country Skiing",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mushroom_foraging",
+      "label": "Mushroom Foraging",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "metal_detecting",
+      "label": "Metal Detecting",
+      "category_ids": [
+        "outdoor"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "new_restaurant_openings",
+      "label": "New Restaurant Openings",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hidden_gem_restaurants",
+      "label": "Hidden Gem Restaurants",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "burger_spots",
+      "label": "Burger Spots",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "steakhouses",
+      "label": "Steakhouses",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fine_dining",
+      "label": "Fine Dining",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sushi",
+      "label": "Sushi",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "korean_bbq",
+      "label": "Korean BBQ",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "italian_food",
+      "label": "Italian Food",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "thai_food",
+      "label": "Thai Food",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mexican_food",
+      "label": "Mexican Food",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "indian_food",
+      "label": "Indian Food",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mediterranean_food",
+      "label": "Mediterranean Food",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "chinese_food",
+      "label": "Chinese Food",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "vietnamese_food",
+      "label": "Vietnamese Food",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "japanese_ramen",
+      "label": "Japanese Ramen",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pizza_spots",
+      "label": "Pizza Spots",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "taco_trucks",
+      "label": "Taco Trucks",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bbq_joints",
+      "label": "BBQ Joints",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "food_trucks",
+      "label": "Food Trucks",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "wings",
+      "label": "Wings",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "brunch",
+      "label": "Brunch",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "breakfast_diners",
+      "label": "Breakfast Diners",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "specialty_coffee",
+      "label": "Specialty Coffee",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "espresso_bars",
+      "label": "Espresso Bars",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "coffee_roasters",
+      "label": "Coffee Roasters",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "craft_beer",
+      "label": "Craft Beer",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "bourbon",
+      "label": "Bourbon",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "whiskey_tastings",
+      "label": "Whiskey Tastings",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "tequila_tastings",
+      "label": "Tequila Tastings",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "scotch",
+      "label": "Scotch",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "wine_tasting",
+      "label": "Wine Tasting",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "mixology",
+      "label": "Mixology",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mocktails",
+      "label": "Mocktails",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "natural_wine",
+      "label": "Natural Wine",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "grilling",
+      "label": "Grilling",
+      "category_ids": [
+        "food_drink",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "smoking_meats",
+      "label": "Smoking Meats",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "cooking_classes",
+      "label": "Cooking Classes",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "homemade_pizza",
+      "label": "Homemade Pizza",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "meal_prep",
+      "label": "Meal Prep",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "food_festivals",
+      "label": "Food Festivals",
+      "category_ids": [
+        "food_drink",
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "farmers_markets",
+      "label": "Farmers Markets",
+      "category_ids": [
+        "food_drink",
+        "explore_city",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pop_up_restaurants",
+      "label": "Pop-Up Restaurants",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "chef_tastings",
+      "label": "Chef Tastings",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "food_tours",
+      "label": "Food Tours",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hot_sauce",
+      "label": "Hot Sauce",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "spicy_food_challenges",
+      "label": "Spicy Food Challenges",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "desserts",
+      "label": "Desserts",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "international_grocery_stores",
+      "label": "International Grocery Stores",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "seafood",
+      "label": "Seafood",
+      "category_ids": [
+        "food_drink"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pc_gaming",
+      "label": "PC Gaming",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "playstation",
+      "label": "PlayStation",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "xbox",
+      "label": "Xbox",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nintendo_switch",
+      "label": "Nintendo Switch",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "vr_gaming",
+      "label": "VR Gaming",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "first_person_shooters",
+      "label": "First-Person Shooters",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sports_games",
+      "label": "Sports Games",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "racing_games",
+      "label": "Racing Games",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "rpgs",
+      "label": "RPGs",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "survival_games",
+      "label": "Survival Games",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "call_of_duty",
+      "label": "Call of Duty",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fortnite",
+      "label": "Fortnite",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "ea_sports_fc",
+      "label": "EA Sports FC",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nba_2k",
+      "label": "NBA 2K",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "madden",
+      "label": "Madden",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "co_op_campaigns",
+      "label": "Co-op Campaigns",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "ranked_competitive_gaming",
+      "label": "Ranked Competitive Gaming",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "online_multiplayer",
+      "label": "Online Multiplayer",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "local_multiplayer",
+      "label": "Local Multiplayer",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "lan_parties",
+      "label": "LAN Parties",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "poker",
+      "label": "Poker",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "chess",
+      "label": "Chess",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "board_games",
+      "label": "Board Games",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "trading_card_games",
+      "label": "Trading Card Games",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "dungeons_and_dragons",
+      "label": "Dungeons & Dragons",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "arcade_games",
+      "label": "Arcade Games",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "retro_gaming",
+      "label": "Retro Gaming",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mobile_gaming",
+      "label": "Mobile Gaming",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "gaming_cafes",
+      "label": "Gaming Cafés",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "esports",
+      "label": "Esports",
+      "category_ids": [
+        "gaming"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "rap_concerts",
+      "label": "Rap Concerts",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hip_hop_festivals",
+      "label": "Hip-Hop Festivals",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "trap_music_shows",
+      "label": "Trap Music Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "underground_rap_shows",
+      "label": "Underground Rap Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "r_and_b_concerts",
+      "label": "R&B Concerts",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "house_music_shows",
+      "label": "House Music Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "edm_shows",
+      "label": "EDM Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "techno_shows",
+      "label": "Techno Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "dubstep_shows",
+      "label": "Dubstep Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "drum_and_bass_shows",
+      "label": "Drum & Bass Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "country_concerts",
+      "label": "Country Concerts",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "rock_concerts",
+      "label": "Rock Concerts",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "indie_concerts",
+      "label": "Indie Concerts",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pop_concerts",
+      "label": "Pop Concerts",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "latin_music_concerts",
+      "label": "Latin Music Concerts",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "music_festivals",
+      "label": "Music Festivals",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "local_bands",
+      "label": "Local Bands",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "jazz_shows",
+      "label": "Jazz Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "blues_shows",
+      "label": "Blues Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nfl_games",
+      "label": "NFL Games",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nba_games",
+      "label": "NBA Games",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mlb_games",
+      "label": "MLB Games",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nhl_games",
+      "label": "NHL Games",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mls_games",
+      "label": "MLS Games",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "college_football",
+      "label": "College Football",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "college_basketball",
+      "label": "College Basketball",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "ufc_events",
+      "label": "UFC Events",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "boxing_matches",
+      "label": "Boxing Matches",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "motorsports_races",
+      "label": "Motorsports Races",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "stand_up_comedy",
+      "label": "Stand-Up Comedy",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "improv_shows",
+      "label": "Improv Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "theater_performances",
+      "label": "Theater Performances",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "magic_shows",
+      "label": "Magic Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "live_podcast_shows",
+      "label": "Live Podcast Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "beer_festivals",
+      "label": "Beer Festivals",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "street_festivals",
+      "label": "Street Festivals",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "cultural_festivals",
+      "label": "Cultural Festivals",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "art_festivals",
+      "label": "Art Festivals",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "car_shows",
+      "label": "Car Shows",
+      "category_ids": [
+        "events",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "exotic_car_events",
+      "label": "Exotic Car Events",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "motorcycle_shows",
+      "label": "Motorcycle Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "watch_events",
+      "label": "Watch Events",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "comic_conventions",
+      "label": "Comic Conventions",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "networking_events",
+      "label": "Networking Events",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "business_conferences",
+      "label": "Business Conferences",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "startup_events",
+      "label": "Startup Events",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "charity_galas",
+      "label": "Charity Galas",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "young_professional_events",
+      "label": "Young Professional Events",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "outdoor_concerts",
+      "label": "Outdoor Concerts",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "outdoor_sporting_events",
+      "label": "Outdoor Sporting Events",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "music_in_the_park",
+      "label": "Music in the Park",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "air_shows",
+      "label": "Air Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "boat_shows",
+      "label": "Boat Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pop_up_events",
+      "label": "Pop-Up Events",
+      "category_ids": [
+        "events",
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "grand_openings",
+      "label": "Grand Openings",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "local_competitions",
+      "label": "Local Competitions",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fashion_shows",
+      "label": "Fashion Shows",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fan_conventions",
+      "label": "Fan Conventions",
+      "category_ids": [
+        "events"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "downtown_exploring",
+      "label": "Downtown Exploring",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "historic_districts",
+      "label": "Historic Districts",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "arts_districts",
+      "label": "Arts Districts",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "new_developments",
+      "label": "New Developments",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "neighborhood_hopping",
+      "label": "Neighborhood Hopping",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "famous_landmarks",
+      "label": "Famous Landmarks",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "observation_decks",
+      "label": "Observation Decks",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "architecture_tours",
+      "label": "Architecture Tours",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "historical_sites",
+      "label": "Historical Sites",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "city_parks",
+      "label": "City Parks",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "art_museums",
+      "label": "Art Museums",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "history_museums",
+      "label": "History Museums",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "art_galleries",
+      "label": "Art Galleries",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "street_art",
+      "label": "Street Art",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "public_art",
+      "label": "Public Art",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hidden_coffee_shops",
+      "label": "Hidden Coffee Shops",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "local_bakeries",
+      "label": "Local Bakeries",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "food_halls",
+      "label": "Food Halls",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "neighborhood_restaurants",
+      "label": "Neighborhood Restaurants",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "vintage_stores",
+      "label": "Vintage Stores",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "thrift_shops",
+      "label": "Thrift Shops",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "record_stores",
+      "label": "Record Stores",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bookstores",
+      "label": "Bookstores",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "local_boutiques",
+      "label": "Local Boutiques",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "walking_tours",
+      "label": "Walking Tours",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "brewery_tours",
+      "label": "Brewery Tours",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "distillery_tours",
+      "label": "Distillery Tours",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "local_history_tours",
+      "label": "Local History Tours",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "factory_tours",
+      "label": "Factory Tours",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "downtown_nightlife_districts",
+      "label": "Downtown Nightlife Districts",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "restaurant_districts",
+      "label": "Restaurant Districts",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "entertainment_complexes",
+      "label": "Entertainment Complexes",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "local_markets",
+      "label": "Local Markets",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "public_squares",
+      "label": "Public Squares",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "scenic_overlooks",
+      "label": "Scenic Overlooks",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hidden_gems",
+      "label": "Hidden Gems",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "local_festivals",
+      "label": "Local Festivals",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "neighborhood_events",
+      "label": "Neighborhood Events",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "new_business_openings",
+      "label": "New Business Openings",
+      "category_ids": [
+        "explore_city"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "car_meets",
+      "label": "Car Meets",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "car_detailing",
+      "label": "Car Detailing",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "classic_cars",
+      "label": "Classic Cars",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "jdm_cars",
+      "label": "JDM Cars",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "exotic_cars",
+      "label": "Exotic Cars",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "track_days",
+      "label": "Track Days",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "motorcycles",
+      "label": "Motorcycles",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "off_road_builds",
+      "label": "Off-Road Builds",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "car_restoration",
+      "label": "Car Restoration",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sim_racing",
+      "label": "Sim Racing",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "watches",
+      "label": "Watches",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sneakers",
+      "label": "Sneakers",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "vintage_clothing",
+      "label": "Vintage Clothing",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "trading_cards",
+      "label": "Trading Cards",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "vinyl_records",
+      "label": "Vinyl Records",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "coin_collecting",
+      "label": "Coin Collecting",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sports_memorabilia",
+      "label": "Sports Memorabilia",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "comic_books",
+      "label": "Comic Books",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "action_figures",
+      "label": "Action Figures",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "antiques",
+      "label": "Antiques",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "photography",
+      "label": "Photography",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "videography",
+      "label": "Videography",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "filmmaking",
+      "label": "Filmmaking",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "painting",
+      "label": "Painting",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "drawing",
+      "label": "Drawing",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "woodworking",
+      "label": "Woodworking",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "leatherworking",
+      "label": "Leatherworking",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pottery",
+      "label": "Pottery",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "3d_printing",
+      "label": "3D Printing",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "model_building",
+      "label": "Model Building",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "guitar",
+      "label": "Guitar",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "piano",
+      "label": "Piano",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "drums",
+      "label": "Drums",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "djing",
+      "label": "DJing",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "music_production",
+      "label": "Music Production",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "songwriting",
+      "label": "Songwriting",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "music_gear",
+      "label": "Music Gear",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "vinyl_djing",
+      "label": "Vinyl DJing",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "home_recording",
+      "label": "Home Recording",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "beat_making",
+      "label": "Beat Making",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pc_building",
+      "label": "PC Building",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "coding",
+      "label": "Coding",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "ai_tools",
+      "label": "AI Tools",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "robotics",
+      "label": "Robotics",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "home_automation",
+      "label": "Home Automation",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "drones",
+      "label": "Drones",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "rc_cars",
+      "label": "RC Cars",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mechanical_keyboards",
+      "label": "Mechanical Keyboards",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "3d_modeling",
+      "label": "3D Modeling",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "electronics_projects",
+      "label": "Electronics Projects",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "home_improvement",
+      "label": "Home Improvement",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "furniture_restoration",
+      "label": "Furniture Restoration",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "automotive_diy",
+      "label": "Automotive DIY",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "home_audio_systems",
+      "label": "Home Audio Systems",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "gardening",
+      "label": "Gardening",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "astronomy",
+      "label": "Astronomy",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "language_learning",
+      "label": "Language Learning",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "history",
+      "label": "History",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "philosophy",
+      "label": "Philosophy",
+      "category_ids": [
+        "hobby",
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "geography",
+      "label": "Geography",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fashion_and_style",
+      "label": "Fashion & Style",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fragrances",
+      "label": "Fragrances",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "tattoo_art",
+      "label": "Tattoo Art",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bartending",
+      "label": "Bartending",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "aquariums",
+      "label": "Aquariums",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "entrepreneurship",
+      "label": "Entrepreneurship",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "startup_building",
+      "label": "Startup Building",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "stock_investing",
+      "label": "Stock Investing",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "real_estate_investing",
+      "label": "Real Estate Investing",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "personal_finance",
+      "label": "Personal Finance",
+      "category_ids": [
+        "hobby"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "go_karting",
+      "label": "Go-Karting",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "batting_cages",
+      "label": "Batting Cages",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "beach_days",
+      "label": "Beach Days",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "pool_days",
+      "label": "Pool Days",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nfl_watch_parties",
+      "label": "NFL Watch Parties",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "college_football_saturdays",
+      "label": "College Football Saturdays",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nba_watch_parties",
+      "label": "NBA Watch Parties",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "ufc_fight_nights",
+      "label": "UFC Fight Nights",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "mlb_watch_parties",
+      "label": "MLB Watch Parties",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "f1_watch_parties",
+      "label": "F1 Watch Parties",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nhl_games_on_tv",
+      "label": "NHL Games on TV",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "soccer_watch_parties",
+      "label": "Soccer Watch Parties",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "march_madness",
+      "label": "March Madness",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fantasy_football_drafts",
+      "label": "Fantasy Football Drafts",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "backyard_bbqs",
+      "label": "Backyard BBQs",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "cornhole",
+      "label": "Cornhole",
+      "category_ids": [
+        "weekend",
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "game_nights",
+      "label": "Game Nights",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "food_truck_rallies",
+      "label": "Food Truck Rallies",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "street_fairs",
+      "label": "Street Fairs",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hiking",
+      "label": "Hiking",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "bike_rides",
+      "label": "Bike Rides",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "shooting_hoops",
+      "label": "Shooting Hoops",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "tailgating",
+      "label": "Tailgating",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "brewery_hopping",
+      "label": "Brewery Hopping",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "escape_rooms",
+      "label": "Escape Rooms",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "axe_throwing",
+      "label": "Axe Throwing",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "day_trips",
+      "label": "Day Trips",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "beach_trips",
+      "label": "Beach Trips",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "water_parks",
+      "label": "Water Parks",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "amusement_parks",
+      "label": "Amusement Parks",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "flea_markets",
+      "label": "Flea Markets",
+      "category_ids": [
+        "weekend"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "smoking_cigars",
+      "label": "Smoking Cigars",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "smoking_cigarettes",
+      "label": "Smoking Cigarettes",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "hookah",
+      "label": "Hookah",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "cannabis_friendly_hangouts",
+      "label": "Cannabis-Friendly Hangouts",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "pipe_tobacco",
+      "label": "Pipe Tobacco",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "backyard_cigar_nights",
+      "label": "Backyard Cigar Nights",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "smoke_breaks",
+      "label": "Smoke Breaks",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "cannabis_hangouts",
+      "label": "Cannabis Hangouts",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "backyard_beers",
+      "label": "Backyard Beers",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "whiskey_nights",
+      "label": "Whiskey Nights",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "bourbon_sipping",
+      "label": "Bourbon Sipping",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "nonalcoholic_drinks",
+      "label": "Nonalcoholic Drinks",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": true
+    },
+    {
+      "id": "coffee_at_home",
+      "label": "Coffee at Home",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "football_games_on_tv",
+      "label": "Football Games on TV",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "ufc_fights",
+      "label": "UFC Fights",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "basketball_games_on_tv",
+      "label": "Basketball Games on TV",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "baseball_games_on_tv",
+      "label": "Baseball Games on TV",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "f1_races",
+      "label": "F1 Races",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "nhl_watch_parties",
+      "label": "NHL Watch Parties",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "soccer_matches_on_tv",
+      "label": "Soccer Matches on TV",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "fantasy_football_talk",
+      "label": "Fantasy Football Talk",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sports_highlights",
+      "label": "Sports Highlights",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "postgame_recaps",
+      "label": "Postgame Recaps",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "backyard_fire_pits",
+      "label": "Backyard Fire Pits",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "porch_hangouts",
+      "label": "Porch Hangouts",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "garage_hangouts",
+      "label": "Garage Hangouts",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "grilling_and_chilling",
+      "label": "Grilling & Chilling",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "hanging_by_the_pool",
+      "label": "Hanging by the Pool",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "poker_nights",
+      "label": "Poker Nights",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "card_games",
+      "label": "Card Games",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "dominoes",
+      "label": "Dominoes",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "listening_to_music",
+      "label": "Listening to Music",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "album_listening_sessions",
+      "label": "Album Listening Sessions",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "youtube_videos",
+      "label": "YouTube Videos",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "comedy_specials",
+      "label": "Comedy Specials",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "podcasts",
+      "label": "Podcasts",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "sports_talk",
+      "label": "Sports Talk",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "cars",
+      "label": "Cars",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "current_events",
+      "label": "Current Events",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "politics",
+      "label": "Politics",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "investing",
+      "label": "Investing",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "business_ideas",
+      "label": "Business Ideas",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "tech_talk",
+      "label": "Tech Talk",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "conspiracy_theories",
+      "label": "Conspiracy Theories",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    },
+    {
+      "id": "watching_documentaries",
+      "label": "Watching Documentaries",
+      "category_ids": [
+        "casual_hang"
+      ],
+      "age_restricted": false
+    }
+  ]
+}
