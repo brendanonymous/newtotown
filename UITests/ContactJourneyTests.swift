@@ -20,17 +20,29 @@ final class ContactJourneyTests: XCTestCase {
         try verifyExpiredCallback(in: app)
     }
 
+    @MainActor func testExpiredEmailCallbackCanBePresentedAgainAfterClosing() throws {
+        let app = XCUIApplication()
+        app.launch()
+        XCTAssertTrue(app.buttons["Join or sign in"].waitForExistence(timeout: 10))
+        try verifyExpiredCallback(in: app)
+        try verifyExpiredCallback(in: app)
+    }
+
     @MainActor private func verifyExpiredCallback(in app: XCUIApplication) throws {
         let identifier = try XCTUnwrap(Bundle(for: Self.self).bundleIdentifier)
         XCTAssertTrue(identifier.hasSuffix(".UITests"))
         let scheme = String(identifier.dropLast(".UITests".count))
-        app.open(try XCTUnwrap(URL(string: "\(scheme)://auth/email-verified#error_code=otp_expired")))
+        // Use OS URL dispatch so warm tests deliver into the running process.
+        XCUIDevice.shared.system.open(try XCTUnwrap(URL(string: "\(scheme)://auth/email-verified#error_code=otp_expired")))
         let result = app.staticTexts["contact.linkResult"]
         XCTAssertTrue(result.waitForExistence(timeout: 8))
         XCTAssertTrue(result.label.contains("expired"))
         XCTAssertFalse(app.staticTexts["Email verified successfully."].exists)
         app.buttons["Close"].tap()
-        XCTAssertFalse(result.exists)
+        // Dismissal is animated; wait for its completion before checking or reopening.
+        let dismissed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"), object: result)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed)
     }
 
     @MainActor private func verifyMissingContact(kind: String, value: String, preserved: String) {
