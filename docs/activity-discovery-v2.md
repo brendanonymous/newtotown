@@ -1,6 +1,6 @@
 # Activity Discovery v2: schema and API proposal
 
-Status: **awaiting schema approval**. This PR contains design, canonical data and executable contract checks only. It creates no database objects or deployed endpoints. Implement migrations only after this proposal is approved.
+Status: **schema approved by the project owner on November 14, 2026**. This design PR contains canonical data and executable contract checks only. Database implementation follows in a separate PR; hosted changes remain scoped to the isolated test project.
 
 ## Approved behavior
 
