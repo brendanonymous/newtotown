@@ -71,7 +71,7 @@ jobs:
           for migration in supabase/migrations/*.sql; do
             psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f "$migration"
           done
-          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles.sql -f supabase/tests/photos.sql -f supabase/tests/photo_review_flag.sql -f supabase/tests/photo_gallery.sql -f supabase/tests/discovery.sql -f supabase/tests/account_agreements.sql -f supabase/tests/messaging.sql -f supabase/tests/preferences.sql -f supabase/tests/reports.sql -f supabase/tests/interests.sql -f supabase/tests/interest_catalog.sql
+          psql -h localhost -U postgres -d newtotown_test -v ON_ERROR_STOP=1 -f supabase/tests/profiles.sql -f supabase/tests/photos.sql -f supabase/tests/photo_review_flag.sql -f supabase/tests/photo_gallery.sql -f supabase/tests/discovery.sql -f supabase/tests/account_agreements.sql -f supabase/tests/messaging.sql -f supabase/tests/preferences.sql -f supabase/tests/reports.sql -f supabase/tests/interests.sql -f supabase/tests/interest_catalog.sql -f supabase/tests/activity_v2.sql
 
       - name: Test concurrent messaging transactions
         env:
@@ -84,6 +84,8 @@ jobs:
         run: |
           python3 supabase/tests/messaging_concurrency.py
           python3 supabase/tests/interests_concurrency.py
+          python3 supabase/tests/activity_v2_concurrency.py
+          python3 supabase/tests/activity_v2_upgrade.py
 
   account-deletion:
     runs-on: ubuntu-latest
