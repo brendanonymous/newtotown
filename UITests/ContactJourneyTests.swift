@@ -39,7 +39,10 @@ final class ContactJourneyTests: XCTestCase {
         XCTAssertTrue(result.label.contains("expired"))
         XCTAssertFalse(app.staticTexts["Email verified successfully."].exists)
         app.buttons["Close"].tap()
-        XCTAssertFalse(result.exists)
+        // Dismissal is animated; wait for its completion before checking or reopening.
+        let dismissed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"), object: result)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed)
     }
 
     @MainActor private func verifyMissingContact(kind: String, value: String, preserved: String) {
