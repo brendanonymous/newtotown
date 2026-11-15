@@ -17,8 +17,9 @@ Apply `supabase/tests/auth_fixture.sql` and all migrations to a disposable Postg
 
 ```sh
 NEWTOTOWN_TEST_DATABASE=1 python3 supabase/tests/activity_v2_concurrency.py
+NEWTOTOWN_TEST_DATABASE=1 python3 supabase/tests/activity_v2_upgrade.py
 ```
 
-The concurrency runner refuses a real Supabase Auth schema. CI runs it alongside the messaging and legacy-interest races. The SQL suite verifies full-catalog saves, migration isolation/review, setup interruption/completion, priorities, rejected writes, privileges and account/feed deletion cascades.
+Both runners refuse a real Supabase Auth schema. The upgrade runner creates a second disposable database, loads a populated legacy schema, applies the actual v2 migrations and verifies import before invoking any v2 load RPC. CI runs it alongside the messaging and legacy-interest races. The SQL suite verifies full-catalog saves, migration isolation/review, setup interruption/completion, priorities, rejected writes, privileges and account/feed deletion cascades.
 
 This PR does not deploy Edge Functions, expose a public catalog, implement screens, rank profiles or distribute an app. Both new feature flags remain false.

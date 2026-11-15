@@ -119,7 +119,7 @@ end $$;
 -- Retired filters require review; public output omits the newly hidden selection.
 update private.activity_interests set published=false where id='golf';
 set local role service_role;
-do $$ declare result jsonb; begin
+do $$ begin
     perform public.activity_v2_save_filters('70000000-0000-0000-0000-000000000001',2,array['chess']);
 end $$;
 reset role;
@@ -163,6 +163,8 @@ do $$ declare role_name text; relation text; rpc regprocedure; begin
             if not (select relrowsecurity from pg_class where oid=('private.'||relation)::regclass) then raise exception 'RLS missing'; end if;
         end loop;
         for rpc in select oid::regprocedure from pg_proc where proname like 'activity_%' loop
+            if (select prosecdef or not coalesce(proconfig @> array['search_path=""'],false) from pg_proc where oid=rpc::oid) then
+                raise exception 'RPC privilege or search path unsafe: %',rpc; end if;
             if has_function_privilege(role_name,rpc,'EXECUTE') then raise exception 'Client RPC access: %',rpc; end if;
         end loop;
     end loop;

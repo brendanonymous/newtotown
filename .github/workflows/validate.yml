@@ -85,6 +85,7 @@ jobs:
           python3 supabase/tests/messaging_concurrency.py
           python3 supabase/tests/interests_concurrency.py
           python3 supabase/tests/activity_v2_concurrency.py
+          python3 supabase/tests/activity_v2_upgrade.py
 
   account-deletion:
     runs-on: ubuntu-latest
