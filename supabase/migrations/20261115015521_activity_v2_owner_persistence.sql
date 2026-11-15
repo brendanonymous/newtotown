@@ -126,7 +126,10 @@ begin
     if not exists(select 1 from public.profiles where id=person) or not private.activity_has_photo(person) then
         raise exception 'Saved profile photo required' using errcode='22023';
     end if;
-    update private.profile_setup_progress set photos_complete=true,selection_revision=selection_revision+1,updated_at=now() where user_id=person;
+    update private.profile_setup_progress set photos_complete=true,
+        completed_at=case when basics_complete and looking_for_complete and interests_complete
+            then coalesce(completed_at,now()) else completed_at end,
+        selection_revision=selection_revision+1,updated_at=now() where user_id=person;
     return private.activity_owner_state(person);
 end;
 $$;
@@ -216,10 +219,11 @@ grant execute on function private.activity_has_photo(uuid), private.activity_ini
     public.activity_v2_save_looking_for(uuid,bigint,text[],text[]), public.activity_v2_save_interests(uuid,bigint,text[],boolean),
     public.activity_v2_save_filters(uuid,bigint,text[]) to service_role;
 -- Basics is server-authenticated too. Members retain their existing self-only grants.
-grant select,insert on public.profiles to service_role;
+grant select on public.profiles to service_role;
+grant insert(id,first_name,job_title,goal,date_of_birth,city,platonic_agreement) on public.profiles to service_role;
 grant update(first_name,job_title,goal,date_of_birth) on public.profiles to service_role;
 grant usage on schema auth to service_role;
-grant select,update(id) on auth.users to service_role;
+grant select(id),update(id) on auth.users to service_role;
 
 -- Snapshot existing selections now; first entry handles any later legacy accounts.
 do $$ declare member_id uuid; begin

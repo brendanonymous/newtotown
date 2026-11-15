@@ -99,6 +99,15 @@ begin
     begin perform public.activity_v2_save_filters(b,6,array[null]::text[]); raise exception 'Null filter accepted'; exception when invalid_parameter_value then null; end;
     if (select selection_revision from private.profile_setup_progress where user_id=b) <> 6 then raise exception 'Failed request advanced revision'; end if;
 end $$;
+-- Existing members may add their first photo after choosing Looking For.
+select public.activity_v2_save_looking_for('70000000-0000-0000-0000-000000000004',0,array['gym'],array[]::text[]);
+reset role;
+insert into storage.objects(bucket_id,name) values ('private-photos','70000000-0000-0000-0000-000000000004/profile.jpg');
+set local role service_role;
+do $$ declare result jsonb; begin
+    result := public.activity_v2_complete_photos('70000000-0000-0000-0000-000000000004',1);
+    if result->'setup'->>'completed_at' is null then raise exception 'Existing member completion did not resume'; end if;
+end $$;
 reset role;
 insert into storage.objects(bucket_id,name) values ('private-photos','70000000-0000-0000-0000-000000000002/selfie.jpg');
 set local role service_role;
@@ -134,12 +143,12 @@ reset role;
 -- Deferred constraints also protect privileged maintenance writes.
 do $$ begin
     begin
-        insert into private.profile_looking_for(user_id,category_id) select '70000000-0000-0000-0000-000000000004',id from private.looking_for_categories limit 6;
+        insert into private.profile_looking_for(user_id,category_id) select '70000000-0000-0000-0000-000000000001',id from private.looking_for_categories limit 6;
         set constraints private.activity_looking_for_invariants immediate;
         raise exception 'Six direct choices accepted';
     exception when check_violation then null; end;
     begin
-        insert into private.profile_looking_for values ('70000000-0000-0000-0000-000000000004','gym',2);
+        insert into private.profile_looking_for values ('70000000-0000-0000-0000-000000000001','gym',2);
         set constraints private.activity_looking_for_invariants immediate;
         raise exception 'Priority gap accepted';
     exception when check_violation then null; end;
